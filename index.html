@@ -3,52 +3,59 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebAI Chemistry · 二氧化碳制取与检验</title>
+    <title>WebAI Chemistry Lab · 二氧化碳制取与检验</title>
     <meta
       name="description"
-      content="WebAI Chemistry v0.2，交互式二氧化碳制取与检验实验页前端原型。"
+      content="WebAI Chemistry v0.3，数字实验室场景版二氧化碳制取与检验交互原型。"
     />
     <style>
       :root {
-        --bg: #06111f;
-        --bg-soft: #0c1d31;
-        --panel: rgba(255, 255, 255, 0.08);
-        --panel-strong: rgba(255, 255, 255, 0.11);
-        --line: rgba(255, 255, 255, 0.14);
-        --text: #edf4ff;
-        --muted: #9cb0cf;
-        --cyan: #78e6ff;
+        --bg: #071017;
+        --bg-2: #0b1620;
+        --chalk: #dfe8d7;
+        --chalk-soft: #9cb09a;
+        --board: #152c22;
+        --board-edge: #284738;
+        --desk: #6f4e37;
+        --desk-edge: #4b3324;
+        --panel: rgba(13, 22, 28, 0.76);
+        --panel-line: rgba(255, 255, 255, 0.08);
+        --text: #eef4ef;
+        --muted: #9cb0b7;
+        --cyan: #79e8ff;
+        --cyan-soft: rgba(121, 232, 255, 0.16);
         --green: #afff84;
-        --yellow: #ffd978;
-        --danger: #ff8d8d;
-        --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
-        --radius: 24px;
+        --green-soft: rgba(175, 255, 132, 0.14);
+        --yellow: #ffd76b;
+        --danger: #ff8e8e;
+        --shadow: 0 28px 80px rgba(0, 0, 0, 0.35);
+        --radius: 22px;
       }
 
       * { box-sizing: border-box; }
       html, body { margin: 0; padding: 0; }
       body {
-        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background:
-          radial-gradient(circle at top left, rgba(120, 230, 255, 0.14), transparent 30%),
-          radial-gradient(circle at top right, rgba(175, 255, 132, 0.12), transparent 28%),
-          linear-gradient(180deg, #07101d 0%, #0a1829 100%);
-        color: var(--text);
         min-height: 100vh;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(121, 232, 255, 0.08), transparent 26%),
+          radial-gradient(circle at top right, rgba(175, 255, 132, 0.06), transparent 24%),
+          linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
       }
 
       .container {
-        width: min(1200px, calc(100% - 32px));
+        width: min(1360px, calc(100% - 28px));
         margin: 0 auto;
-        padding-bottom: 56px;
+        padding: 18px 0 36px;
       }
 
-      .nav {
+      .topbar {
         display: flex;
-        align-items: center;
         justify-content: space-between;
+        align-items: center;
         gap: 12px;
-        padding: 20px 0;
+        margin-bottom: 14px;
       }
 
       .brand {
@@ -64,65 +71,73 @@
         border-radius: 14px;
         display: grid;
         place-items: center;
-        background: linear-gradient(135deg, var(--cyan), #61a9ff);
-        color: #07101d;
+        background: linear-gradient(135deg, var(--cyan), #56a7ff);
+        color: #071017;
         box-shadow: var(--shadow);
       }
 
-      .nav-note {
+      .version {
         color: var(--muted);
         font-size: 14px;
       }
 
-      .hero {
-        display: grid;
-        grid-template-columns: 1.05fr 0.95fr;
-        gap: 24px;
-        align-items: stretch;
-        padding: 24px 0 28px;
-      }
-
-      .card {
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
+      .board {
+        position: relative;
+        border-radius: 26px;
+        background: linear-gradient(180deg, var(--board) 0%, #11241b 100%);
+        border: 6px solid var(--board-edge);
         box-shadow: var(--shadow);
-        backdrop-filter: blur(18px);
+        padding: 26px 28px;
+        overflow: hidden;
       }
 
-      .hero-copy {
-        padding: 34px;
+      .board::before,
+      .board::after {
+        content: "";
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255,255,255,0.05), transparent 70%);
+        pointer-events: none;
+      }
+
+      .board::before { top: -100px; left: -60px; }
+      .board::after { bottom: -120px; right: -80px; }
+
+      .board-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 18px;
       }
 
       .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        background: rgba(255,255,255,0.04);
-        color: var(--cyan);
-        font-size: 14px;
+        color: var(--green);
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
       }
 
       h1 {
-        margin: 18px 0 14px;
-        font-size: clamp(36px, 6vw, 60px);
-        line-height: 1.04;
+        font-size: clamp(32px, 5vw, 52px);
+        margin: 10px 0 10px;
+        line-height: 1.05;
+        font-weight: 800;
       }
 
-      .hero-copy p {
-        margin: 0;
-        color: var(--muted);
+      .board-subtitle {
+        max-width: 900px;
+        color: var(--chalk);
+        opacity: 0.9;
         font-size: 17px;
-        line-height: 1.85;
+        line-height: 1.8;
+        margin: 0;
       }
 
-      .hero-actions {
-        margin-top: 24px;
+      .board-actions {
         display: flex;
-        gap: 12px;
+        gap: 10px;
         flex-wrap: wrap;
       }
 
@@ -130,98 +145,243 @@
         appearance: none;
         border: 1px solid transparent;
         border-radius: 14px;
-        padding: 14px 18px;
+        padding: 13px 18px;
         cursor: pointer;
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 700;
         transition: 0.2s ease;
       }
 
       .btn:hover { transform: translateY(-1px); }
+
       .btn-primary {
-        background: linear-gradient(135deg, var(--green), #72f7d4);
-        color: #07101d;
+        background: linear-gradient(135deg, var(--green), #79ffd1);
+        color: #071017;
       }
+
       .btn-secondary {
         background: rgba(255,255,255,0.04);
-        border-color: var(--line);
         color: var(--text);
+        border-color: rgba(255,255,255,0.08);
       }
 
-      .quick-grid {
+      .board-meta {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-        margin-top: 28px;
+        grid-template-columns: 1.4fr 1fr 1fr;
+        gap: 14px;
+        margin-top: 22px;
       }
 
-      .quick-item {
-        background: rgba(255,255,255,0.05);
-        border: 1px solid var(--line);
+      .chalk-card {
+        border: 1px dashed rgba(223, 232, 215, 0.18);
+        background: rgba(0,0,0,0.08);
         border-radius: 18px;
-        padding: 16px;
+        padding: 16px 18px;
       }
 
-      .quick-item strong {
+      .chalk-card strong {
         display: block;
-        font-size: 24px;
+        color: var(--chalk-soft);
+        font-size: 13px;
+        margin-bottom: 6px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .equation {
+        font-size: 20px;
+        line-height: 1.65;
+        color: var(--chalk);
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 240px minmax(0, 1fr) 260px;
+        gap: 16px;
+        margin-top: 16px;
+        align-items: stretch;
+      }
+
+      .side-panel,
+      .journal,
+      .lab-stage {
+        border-radius: 22px;
+        background: var(--panel);
+        border: 1px solid var(--panel-line);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(12px);
+      }
+
+      .side-panel {
+        padding: 18px;
+      }
+
+      .side-panel h2,
+      .journal h2 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+
+      .side-note {
+        color: var(--muted);
+        line-height: 1.7;
+        font-size: 14px;
+        margin-bottom: 14px;
+      }
+
+      .inventory {
+        display: grid;
+        gap: 12px;
+      }
+
+      .inventory-item {
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 18px;
+        padding: 14px;
+        background: rgba(255,255,255,0.03);
+        cursor: pointer;
+        transition: 0.2s ease;
+      }
+
+      .inventory-item:hover,
+      .inventory-item.active {
+        border-color: rgba(121, 232, 255, 0.4);
+        background: rgba(121, 232, 255, 0.1);
+      }
+
+      .inventory-item strong {
+        display: block;
         margin-bottom: 6px;
       }
 
-      .lab-panel {
-        padding: 24px;
-      }
-
-      .lab-head {
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        align-items: center;
-        margin-bottom: 18px;
-      }
-
-      .status-pill {
-        padding: 8px 12px;
-        border-radius: 999px;
-        background: rgba(175, 255, 132, 0.12);
-        border: 1px solid rgba(175, 255, 132, 0.2);
-        color: var(--green);
+      .inventory-item span {
+        display: block;
+        color: var(--muted);
+        line-height: 1.6;
         font-size: 13px;
       }
 
       .lab-stage {
         position: relative;
-        min-height: 360px;
-        border-radius: 24px;
-        border: 1px solid var(--line);
-        background: linear-gradient(180deg, rgba(10, 22, 36, 0.95), rgba(8, 16, 28, 0.95));
+        min-height: 640px;
         overflow: hidden;
-        padding: 20px;
+        background:
+          linear-gradient(180deg, rgba(29, 38, 46, 0.95) 0%, rgba(17, 24, 31, 0.98) 100%);
       }
 
-      .bench {
+      .back-wall {
+        position: absolute;
+        inset: 0 0 118px 0;
+        background:
+          linear-gradient(180deg, rgba(35, 47, 58, 0.94), rgba(23, 31, 38, 0.96));
+      }
+
+      .shelf {
+        position: absolute;
+        left: 60px;
+        right: 60px;
+        top: 118px;
+        height: 16px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #43525f, #303d49);
+        box-shadow: 0 10px 18px rgba(0,0,0,0.25);
+      }
+
+      .shelf-item {
+        position: absolute;
+        top: 52px;
+        width: 44px;
+        border-radius: 12px 12px 10px 10px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0.08));
+        border: 2px solid rgba(255,255,255,0.2);
+      }
+
+      .shelf-item::after {
+        content: "";
+        position: absolute;
+        left: 7px;
+        right: 7px;
+        bottom: 8px;
+        height: 22px;
+        border-radius: 8px;
+      }
+
+      .shelf-item.one { left: 120px; height: 68px; }
+      .shelf-item.one::after { background: rgba(255, 215, 107, 0.6); }
+      .shelf-item.two { left: 200px; height: 58px; }
+      .shelf-item.two::after { background: rgba(121, 232, 255, 0.52); }
+      .shelf-item.three { right: 210px; height: 64px; }
+      .shelf-item.three::after { background: rgba(255, 142, 142, 0.5); }
+      .shelf-item.four { right: 130px; height: 72px; }
+      .shelf-item.four::after { background: rgba(175, 255, 132, 0.48); }
+
+      .board-screen {
+        position: absolute;
+        top: 44px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(70%, 600px);
+        border-radius: 20px;
+        background: rgba(8, 14, 18, 0.72);
+        border: 1px solid rgba(255,255,255,0.08);
+        padding: 18px 20px;
+        text-align: left;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+      }
+
+      .board-screen strong {
+        color: var(--green);
+        letter-spacing: 0.08em;
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+
+      .board-screen h3 {
+        margin: 8px 0 8px;
+        font-size: 28px;
+      }
+
+      .board-screen p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .desk-surface {
         position: absolute;
         left: 0;
         right: 0;
         bottom: 0;
-        height: 78px;
-        background: linear-gradient(180deg, #1f4563, #163149);
-        border-top: 1px solid rgba(255,255,255,0.08);
+        height: 142px;
+        background: linear-gradient(180deg, var(--desk) 0%, var(--desk-edge) 100%);
+        border-top: 3px solid rgba(255,255,255,0.08);
       }
 
-      .equipment {
+      .desk-glow {
         position: absolute;
-        bottom: 58px;
+        left: 50%;
+        bottom: 100px;
+        transform: translateX(-50%);
+        width: 540px;
+        height: 120px;
+        background: radial-gradient(circle, rgba(121,232,255,0.12), transparent 68%);
+        pointer-events: none;
+      }
+
+      .apparatus {
+        position: absolute;
+        bottom: 118px;
       }
 
       .flask {
-        left: 54px;
-        width: 110px;
-        height: 140px;
-        border: 3px solid rgba(255,255,255,0.65);
-        border-top: 10px solid rgba(255,255,255,0.7);
-        border-radius: 16px 16px 34px 34px;
-        background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+        left: 180px;
+        width: 128px;
+        height: 168px;
+        border: 4px solid rgba(255,255,255,0.72);
+        border-top: 14px solid rgba(255,255,255,0.8);
+        border-radius: 18px 18px 38px 38px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02));
+        box-shadow: inset 0 0 30px rgba(255,255,255,0.03);
       }
 
       .flask::after {
@@ -230,54 +390,86 @@
         left: 14px;
         right: 14px;
         bottom: 12px;
-        height: var(--flask-liquid, 34px);
-        background: linear-gradient(180deg, rgba(120, 230, 255, 0.8), rgba(85, 164, 255, 0.7));
-        border-radius: 10px 10px 22px 22px;
-        transition: height 0.5s ease, background 0.5s ease;
+        height: var(--flask-liquid, 36px);
+        background: linear-gradient(180deg, rgba(121,232,255,0.84), rgba(74,151,255,0.72));
+        border-radius: 12px 12px 28px 28px;
+        transition: height 0.45s ease;
+      }
+
+      .powder {
+        position: absolute;
+        left: 204px;
+        bottom: 130px;
+        width: 80px;
+        height: 20px;
+        border-radius: 999px;
+        background: var(--powder-color, rgba(245,245,245,0.88));
+        box-shadow: 0 0 18px rgba(255,255,255,0.08);
+        transition: background 0.35s ease;
       }
 
       .tube {
-        left: 160px;
-        bottom: 168px;
-        width: 150px;
-        height: 10px;
+        left: 304px;
+        bottom: 278px;
+        width: 224px;
+        height: 12px;
         border-radius: 999px;
-        background: rgba(255,255,255,0.55);
-        transform: rotate(10deg);
+        background: rgba(255,255,255,0.62);
+        transform: rotate(7deg);
         transform-origin: left center;
       }
 
       .beaker {
-        right: 70px;
-        width: 122px;
-        height: 154px;
-        border: 3px solid rgba(255,255,255,0.65);
-        border-top: 10px solid rgba(255,255,255,0.75);
-        border-radius: 16px 16px 24px 24px;
-        background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+        right: 160px;
+        width: 144px;
+        height: 188px;
+        border: 4px solid rgba(255,255,255,0.72);
+        border-top: 14px solid rgba(255,255,255,0.82);
+        border-radius: 18px 18px 28px 28px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02));
       }
 
       .beaker::after {
         content: "";
         position: absolute;
-        left: 10px;
-        right: 10px;
+        left: 12px;
+        right: 12px;
         bottom: 10px;
-        height: 82px;
-        background: var(--limewater-color, rgba(232, 245, 255, 0.75));
-        border-radius: 10px 10px 16px 16px;
-        transition: background 0.5s ease;
+        height: 108px;
+        background: var(--limewater-color, rgba(240,248,255,0.78));
+        border-radius: 12px 12px 18px 18px;
+        transition: background 0.45s ease;
       }
 
       .label {
         position: absolute;
-        bottom: -38px;
         left: 50%;
+        bottom: -42px;
         transform: translateX(-50%);
-        white-space: nowrap;
-        font-size: 13px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(0,0,0,0.32);
+        border: 1px solid rgba(255,255,255,0.08);
         color: var(--muted);
+        font-size: 13px;
+        white-space: nowrap;
       }
+
+      .reagent-token {
+        position: absolute;
+        bottom: 132px;
+        width: 86px;
+        border-radius: 16px;
+        background: rgba(0,0,0,0.28);
+        border: 1px solid rgba(255,255,255,0.08);
+        padding: 10px 12px;
+        text-align: center;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .token-left { left: 70px; }
+      .token-right { right: 64px; }
 
       .bubble-layer {
         position: absolute;
@@ -289,514 +481,461 @@
 
       .bubble {
         position: absolute;
-        width: 12px;
-        height: 12px;
         border-radius: 50%;
-        background: rgba(120, 230, 255, 0.7);
-        bottom: 110px;
+        background: rgba(121, 232, 255, 0.72);
         animation: rise 3s infinite ease-in;
       }
 
-      .bubble:nth-child(1) { left: 114px; animation-delay: 0s; }
-      .bubble:nth-child(2) { left: 136px; width: 10px; height: 10px; animation-delay: 0.8s; }
-      .bubble:nth-child(3) { right: 120px; width: 14px; height: 14px; animation-delay: 1.2s; }
-      .bubble:nth-child(4) { right: 100px; width: 8px; height: 8px; animation-delay: 2s; }
+      .bubble.f1 { left: 236px; bottom: 180px; width: 11px; height: 11px; animation-delay: 0s; }
+      .bubble.f2 { left: 258px; bottom: 172px; width: 9px; height: 9px; animation-delay: 0.7s; }
+      .bubble.f3 { right: 218px; bottom: 176px; width: 13px; height: 13px; animation-delay: 1.1s; }
+      .bubble.f4 { right: 194px; bottom: 164px; width: 8px; height: 8px; animation-delay: 1.9s; }
 
       @keyframes rise {
-        0% { transform: translateY(0) scale(0.95); opacity: 0; }
-        20% { opacity: 1; }
-        100% { transform: translateY(-160px) scale(1.15); opacity: 0; }
+        0% { transform: translateY(0) scale(0.92); opacity: 0; }
+        25% { opacity: 1; }
+        100% { transform: translateY(-180px) scale(1.1); opacity: 0; }
       }
 
-      .powder {
+      .hint-overlay {
         position: absolute;
-        left: 78px;
-        bottom: 72px;
-        width: 62px;
-        height: 18px;
-        border-radius: 999px;
-        background: var(--powder-color, rgba(250, 250, 250, 0.86));
-        box-shadow: 0 0 18px rgba(255,255,255,0.08);
-      }
-
-      .step-section {
-        display: grid;
-        grid-template-columns: 0.88fr 1.12fr;
-        gap: 20px;
-        margin-top: 26px;
-      }
-
-      .info-card,
-      .steps-card,
-      .note-card,
-      .meta-card {
-        padding: 22px;
-      }
-
-      .section-title {
-        font-size: 22px;
-        margin: 0 0 8px;
-      }
-
-      .section-desc {
-        color: var(--muted);
-        line-height: 1.75;
-        margin: 0 0 18px;
-      }
-
-      .tag-list,
-      .kit-list,
-      .facts,
-      .meta-grid {
-        display: grid;
-        gap: 10px;
-      }
-
-      .tag-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .kit-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .meta-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-
-      .pill,
-      .kit-item,
-      .fact,
-      .meta-item {
-        border: 1px solid var(--line);
-        background: rgba(255,255,255,0.05);
+        left: 50%;
+        bottom: 18px;
+        transform: translateX(-50%);
+        width: calc(100% - 36px);
         border-radius: 18px;
-        padding: 14px;
-      }
-
-      .steps {
-        display: grid;
-        gap: 12px;
-      }
-
-      .step {
-        border: 1px solid var(--line);
-        background: rgba(255,255,255,0.04);
-        border-radius: 18px;
-        padding: 16px;
-        cursor: pointer;
-        transition: 0.2s ease;
-      }
-
-      .step:hover { border-color: rgba(120,230,255,0.35); }
-      .step.active {
-        background: rgba(120,230,255,0.1);
-        border-color: rgba(120,230,255,0.35);
-      }
-
-      .step small {
-        display: block;
-        color: var(--cyan);
-        margin-bottom: 6px;
-      }
-
-      .step strong {
-        display: block;
-        margin-bottom: 6px;
-        font-size: 18px;
-      }
-
-      .step p {
-        margin: 0;
+        background: rgba(6, 12, 16, 0.56);
+        border: 1px solid rgba(255,255,255,0.07);
+        padding: 14px 16px;
         color: var(--muted);
+        font-size: 14px;
         line-height: 1.7;
       }
 
-      .detail-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 20px;
-        margin-top: 24px;
-      }
-
-      .note-card ul {
-        padding-left: 18px;
-        margin: 12px 0 0;
-        color: var(--muted);
-        line-height: 1.8;
-      }
-
-      .legend {
+      .journal {
         margin-top: 16px;
-        display: flex;
+        padding: 18px;
+      }
+
+      .journal-grid {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr 0.95fr;
+        gap: 14px;
+        margin-top: 14px;
+      }
+
+      .journal-card {
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.03);
+        padding: 16px;
+      }
+
+      .journal-card strong {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      .facts,
+      .tips,
+      .step-list {
+        display: grid;
         gap: 10px;
-        flex-wrap: wrap;
       }
 
-      .legend span {
-        display: inline-flex;
-        gap: 8px;
-        align-items: center;
-        padding: 8px 12px;
-        border-radius: 999px;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid var(--line);
+      .fact,
+      .tip,
+      .step-chip {
+        border-radius: 14px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.07);
+        padding: 12px 13px;
         color: var(--muted);
-        font-size: 13px;
+        line-height: 1.7;
+        font-size: 14px;
       }
 
-      .dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
+      .step-chip.active {
+        border-color: rgba(121,232,255,0.38);
+        background: rgba(121,232,255,0.1);
+        color: var(--text);
       }
 
-      footer {
-        padding-top: 28px;
-        color: var(--muted);
-        text-align: center;
-      }
-
-      @media (max-width: 980px) {
-        .hero,
-        .step-section,
-        .detail-grid,
-        .meta-grid {
+      @media (max-width: 1160px) {
+        .layout,
+        .board-meta,
+        .journal-grid {
           grid-template-columns: 1fr;
         }
 
-        .quick-grid,
-        .tag-list,
-        .kit-list {
-          grid-template-columns: 1fr;
+        .lab-stage {
+          min-height: 760px;
         }
+
+        .board-head {
+          flex-direction: column;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .container {
+          width: min(100%, calc(100% - 16px));
+        }
+
+        .lab-stage {
+          min-height: 860px;
+        }
+
+        .flask { left: 54px; }
+        .powder { left: 78px; }
+        .tube { left: 182px; width: 156px; }
+        .beaker { right: 46px; }
+        .token-left { left: 20px; }
+        .token-right { right: 16px; }
+        .bubble.f1 { left: 112px; }
+        .bubble.f2 { left: 134px; }
+        .bubble.f3 { right: 96px; }
+        .bubble.f4 { right: 74px; }
+        .board-screen { width: calc(100% - 28px); }
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <header class="nav">
+      <header class="topbar">
         <div class="brand">
           <div class="brand-badge">⚗️</div>
-          <div>WebAI Chemistry</div>
+          <div>WebAI Chemistry Lab</div>
         </div>
-        <div class="nav-note">v0.2 · 交互式实验页原型</div>
+        <div class="version">v0.3.0 · 数字实验室场景版</div>
       </header>
 
-      <section class="hero">
-        <div class="card hero-copy">
-          <div class="eyebrow">经典实验原型 · 二氧化碳制取与检验</div>
-          <h1>把化学实验，做成可以互动理解的网页页面。</h1>
-          <p>
-            这不是单纯的知识页，而是一个前端化学实验原型。用户可以按步骤体验二氧化碳的制取与检验，看到器材、试剂、实验现象、反应表达和注意事项之间的关系。
-          </p>
-          <div class="hero-actions">
-            <button class="btn btn-primary" data-action="play-all">自动演示实验</button>
-            <button class="btn btn-secondary" data-action="reset">重置实验场景</button>
+      <section class="board">
+        <div class="board-head">
+          <div>
+            <div class="eyebrow">Interactive Chemistry Lab</div>
+            <h1>二氧化碳制取与检验，不该像在读网页，而该像在做实验。</h1>
+            <p class="board-subtitle">
+              这一版把页面重构成一个数字实验室。黑板负责指引，实验桌负责演示，原料区和器材区负责操作，让用户更像站在实验台前而不是浏览卡片页面。
+            </p>
           </div>
-          <div class="quick-grid">
-            <div class="quick-item">
-              <strong>4</strong>
-              <span>实验步骤</span>
-            </div>
-            <div class="quick-item">
-              <strong>3</strong>
-              <span>核心器材类别</span>
-            </div>
-            <div class="quick-item">
-              <strong>1</strong>
-              <span>完整教学闭环原型</span>
-            </div>
+          <div class="board-actions">
+            <button class="btn btn-primary" data-action="play-all">自动演示</button>
+            <button class="btn btn-secondary" data-action="reset">重置实验</button>
           </div>
         </div>
-
-        <div class="card lab-panel">
-          <div class="lab-head">
-            <div>
-              <div class="section-title" style="margin-bottom: 4px;">实验舞台</div>
-              <div class="section-desc" id="sceneCaption" style="margin: 0;">
-                准备实验器材，观察固体与液体试剂的初始状态。
-              </div>
-            </div>
-            <div class="status-pill" id="sceneStatus">Step 1 / 4</div>
+        <div class="board-meta">
+          <div class="chalk-card">
+            <strong>实验目标</strong>
+            <div class="equation">用石灰石与稀盐酸制取 CO₂，再通入澄清石灰水完成检验。</div>
           </div>
-          <div
-            class="lab-stage"
-            id="labStage"
-            style="--bubble-opacity: 0; --flask-liquid: 34px; --limewater-color: rgba(232, 245, 255, 0.75); --powder-color: rgba(250, 250, 250, 0.86);"
-          >
-            <div class="equipment flask">
-              <div class="label">锥形瓶（石灰石 + 稀盐酸）</div>
-            </div>
-            <div class="powder" id="powder"></div>
-            <div class="equipment tube">
-              <div class="label">导气管</div>
-            </div>
-            <div class="equipment beaker">
-              <div class="label">澄清石灰水</div>
-            </div>
-            <div class="bubble-layer" id="bubbleLayer">
-              <div class="bubble"></div>
-              <div class="bubble"></div>
-              <div class="bubble"></div>
-              <div class="bubble"></div>
-            </div>
-            <div class="bench"></div>
+          <div class="chalk-card">
+            <strong>制取反应</strong>
+            <div class="equation">CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑</div>
           </div>
-          <div class="legend">
-            <span><i class="dot" style="background: var(--cyan);"></i> 气泡表示 CO₂ 正在生成 / 通入</span>
-            <span><i class="dot" style="background: rgba(255,255,255,0.8);"></i> 白色浑浊表示石灰水变浑浊</span>
-            <span><i class="dot" style="background: var(--green);"></i> 高亮步骤表示当前实验焦点</span>
+          <div class="chalk-card">
+            <strong>检验反应</strong>
+            <div class="equation">CO₂ + Ca(OH)₂ → CaCO₃↓ + H₂O</div>
           </div>
         </div>
       </section>
 
-      <section class="step-section">
-        <div class="card info-card">
-          <h2 class="section-title">实验目标</h2>
-          <p class="section-desc">
-            用石灰石和稀盐酸反应制取二氧化碳，再将生成的气体通入澄清石灰水，通过石灰水变浑浊来完成检验。
-          </p>
-          <div class="tag-list">
-            <div class="pill">化学反应可视化</div>
-            <div class="pill">实验流程演示</div>
-            <div class="pill">器材与试剂关联</div>
-            <div class="pill">现象驱动理解</div>
+      <section class="layout">
+        <aside class="side-panel">
+          <h2>原料区</h2>
+          <div class="side-note">像实验桌左边的试剂托盘。点击不同原料，查看它在当前实验中的作用。</div>
+          <div class="inventory" id="reagentList"></div>
+        </aside>
+
+        <main class="lab-stage" id="labStage" style="--bubble-opacity: 0; --flask-liquid: 36px; --limewater-color: rgba(240,248,255,0.78); --powder-color: rgba(245,245,245,0.88);">
+          <div class="back-wall"></div>
+          <div class="board-screen">
+            <strong id="screenStep">Step 1 / 4</strong>
+            <h3 id="screenTitle">准备实验装置</h3>
+            <p id="screenText">检查导气装置连接，确认石灰石、稀盐酸和澄清石灰水都已就位。</p>
+          </div>
+          <div class="shelf"></div>
+          <div class="shelf-item one"></div>
+          <div class="shelf-item two"></div>
+          <div class="shelf-item three"></div>
+          <div class="shelf-item four"></div>
+
+          <div class="reagent-token token-left">石灰石 / 稀盐酸</div>
+          <div class="reagent-token token-right">澄清石灰水</div>
+
+          <div class="apparatus flask">
+            <div class="label">锥形瓶</div>
+          </div>
+          <div class="powder"></div>
+          <div class="apparatus tube">
+            <div class="label">导气管</div>
+          </div>
+          <div class="apparatus beaker">
+            <div class="label">烧杯中的石灰水</div>
           </div>
 
-          <h2 class="section-title" style="margin-top: 22px;">实验器材与试剂</h2>
-          <div class="kit-list">
-            <div class="kit-item">锥形瓶、导气管、烧杯</div>
-            <div class="kit-item">石灰石（CaCO₃）</div>
-            <div class="kit-item">稀盐酸（HCl）</div>
-            <div class="kit-item">澄清石灰水 [Ca(OH)₂]</div>
+          <div class="bubble-layer">
+            <div class="bubble f1"></div>
+            <div class="bubble f2"></div>
+            <div class="bubble f3"></div>
+            <div class="bubble f4"></div>
           </div>
-        </div>
 
-        <div class="card steps-card">
-          <h2 class="section-title">交互步骤</h2>
-          <p class="section-desc">
-            你可以逐步点击，也可以自动演示。页面重点不是“播放动画”，而是把操作、现象和原理连起来。
-          </p>
-          <div class="steps" id="steps"></div>
-        </div>
+          <div class="desk-glow"></div>
+          <div class="desk-surface"></div>
+          <div class="hint-overlay" id="sceneHint">
+            当前场景：实验桌已准备完成，等待你开始向锥形瓶内加入稀盐酸。
+          </div>
+        </main>
+
+        <aside class="side-panel">
+          <h2>器材区</h2>
+          <div class="side-note">像实验器材架。点击器材查看用途，帮助用户建立实验空间感和器材认知。</div>
+          <div class="inventory" id="toolList"></div>
+        </aside>
       </section>
 
-      <section class="detail-grid">
-        <div class="card note-card">
-          <h2 class="section-title">反应原理</h2>
-          <div class="facts" id="principleBox">
-            <div class="fact">CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑</div>
-            <div class="fact">CO₂ + Ca(OH)₂ → CaCO₃↓ + H₂O</div>
+      <section class="journal">
+        <h2>实验记录与引导</h2>
+        <div class="side-note">这里承接现象、步骤和注意事项，不打断实验桌上的主交互。</div>
+        <div class="journal-grid">
+          <div class="journal-card">
+            <strong>步骤导航</strong>
+            <div class="step-list" id="stepList"></div>
           </div>
-        </div>
-
-        <div class="card note-card">
-          <h2 class="section-title">当前实验现象</h2>
-          <div class="facts" id="phenomenonBox">
-            <div class="fact">点击步骤后查看对应现象说明。</div>
+          <div class="journal-card">
+            <strong>当前现象</strong>
+            <div class="facts" id="phenomenonList"></div>
           </div>
-        </div>
-
-        <div class="card note-card">
-          <h2 class="section-title">注意事项</h2>
-          <ul id="tipsBox">
-            <li>实验前检查导气装置连接是否紧密，避免漏气。</li>
-            <li>优先选稀盐酸，不建议用稀硫酸，避免生成难溶物影响反应。</li>
-            <li>观察石灰水是否变浑浊，是检验 CO₂ 的关键现象。</li>
-          </ul>
-        </div>
-      </section>
-
-      <section class="card meta-card" style="margin-top: 24px;">
-        <h2 class="section-title">这个版本的产品意思</h2>
-        <p class="section-desc">
-          v0.2 不追求复杂物理模拟，而是先建立一个可继续扩展的交互框架。后面可以继续加拖拽器材、条件选择、错误实验路径、元素百科联动和题目练习。
-        </p>
-        <div class="meta-grid">
-          <div class="meta-item">
-            <strong>实验页</strong>
-            <p style="color: var(--muted); line-height: 1.7; margin-bottom: 0;">先做一个完整实验闭环，验证页面表达和交互形式。</p>
-          </div>
-          <div class="meta-item">
-            <strong>可扩展性</strong>
-            <p style="color: var(--muted); line-height: 1.7; margin-bottom: 0;">后续可以复制这个结构去做酸碱中和、沉淀反应、气体制取等实验。</p>
-          </div>
-          <div class="meta-item">
-            <strong>前端优先</strong>
-            <p style="color: var(--muted); line-height: 1.7; margin-bottom: 0;">先把产品感和演示体验做出来，再决定是否加后台和用户体系。</p>
+          <div class="journal-card">
+            <strong>注意事项</strong>
+            <div class="tips" id="tipsList"></div>
           </div>
         </div>
       </section>
-
-      <footer>
-        Built by WebAI · Interactive Chemistry Prototype · CO₂ Experiment v0.2
-      </footer>
     </div>
 
     <script>
+      const reagents = [
+        {
+          name: "石灰石 CaCO₃",
+          desc: "作为产气原料，和稀盐酸反应后生成二氧化碳。"
+        },
+        {
+          name: "稀盐酸 HCl",
+          desc: "与石灰石反应，适合持续制取 CO₂。"
+        },
+        {
+          name: "澄清石灰水",
+          desc: "用于检验二氧化碳，变浑浊是关键实验现象。"
+        }
+      ];
+
+      const tools = [
+        {
+          name: "锥形瓶",
+          desc: "承载石灰石和稀盐酸反应，是制气主容器。"
+        },
+        {
+          name: "导气管",
+          desc: "把生成的 CO₂ 导入石灰水中完成检验。"
+        },
+        {
+          name: "烧杯 / 容器",
+          desc: "盛放澄清石灰水，观察由清变浑的现象。"
+        },
+        {
+          name: "滴加操作",
+          desc: "模拟真实实验中向容器加入液体试剂的过程。"
+        }
+      ];
+
       const steps = [
         {
-          title: "准备装置与试剂",
-          summary: "在锥形瓶中加入石灰石，连接导气管，另一端插入盛有澄清石灰水的容器。",
-          scene: "准备实验器材，观察固体与液体试剂的初始状态。",
+          title: "准备实验装置",
+          screen: "检查导气装置连接，确认石灰石、稀盐酸和澄清石灰水都已就位。",
+          scene: "当前场景：实验桌已准备完成，等待你开始向锥形瓶内加入稀盐酸。",
           phenomenon: [
-            "锥形瓶底部可见白色块状石灰石。",
+            "石灰石静置在锥形瓶底部。",
             "石灰水保持澄清，没有明显变化。"
           ],
           tips: [
-            "先检查装置连接，避免后面产生气体时漏气。",
-            "导气管末端要正确伸入石灰水中。"
-          ],
-          principle: [
-            "实验目标是先制取 CO₂，再通过石灰水检验。"
+            "装置连接是否严密，会直接影响后续产气效果。",
+            "先确认导气管末端已正确伸入石灰水。"
           ],
           visual: {
             bubbleOpacity: 0,
-            flaskLiquid: 34,
-            limewater: "rgba(232, 245, 255, 0.75)",
-            powder: "rgba(250, 250, 250, 0.86)"
+            flaskLiquid: 36,
+            limewater: "rgba(240,248,255,0.78)",
+            powder: "rgba(245,245,245,0.88)"
           }
         },
         {
-          title: "加入稀盐酸开始制气",
-          summary: "向锥形瓶中加入稀盐酸，与石灰石接触后开始反应，生成二氧化碳。",
-          scene: "石灰石和稀盐酸开始反应，锥形瓶中出现明显气泡。",
+          title: "加入稀盐酸制取 CO₂",
+          screen: "向锥形瓶中加入稀盐酸，石灰石开始与其反应，产生二氧化碳。",
+          scene: "当前场景：锥形瓶内开始剧烈起泡，说明制气反应已经发生。",
           phenomenon: [
-            "锥形瓶内迅速出现气泡。",
-            "导气装置开始有气体通过。"
+            "锥形瓶内出现明显气泡。",
+            "说明石灰石与稀盐酸已经开始反应。"
           ],
           tips: [
-            "使用稀盐酸更适合持续制取 CO₂。",
-            "如果几乎无气泡，优先检查试剂和装置状态。"
-          ],
-          principle: [
-            "CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑"
+            "如果没有明显产气，优先检查试剂和装置。",
+            "稀盐酸比稀硫酸更适合此实验。"
           ],
           visual: {
             bubbleOpacity: 1,
-            flaskLiquid: 58,
-            limewater: "rgba(232, 245, 255, 0.75)",
-            powder: "rgba(244, 244, 244, 0.72)"
+            flaskLiquid: 62,
+            limewater: "rgba(240,248,255,0.78)",
+            powder: "rgba(236,236,236,0.74)"
           }
         },
         {
           title: "通入澄清石灰水",
-          summary: "生成的二氧化碳通过导气管进入石灰水，开始发生检验反应。",
-          scene: "CO₂ 持续进入石灰水，右侧容器出现由清到浑的变化。",
+          screen: "生成的二氧化碳通过导气管进入石灰水，开始出现检验反应。",
+          scene: "当前场景：CO₂ 正在通过导气管进入右侧容器，石灰水逐渐失去澄清。",
           phenomenon: [
-            "烧杯内可以理解为有气体不断通入。",
-            "石灰水开始失去澄清感，逐渐发白。"
+            "导气过程持续进行。",
+            "石灰水开始由清澈向浑浊变化。"
           ],
           tips: [
-            "通气过程要连续，观察变化要耐心。",
-            "石灰水是否新鲜澄清，会影响实验现象。"
-          ],
-          principle: [
-            "CO₂ + Ca(OH)₂ → CaCO₃↓ + H₂O"
+            "观察石灰水状态变化，是这个实验的关键。",
+            "需要保证气体持续通入。"
           ],
           visual: {
             bubbleOpacity: 1,
-            flaskLiquid: 56,
-            limewater: "rgba(242, 242, 242, 0.92)",
-            powder: "rgba(240, 240, 240, 0.68)"
+            flaskLiquid: 58,
+            limewater: "rgba(244,244,244,0.9)",
+            powder: "rgba(232,232,232,0.68)"
           }
         },
         {
-          title: "完成检验并总结",
-          summary: "石灰水变浑浊，说明通入的气体中含有二氧化碳，实验完成。",
-          scene: "石灰水明显浑浊，实验现象与检验结论形成闭环。",
+          title: "完成检验并得出结论",
+          screen: "石灰水明显变浑浊，说明通入的气体中含有二氧化碳。",
+          scene: "当前场景：实验现象已经形成完整闭环，可以从浑浊石灰水推导出 CO₂ 存在。",
           phenomenon: [
             "石灰水明显变浑浊。",
-            "可以据此判断生成并通入的气体是二氧化碳。"
+            "生成碳酸钙沉淀，是检验 CO₂ 的直接证据。"
           ],
           tips: [
-            "最终要把现象和结论对应起来，不只是看动画。",
-            "后续版本可以扩展错误选项，比如装置漏气或试剂失效。"
-          ],
-          principle: [
-            "变浑浊来自碳酸钙沉淀生成。",
-            "这就是检验 CO₂ 的经典方法之一。"
+            "要把实验现象和结论对应起来，不只是看到动画。",
+            "后续版本可以继续加入错误路径和纠错反馈。"
           ],
           visual: {
-            bubbleOpacity: 0.4,
+            bubbleOpacity: 0.35,
             flaskLiquid: 50,
-            limewater: "rgba(248, 248, 248, 0.96)",
-            powder: "rgba(235, 235, 235, 0.62)"
+            limewater: "rgba(248,248,248,0.96)",
+            powder: "rgba(228,228,228,0.62)"
           }
         }
       ];
 
-      const stepsEl = document.getElementById("steps");
-      const sceneCaptionEl = document.getElementById("sceneCaption");
-      const sceneStatusEl = document.getElementById("sceneStatus");
-      const phenomenonBoxEl = document.getElementById("phenomenonBox");
-      const principleBoxEl = document.getElementById("principleBox");
-      const tipsBoxEl = document.getElementById("tipsBox");
-      const labStageEl = document.getElementById("labStage");
-      let activeIndex = 0;
-      let playTimer = null;
+      const reagentList = document.getElementById("reagentList");
+      const toolList = document.getElementById("toolList");
+      const stepList = document.getElementById("stepList");
+      const phenomenonList = document.getElementById("phenomenonList");
+      const tipsList = document.getElementById("tipsList");
+      const labStage = document.getElementById("labStage");
+      const screenStep = document.getElementById("screenStep");
+      const screenTitle = document.getElementById("screenTitle");
+      const screenText = document.getElementById("screenText");
+      const sceneHint = document.getElementById("sceneHint");
 
-      function renderSteps() {
-        stepsEl.innerHTML = steps
-          .map((step, index) => `
-            <div class="step ${index === activeIndex ? "active" : ""}" data-step="${index}">
-              <small>Step ${index + 1}</small>
-              <strong>${step.title}</strong>
-              <p>${step.summary}</p>
+      let activeStep = 0;
+      let activeReagent = 0;
+      let activeTool = 0;
+      let timer = null;
+
+      function renderInventory(list, items, activeIndex, type) {
+        list.innerHTML = items
+          .map((item, index) => `
+            <div class="inventory-item ${index === activeIndex ? "active" : ""}" data-type="${type}" data-index="${index}">
+              <strong>${item.name}</strong>
+              <span>${item.desc}</span>
             </div>
           `)
           .join("");
       }
 
-      function renderList(container, items) {
-        container.innerHTML = items.map(item => `<div class="fact">${item}</div>`).join("");
+      function renderStepList() {
+        stepList.innerHTML = steps
+          .map((step, index) => `
+            <div class="step-chip ${index === activeStep ? "active" : ""}" data-step="${index}">
+              Step ${index + 1} · ${step.title}
+            </div>
+          `)
+          .join("");
       }
 
-      function renderTips(items) {
-        tipsBoxEl.innerHTML = items.map(item => `<li>${item}</li>`).join("");
+      function renderCards(container, items, className) {
+        container.innerHTML = items.map(item => `<div class="${className}">${item}</div>`).join("");
       }
 
       function applyVisual(visual) {
-        labStageEl.style.setProperty("--bubble-opacity", visual.bubbleOpacity);
-        labStageEl.style.setProperty("--flask-liquid", `${visual.flaskLiquid}px`);
-        labStageEl.style.setProperty("--limewater-color", visual.limewater);
-        labStageEl.style.setProperty("--powder-color", visual.powder);
+        labStage.style.setProperty("--bubble-opacity", visual.bubbleOpacity);
+        labStage.style.setProperty("--flask-liquid", `${visual.flaskLiquid}px`);
+        labStage.style.setProperty("--limewater-color", visual.limewater);
+        labStage.style.setProperty("--powder-color", visual.powder);
       }
 
       function setStep(index) {
-        activeIndex = index;
+        activeStep = index;
         const step = steps[index];
-        renderSteps();
-        sceneCaptionEl.textContent = step.scene;
-        sceneStatusEl.textContent = `Step ${index + 1} / ${steps.length}`;
-        renderList(phenomenonBoxEl, step.phenomenon);
-        renderList(principleBoxEl, step.principle);
-        renderTips(step.tips);
+        screenStep.textContent = `Step ${index + 1} / ${steps.length}`;
+        screenTitle.textContent = step.title;
+        screenText.textContent = step.screen;
+        sceneHint.textContent = step.scene;
+        renderStepList();
+        renderCards(phenomenonList, step.phenomenon, "fact");
+        renderCards(tipsList, step.tips, "tip");
         applyVisual(step.visual);
       }
 
-      stepsEl.addEventListener("click", (event) => {
-        const target = event.target.closest("[data-step]");
-        if (!target) return;
-        clearInterval(playTimer);
-        playTimer = null;
-        setStep(Number(target.dataset.step));
+      reagentList.addEventListener("click", (event) => {
+        const item = event.target.closest('[data-type="reagent"]');
+        if (!item) return;
+        activeReagent = Number(item.dataset.index);
+        renderInventory(reagentList, reagents, activeReagent, "reagent");
+      });
+
+      toolList.addEventListener("click", (event) => {
+        const item = event.target.closest('[data-type="tool"]');
+        if (!item) return;
+        activeTool = Number(item.dataset.index);
+        renderInventory(toolList, tools, activeTool, "tool");
+      });
+
+      stepList.addEventListener("click", (event) => {
+        const item = event.target.closest('[data-step]');
+        if (!item) return;
+        clearInterval(timer);
+        timer = null;
+        setStep(Number(item.dataset.step));
       });
 
       document.querySelector('[data-action="reset"]').addEventListener("click", () => {
-        clearInterval(playTimer);
-        playTimer = null;
+        clearInterval(timer);
+        timer = null;
         setStep(0);
       });
 
       document.querySelector('[data-action="play-all"]').addEventListener("click", () => {
-        clearInterval(playTimer);
+        clearInterval(timer);
         let index = 0;
         setStep(index);
-        playTimer = setInterval(() => {
+        timer = setInterval(() => {
           index += 1;
           if (index >= steps.length) {
-            clearInterval(playTimer);
-            playTimer = null;
+            clearInterval(timer);
+            timer = null;
             return;
           }
           setStep(index);
-        }, 1800);
+        }, 1900);
       });
 
+      renderInventory(reagentList, reagents, activeReagent, "reagent");
+      renderInventory(toolList, tools, activeTool, "tool");
       setStep(0);
     </script>
   </body>
