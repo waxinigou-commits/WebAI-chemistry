@@ -3,51 +3,52 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebAI Chemistry</title>
+    <title>WebAI Chemistry · 二氧化碳制取与检验</title>
     <meta
       name="description"
-      content="WebAI Chemistry，一个面向化学学习的轻量网页产品原型。"
+      content="WebAI Chemistry v0.2，交互式二氧化碳制取与检验实验页前端原型。"
     />
     <style>
       :root {
-        --bg: #07111f;
-        --bg-soft: #0d1b2a;
-        --card: rgba(255, 255, 255, 0.08);
+        --bg: #06111f;
+        --bg-soft: #0c1d31;
+        --panel: rgba(255, 255, 255, 0.08);
+        --panel-strong: rgba(255, 255, 255, 0.11);
         --line: rgba(255, 255, 255, 0.14);
-        --text: #eaf2ff;
-        --muted: #a7b7d6;
-        --primary: #69d2e7;
-        --accent: #b7ff7a;
+        --text: #edf4ff;
+        --muted: #9cb0cf;
+        --cyan: #78e6ff;
+        --green: #afff84;
+        --yellow: #ffd978;
+        --danger: #ff8d8d;
         --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+        --radius: 24px;
       }
 
       * { box-sizing: border-box; }
       html, body { margin: 0; padding: 0; }
       body {
         font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        color: var(--text);
         background:
-          radial-gradient(circle at top left, rgba(105, 210, 231, 0.18), transparent 30%),
-          radial-gradient(circle at right, rgba(183, 255, 122, 0.14), transparent 28%),
-          linear-gradient(180deg, #081120 0%, #0a1627 100%);
+          radial-gradient(circle at top left, rgba(120, 230, 255, 0.14), transparent 30%),
+          radial-gradient(circle at top right, rgba(175, 255, 132, 0.12), transparent 28%),
+          linear-gradient(180deg, #07101d 0%, #0a1829 100%);
+        color: var(--text);
         min-height: 100vh;
       }
 
-      .wrap {
-        width: min(1120px, calc(100% - 32px));
+      .container {
+        width: min(1200px, calc(100% - 32px));
         margin: 0 auto;
-      }
-
-      .hero {
-        padding: 72px 0 48px;
+        padding-bottom: 56px;
       }
 
       .nav {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 16px;
-        padding-top: 20px;
+        gap: 12px;
+        padding: 20px 0;
       }
 
       .brand {
@@ -58,22 +59,39 @@
       }
 
       .brand-badge {
-        width: 40px;
-        height: 40px;
+        width: 42px;
+        height: 42px;
         border-radius: 14px;
         display: grid;
         place-items: center;
-        background: linear-gradient(135deg, var(--primary), #4ea8ff);
-        color: #06111d;
+        background: linear-gradient(135deg, var(--cyan), #61a9ff);
+        color: #07101d;
         box-shadow: var(--shadow);
       }
 
-      .hero-grid {
+      .nav-note {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .hero {
         display: grid;
-        grid-template-columns: 1.2fr 0.8fr;
-        gap: 28px;
-        align-items: center;
-        margin-top: 40px;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 24px;
+        align-items: stretch;
+        padding: 24px 0 28px;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .hero-copy {
+        padding: 34px;
       }
 
       .eyebrow {
@@ -83,238 +101,703 @@
         padding: 8px 12px;
         border: 1px solid var(--line);
         border-radius: 999px;
-        color: var(--primary);
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(255,255,255,0.04);
+        color: var(--cyan);
         font-size: 14px;
       }
 
       h1 {
-        font-size: clamp(40px, 7vw, 72px);
-        line-height: 1.02;
-        margin: 16px 0;
+        margin: 18px 0 14px;
+        font-size: clamp(36px, 6vw, 60px);
+        line-height: 1.04;
       }
 
-      p.lead {
-        font-size: 18px;
-        line-height: 1.8;
-        color: var(--muted);
-        max-width: 720px;
+      .hero-copy p {
         margin: 0;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.85;
       }
 
-      .actions {
+      .hero-actions {
+        margin-top: 24px;
         display: flex;
-        gap: 14px;
+        gap: 12px;
         flex-wrap: wrap;
-        margin-top: 28px;
       }
 
       .btn {
-        padding: 14px 20px;
-        border-radius: 14px;
+        appearance: none;
         border: 1px solid transparent;
-        text-decoration: none;
-        color: inherit;
-        font-weight: 600;
-      }
-
-      .btn-primary {
-        background: linear-gradient(135deg, var(--accent), #74f2ce);
-        color: #08111f;
-      }
-
-      .btn-secondary {
-        border-color: var(--line);
-        background: rgba(255, 255, 255, 0.04);
-      }
-
-      .panel {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: 28px;
-        box-shadow: var(--shadow);
-        backdrop-filter: blur(20px);
-      }
-
-      .mockup {
-        padding: 22px;
-      }
-
-      .mockup-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        color: var(--muted);
-        font-size: 14px;
-        margin-bottom: 20px;
-      }
-
-      .lesson-card, .stat-card, .feature {
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 20px;
-      }
-
-      .lesson-card {
-        padding: 18px;
-      }
-
-      .lesson-card h3 {
-        margin: 0 0 10px;
-        font-size: 22px;
-      }
-
-      .tag-row, .stat-grid, .feature-grid {
-        display: grid;
-        gap: 12px;
-      }
-
-      .tag-row {
-        grid-template-columns: repeat(3, 1fr);
-        margin-top: 14px;
-      }
-
-      .tag {
-        padding: 10px 12px;
         border-radius: 14px;
-        background: rgba(105, 210, 231, 0.12);
-        color: var(--primary);
-        text-align: center;
-        font-size: 14px;
+        padding: 14px 18px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 700;
+        transition: 0.2s ease;
       }
 
-      .stat-grid {
-        grid-template-columns: repeat(2, 1fr);
-        margin-top: 14px;
+      .btn:hover { transform: translateY(-1px); }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--green), #72f7d4);
+        color: #07101d;
+      }
+      .btn-secondary {
+        background: rgba(255,255,255,0.04);
+        border-color: var(--line);
+        color: var(--text);
       }
 
-      .stat-card {
+      .quick-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .quick-item {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--line);
+        border-radius: 18px;
         padding: 16px;
       }
 
-      .stat-card strong {
+      .quick-item strong {
         display: block;
-        font-size: 28px;
+        font-size: 24px;
         margin-bottom: 6px;
       }
 
-      section {
-        padding: 18px 0 52px;
+      .lab-panel {
+        padding: 24px;
+      }
+
+      .lab-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+
+      .status-pill {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(175, 255, 132, 0.12);
+        border: 1px solid rgba(175, 255, 132, 0.2);
+        color: var(--green);
+        font-size: 13px;
+      }
+
+      .lab-stage {
+        position: relative;
+        min-height: 360px;
+        border-radius: 24px;
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, rgba(10, 22, 36, 0.95), rgba(8, 16, 28, 0.95));
+        overflow: hidden;
+        padding: 20px;
+      }
+
+      .bench {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 78px;
+        background: linear-gradient(180deg, #1f4563, #163149);
+        border-top: 1px solid rgba(255,255,255,0.08);
+      }
+
+      .equipment {
+        position: absolute;
+        bottom: 58px;
+      }
+
+      .flask {
+        left: 54px;
+        width: 110px;
+        height: 140px;
+        border: 3px solid rgba(255,255,255,0.65);
+        border-top: 10px solid rgba(255,255,255,0.7);
+        border-radius: 16px 16px 34px 34px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      }
+
+      .flask::after {
+        content: "";
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        bottom: 12px;
+        height: var(--flask-liquid, 34px);
+        background: linear-gradient(180deg, rgba(120, 230, 255, 0.8), rgba(85, 164, 255, 0.7));
+        border-radius: 10px 10px 22px 22px;
+        transition: height 0.5s ease, background 0.5s ease;
+      }
+
+      .tube {
+        left: 160px;
+        bottom: 168px;
+        width: 150px;
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.55);
+        transform: rotate(10deg);
+        transform-origin: left center;
+      }
+
+      .beaker {
+        right: 70px;
+        width: 122px;
+        height: 154px;
+        border: 3px solid rgba(255,255,255,0.65);
+        border-top: 10px solid rgba(255,255,255,0.75);
+        border-radius: 16px 16px 24px 24px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      }
+
+      .beaker::after {
+        content: "";
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        height: 82px;
+        background: var(--limewater-color, rgba(232, 245, 255, 0.75));
+        border-radius: 10px 10px 16px 16px;
+        transition: background 0.5s ease;
+      }
+
+      .label {
+        position: absolute;
+        bottom: -38px;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .bubble-layer {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: var(--bubble-opacity, 0);
+        transition: opacity 0.35s ease;
+      }
+
+      .bubble {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(120, 230, 255, 0.7);
+        bottom: 110px;
+        animation: rise 3s infinite ease-in;
+      }
+
+      .bubble:nth-child(1) { left: 114px; animation-delay: 0s; }
+      .bubble:nth-child(2) { left: 136px; width: 10px; height: 10px; animation-delay: 0.8s; }
+      .bubble:nth-child(3) { right: 120px; width: 14px; height: 14px; animation-delay: 1.2s; }
+      .bubble:nth-child(4) { right: 100px; width: 8px; height: 8px; animation-delay: 2s; }
+
+      @keyframes rise {
+        0% { transform: translateY(0) scale(0.95); opacity: 0; }
+        20% { opacity: 1; }
+        100% { transform: translateY(-160px) scale(1.15); opacity: 0; }
+      }
+
+      .powder {
+        position: absolute;
+        left: 78px;
+        bottom: 72px;
+        width: 62px;
+        height: 18px;
+        border-radius: 999px;
+        background: var(--powder-color, rgba(250, 250, 250, 0.86));
+        box-shadow: 0 0 18px rgba(255,255,255,0.08);
+      }
+
+      .step-section {
+        display: grid;
+        grid-template-columns: 0.88fr 1.12fr;
+        gap: 20px;
+        margin-top: 26px;
+      }
+
+      .info-card,
+      .steps-card,
+      .note-card,
+      .meta-card {
+        padding: 22px;
       }
 
       .section-title {
-        font-size: 28px;
-        margin-bottom: 8px;
+        font-size: 22px;
+        margin: 0 0 8px;
       }
 
       .section-desc {
         color: var(--muted);
-        margin-bottom: 24px;
+        line-height: 1.75;
+        margin: 0 0 18px;
       }
 
-      .feature-grid {
-        grid-template-columns: repeat(3, 1fr);
+      .tag-list,
+      .kit-list,
+      .facts,
+      .meta-grid {
+        display: grid;
+        gap: 10px;
       }
 
-      .feature {
-        padding: 20px;
+      .tag-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .kit-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .meta-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+      .pill,
+      .kit-item,
+      .fact,
+      .meta-item {
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.05);
+        border-radius: 18px;
+        padding: 14px;
       }
 
-      .feature h3 {
-        margin: 0 0 10px;
+      .steps {
+        display: grid;
+        gap: 12px;
+      }
+
+      .step {
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.04);
+        border-radius: 18px;
+        padding: 16px;
+        cursor: pointer;
+        transition: 0.2s ease;
+      }
+
+      .step:hover { border-color: rgba(120,230,255,0.35); }
+      .step.active {
+        background: rgba(120,230,255,0.1);
+        border-color: rgba(120,230,255,0.35);
+      }
+
+      .step small {
+        display: block;
+        color: var(--cyan);
+        margin-bottom: 6px;
+      }
+
+      .step strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 18px;
+      }
+
+      .step p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 20px;
+        margin-top: 24px;
+      }
+
+      .note-card ul {
+        padding-left: 18px;
+        margin: 12px 0 0;
+        color: var(--muted);
+        line-height: 1.8;
+      }
+
+      .legend {
+        margin-top: 16px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .legend span {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
       }
 
       footer {
+        padding-top: 28px;
         color: var(--muted);
-        padding: 12px 0 48px;
         text-align: center;
       }
 
-      @media (max-width: 860px) {
-        .hero-grid, .feature-grid {
+      @media (max-width: 980px) {
+        .hero,
+        .step-section,
+        .detail-grid,
+        .meta-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .quick-grid,
+        .tag-list,
+        .kit-list {
           grid-template-columns: 1fr;
         }
       }
     </style>
   </head>
   <body>
-    <div class="wrap">
+    <div class="container">
       <header class="nav">
         <div class="brand">
           <div class="brand-badge">⚗️</div>
-          <span>WebAI Chemistry</span>
+          <div>WebAI Chemistry</div>
         </div>
-        <div style="color: var(--muted);">Hello World Landing Page</div>
+        <div class="nav-note">v0.2 · 交互式实验页原型</div>
       </header>
 
-      <main class="hero">
-        <div class="hero-grid">
-          <section>
-            <div class="eyebrow">化学学习网站原型 · GitHub Pages Ready</div>
-            <h1>Hello World, Chemistry.</h1>
-            <p class="lead">
-              这是 WebAI Chemistry 的第一版前端原型。先用一个简洁首页把产品感觉搭起来，后面可以继续加章节学习、题库练习、错题本和学习仪表盘。
-            </p>
-            <div class="actions">
-              <a class="btn btn-primary" href="#features">查看页面模块</a>
-              <a class="btn btn-secondary" href="https://github.com" target="_blank" rel="noreferrer">准备发布到 GitHub Pages</a>
+      <section class="hero">
+        <div class="card hero-copy">
+          <div class="eyebrow">经典实验原型 · 二氧化碳制取与检验</div>
+          <h1>把化学实验，做成可以互动理解的网页页面。</h1>
+          <p>
+            这不是单纯的知识页，而是一个前端化学实验原型。用户可以按步骤体验二氧化碳的制取与检验，看到器材、试剂、实验现象、反应表达和注意事项之间的关系。
+          </p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" data-action="play-all">自动演示实验</button>
+            <button class="btn btn-secondary" data-action="reset">重置实验场景</button>
+          </div>
+          <div class="quick-grid">
+            <div class="quick-item">
+              <strong>4</strong>
+              <span>实验步骤</span>
             </div>
-          </section>
-
-          <aside class="panel mockup">
-            <div class="mockup-top">
-              <span>今日学习</span>
-              <span>Chapter 01</span>
+            <div class="quick-item">
+              <strong>3</strong>
+              <span>核心器材类别</span>
             </div>
-            <div class="lesson-card">
-              <h3>物质的量入门</h3>
-              <div style="color: var(--muted); line-height: 1.7;">
-                用更清楚的知识卡片、概念关联和练习节奏，帮学生先理解，再做题。
-              </div>
-              <div class="tag-row">
-                <div class="tag">知识点</div>
-                <div class="tag">例题</div>
-                <div class="tag">小测</div>
-              </div>
+            <div class="quick-item">
+              <strong>1</strong>
+              <span>完整教学闭环原型</span>
             </div>
-            <div class="stat-grid">
-              <div class="stat-card">
-                <strong>12</strong>
-                <span>今日练习题</span>
-              </div>
-              <div class="stat-card">
-                <strong>89%</strong>
-                <span>阶段正确率</span>
-              </div>
-            </div>
-          </aside>
+          </div>
         </div>
-      </main>
 
-      <section id="features">
-        <div class="section-title">第一版可以往这 3 个模块扩展</div>
-        <div class="section-desc">
-          先把产品感做出来，再逐步增加真实学习功能，不急着上后端。
+        <div class="card lab-panel">
+          <div class="lab-head">
+            <div>
+              <div class="section-title" style="margin-bottom: 4px;">实验舞台</div>
+              <div class="section-desc" id="sceneCaption" style="margin: 0;">
+                准备实验器材，观察固体与液体试剂的初始状态。
+              </div>
+            </div>
+            <div class="status-pill" id="sceneStatus">Step 1 / 4</div>
+          </div>
+          <div
+            class="lab-stage"
+            id="labStage"
+            style="--bubble-opacity: 0; --flask-liquid: 34px; --limewater-color: rgba(232, 245, 255, 0.75); --powder-color: rgba(250, 250, 250, 0.86);"
+          >
+            <div class="equipment flask">
+              <div class="label">锥形瓶（石灰石 + 稀盐酸）</div>
+            </div>
+            <div class="powder" id="powder"></div>
+            <div class="equipment tube">
+              <div class="label">导气管</div>
+            </div>
+            <div class="equipment beaker">
+              <div class="label">澄清石灰水</div>
+            </div>
+            <div class="bubble-layer" id="bubbleLayer">
+              <div class="bubble"></div>
+              <div class="bubble"></div>
+              <div class="bubble"></div>
+              <div class="bubble"></div>
+            </div>
+            <div class="bench"></div>
+          </div>
+          <div class="legend">
+            <span><i class="dot" style="background: var(--cyan);"></i> 气泡表示 CO₂ 正在生成 / 通入</span>
+            <span><i class="dot" style="background: rgba(255,255,255,0.8);"></i> 白色浑浊表示石灰水变浑浊</span>
+            <span><i class="dot" style="background: var(--green);"></i> 高亮步骤表示当前实验焦点</span>
+          </div>
         </div>
-        <div class="feature-grid">
-          <article class="feature">
-            <h3>章节学习</h3>
-            <p>按知识点拆分内容，配合重点总结和常见误区，适合先做内容表达。</p>
-          </article>
-          <article class="feature">
-            <h3>刷题练习</h3>
-            <p>按章节和难度练题，后面可以继续扩展解析、收藏和错题回顾。</p>
-          </article>
-          <article class="feature">
-            <h3>学习仪表盘</h3>
-            <p>展示学习进度、正确率和薄弱点，让这个网站更像一个真正的学习产品。</p>
-          </article>
+      </section>
+
+      <section class="step-section">
+        <div class="card info-card">
+          <h2 class="section-title">实验目标</h2>
+          <p class="section-desc">
+            用石灰石和稀盐酸反应制取二氧化碳，再将生成的气体通入澄清石灰水，通过石灰水变浑浊来完成检验。
+          </p>
+          <div class="tag-list">
+            <div class="pill">化学反应可视化</div>
+            <div class="pill">实验流程演示</div>
+            <div class="pill">器材与试剂关联</div>
+            <div class="pill">现象驱动理解</div>
+          </div>
+
+          <h2 class="section-title" style="margin-top: 22px;">实验器材与试剂</h2>
+          <div class="kit-list">
+            <div class="kit-item">锥形瓶、导气管、烧杯</div>
+            <div class="kit-item">石灰石（CaCO₃）</div>
+            <div class="kit-item">稀盐酸（HCl）</div>
+            <div class="kit-item">澄清石灰水 [Ca(OH)₂]</div>
+          </div>
+        </div>
+
+        <div class="card steps-card">
+          <h2 class="section-title">交互步骤</h2>
+          <p class="section-desc">
+            你可以逐步点击，也可以自动演示。页面重点不是“播放动画”，而是把操作、现象和原理连起来。
+          </p>
+          <div class="steps" id="steps"></div>
+        </div>
+      </section>
+
+      <section class="detail-grid">
+        <div class="card note-card">
+          <h2 class="section-title">反应原理</h2>
+          <div class="facts" id="principleBox">
+            <div class="fact">CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑</div>
+            <div class="fact">CO₂ + Ca(OH)₂ → CaCO₃↓ + H₂O</div>
+          </div>
+        </div>
+
+        <div class="card note-card">
+          <h2 class="section-title">当前实验现象</h2>
+          <div class="facts" id="phenomenonBox">
+            <div class="fact">点击步骤后查看对应现象说明。</div>
+          </div>
+        </div>
+
+        <div class="card note-card">
+          <h2 class="section-title">注意事项</h2>
+          <ul id="tipsBox">
+            <li>实验前检查导气装置连接是否紧密，避免漏气。</li>
+            <li>优先选稀盐酸，不建议用稀硫酸，避免生成难溶物影响反应。</li>
+            <li>观察石灰水是否变浑浊，是检验 CO₂ 的关键现象。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card meta-card" style="margin-top: 24px;">
+        <h2 class="section-title">这个版本的产品意思</h2>
+        <p class="section-desc">
+          v0.2 不追求复杂物理模拟，而是先建立一个可继续扩展的交互框架。后面可以继续加拖拽器材、条件选择、错误实验路径、元素百科联动和题目练习。
+        </p>
+        <div class="meta-grid">
+          <div class="meta-item">
+            <strong>实验页</strong>
+            <p style="color: var(--muted); line-height: 1.7; margin-bottom: 0;">先做一个完整实验闭环，验证页面表达和交互形式。</p>
+          </div>
+          <div class="meta-item">
+            <strong>可扩展性</strong>
+            <p style="color: var(--muted); line-height: 1.7; margin-bottom: 0;">后续可以复制这个结构去做酸碱中和、沉淀反应、气体制取等实验。</p>
+          </div>
+          <div class="meta-item">
+            <strong>前端优先</strong>
+            <p style="color: var(--muted); line-height: 1.7; margin-bottom: 0;">先把产品感和演示体验做出来，再决定是否加后台和用户体系。</p>
+          </div>
         </div>
       </section>
 
       <footer>
-        Built by WebAI · Frontend-only MVP for GitHub Pages
+        Built by WebAI · Interactive Chemistry Prototype · CO₂ Experiment v0.2
       </footer>
     </div>
+
+    <script>
+      const steps = [
+        {
+          title: "准备装置与试剂",
+          summary: "在锥形瓶中加入石灰石，连接导气管，另一端插入盛有澄清石灰水的容器。",
+          scene: "准备实验器材，观察固体与液体试剂的初始状态。",
+          phenomenon: [
+            "锥形瓶底部可见白色块状石灰石。",
+            "石灰水保持澄清，没有明显变化。"
+          ],
+          tips: [
+            "先检查装置连接，避免后面产生气体时漏气。",
+            "导气管末端要正确伸入石灰水中。"
+          ],
+          principle: [
+            "实验目标是先制取 CO₂，再通过石灰水检验。"
+          ],
+          visual: {
+            bubbleOpacity: 0,
+            flaskLiquid: 34,
+            limewater: "rgba(232, 245, 255, 0.75)",
+            powder: "rgba(250, 250, 250, 0.86)"
+          }
+        },
+        {
+          title: "加入稀盐酸开始制气",
+          summary: "向锥形瓶中加入稀盐酸，与石灰石接触后开始反应，生成二氧化碳。",
+          scene: "石灰石和稀盐酸开始反应，锥形瓶中出现明显气泡。",
+          phenomenon: [
+            "锥形瓶内迅速出现气泡。",
+            "导气装置开始有气体通过。"
+          ],
+          tips: [
+            "使用稀盐酸更适合持续制取 CO₂。",
+            "如果几乎无气泡，优先检查试剂和装置状态。"
+          ],
+          principle: [
+            "CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑"
+          ],
+          visual: {
+            bubbleOpacity: 1,
+            flaskLiquid: 58,
+            limewater: "rgba(232, 245, 255, 0.75)",
+            powder: "rgba(244, 244, 244, 0.72)"
+          }
+        },
+        {
+          title: "通入澄清石灰水",
+          summary: "生成的二氧化碳通过导气管进入石灰水，开始发生检验反应。",
+          scene: "CO₂ 持续进入石灰水，右侧容器出现由清到浑的变化。",
+          phenomenon: [
+            "烧杯内可以理解为有气体不断通入。",
+            "石灰水开始失去澄清感，逐渐发白。"
+          ],
+          tips: [
+            "通气过程要连续，观察变化要耐心。",
+            "石灰水是否新鲜澄清，会影响实验现象。"
+          ],
+          principle: [
+            "CO₂ + Ca(OH)₂ → CaCO₃↓ + H₂O"
+          ],
+          visual: {
+            bubbleOpacity: 1,
+            flaskLiquid: 56,
+            limewater: "rgba(242, 242, 242, 0.92)",
+            powder: "rgba(240, 240, 240, 0.68)"
+          }
+        },
+        {
+          title: "完成检验并总结",
+          summary: "石灰水变浑浊，说明通入的气体中含有二氧化碳，实验完成。",
+          scene: "石灰水明显浑浊，实验现象与检验结论形成闭环。",
+          phenomenon: [
+            "石灰水明显变浑浊。",
+            "可以据此判断生成并通入的气体是二氧化碳。"
+          ],
+          tips: [
+            "最终要把现象和结论对应起来，不只是看动画。",
+            "后续版本可以扩展错误选项，比如装置漏气或试剂失效。"
+          ],
+          principle: [
+            "变浑浊来自碳酸钙沉淀生成。",
+            "这就是检验 CO₂ 的经典方法之一。"
+          ],
+          visual: {
+            bubbleOpacity: 0.4,
+            flaskLiquid: 50,
+            limewater: "rgba(248, 248, 248, 0.96)",
+            powder: "rgba(235, 235, 235, 0.62)"
+          }
+        }
+      ];
+
+      const stepsEl = document.getElementById("steps");
+      const sceneCaptionEl = document.getElementById("sceneCaption");
+      const sceneStatusEl = document.getElementById("sceneStatus");
+      const phenomenonBoxEl = document.getElementById("phenomenonBox");
+      const principleBoxEl = document.getElementById("principleBox");
+      const tipsBoxEl = document.getElementById("tipsBox");
+      const labStageEl = document.getElementById("labStage");
+      let activeIndex = 0;
+      let playTimer = null;
+
+      function renderSteps() {
+        stepsEl.innerHTML = steps
+          .map((step, index) => `
+            <div class="step ${index === activeIndex ? "active" : ""}" data-step="${index}">
+              <small>Step ${index + 1}</small>
+              <strong>${step.title}</strong>
+              <p>${step.summary}</p>
+            </div>
+          `)
+          .join("");
+      }
+
+      function renderList(container, items) {
+        container.innerHTML = items.map(item => `<div class="fact">${item}</div>`).join("");
+      }
+
+      function renderTips(items) {
+        tipsBoxEl.innerHTML = items.map(item => `<li>${item}</li>`).join("");
+      }
+
+      function applyVisual(visual) {
+        labStageEl.style.setProperty("--bubble-opacity", visual.bubbleOpacity);
+        labStageEl.style.setProperty("--flask-liquid", `${visual.flaskLiquid}px`);
+        labStageEl.style.setProperty("--limewater-color", visual.limewater);
+        labStageEl.style.setProperty("--powder-color", visual.powder);
+      }
+
+      function setStep(index) {
+        activeIndex = index;
+        const step = steps[index];
+        renderSteps();
+        sceneCaptionEl.textContent = step.scene;
+        sceneStatusEl.textContent = `Step ${index + 1} / ${steps.length}`;
+        renderList(phenomenonBoxEl, step.phenomenon);
+        renderList(principleBoxEl, step.principle);
+        renderTips(step.tips);
+        applyVisual(step.visual);
+      }
+
+      stepsEl.addEventListener("click", (event) => {
+        const target = event.target.closest("[data-step]");
+        if (!target) return;
+        clearInterval(playTimer);
+        playTimer = null;
+        setStep(Number(target.dataset.step));
+      });
+
+      document.querySelector('[data-action="reset"]').addEventListener("click", () => {
+        clearInterval(playTimer);
+        playTimer = null;
+        setStep(0);
+      });
+
+      document.querySelector('[data-action="play-all"]').addEventListener("click", () => {
+        clearInterval(playTimer);
+        let index = 0;
+        setStep(index);
+        playTimer = setInterval(() => {
+          index += 1;
+          if (index >= steps.length) {
+            clearInterval(playTimer);
+            playTimer = null;
+            return;
+          }
+          setStep(index);
+        }, 1800);
+      });
+
+      setStep(0);
+    </script>
   </body>
 </html>

@@ -1,13 +1,72 @@
 # WebAI-chemistry
 
-A frontend-only hello world prototype for a chemistry learning website.
+一个前端优先的化学学习网站原型仓库，用来逐步探索“交互式化学实验网页”这个方向。
 
-## Preview
+## 预览地址
 
-This project is a simple static landing page designed to be deployed on GitHub Pages first.
+- GitHub Pages: https://waxinigou-commits.github.io/WebAI-chemistry/
 
-## Stack
+## 技术栈
 
 - HTML
 - CSS
+- Vanilla JavaScript
 - GitHub Pages
+
+## 版本说明
+
+### v0.2.0 · 二氧化碳制取与检验交互原型
+
+本版本把最初的 Hello World 首页升级成一个更接近真实产品方向的实验页原型，围绕“二氧化碳制取与检验”搭建了一个完整的交互式实验展示页面。
+
+#### 本版本新增内容
+
+- 以经典实验“二氧化碳制取与检验”为核心主题
+- 提供可点击切换的 4 步实验流程
+- 支持自动演示实验步骤
+- 用前端动画模拟：
+  - 锥形瓶中试剂反应
+  - 气泡产生与通气过程
+  - 澄清石灰水由清变浑浊
+- 页面中整合了：
+  - 实验目标
+  - 器材与试剂
+  - 当前实验现象
+  - 反应原理
+  - 注意事项
+  - 产品化扩展方向
+
+#### 本版本目的
+
+- 验证“交互式化学实验页”是否适合作为产品核心方向
+- 用较轻量的前端方式建立可扩展页面结构
+- 先做产品表达与交互框架，不急着上后端
+
+#### 后续可扩展方向
+
+- 增加拖拽式器材交互
+- 增加错误实验路径和纠错反馈
+- 加入元素百科、反应百科、器材百科联动
+- 增加更多实验模板，如酸碱中和、沉淀反应、气体制取
+- 后续再考虑用户系统、进度记录、题目练习等能力
+
+---
+
+### v0.1.0 · Hello World Landing Page
+
+初始版本，用一个简洁首页验证仓库、静态部署和 GitHub Pages 发布流程。
+
+#### 本版本内容
+
+- 创建 WebAI Chemistry 基础 landing page
+- 完成 GitHub 仓库初始化
+- 完成 GitHub Pages 首次部署
+
+## 版本管理约定
+
+后续开发默认遵循以下规则：
+
+- 每个可用阶段保留独立 git commit
+- 关键阶段打 git tag，便于切换和回退
+- 每实现一个新版本，同步更新本 README
+- README 中持续记录当前版本能力、变更点和后续方向
