@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebAI Chemistry</title>
+    <meta
+      name="description"
+      content="WebAI Chemistry，一个面向化学学习的轻量网页产品原型。"
+    />
+    <style>
+      :root {
+        --bg: #07111f;
+        --bg-soft: #0d1b2a;
+        --card: rgba(255, 255, 255, 0.08);
+        --line: rgba(255, 255, 255, 0.14);
+        --text: #eaf2ff;
+        --muted: #a7b7d6;
+        --primary: #69d2e7;
+        --accent: #b7ff7a;
+        --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      }
+
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(105, 210, 231, 0.18), transparent 30%),
+          radial-gradient(circle at right, rgba(183, 255, 122, 0.14), transparent 28%),
+          linear-gradient(180deg, #081120 0%, #0a1627 100%);
+        min-height: 100vh;
+      }
+
+      .wrap {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      .hero {
+        padding: 72px 0 48px;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding-top: 20px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+      }
+
+      .brand-badge {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, var(--primary), #4ea8ff);
+        color: #06111d;
+        box-shadow: var(--shadow);
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 28px;
+        align-items: center;
+        margin-top: 40px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--primary);
+        background: rgba(255, 255, 255, 0.04);
+        font-size: 14px;
+      }
+
+      h1 {
+        font-size: clamp(40px, 7vw, 72px);
+        line-height: 1.02;
+        margin: 16px 0;
+      }
+
+      p.lead {
+        font-size: 18px;
+        line-height: 1.8;
+        color: var(--muted);
+        max-width: 720px;
+        margin: 0;
+      }
+
+      .actions {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 28px;
+      }
+
+      .btn {
+        padding: 14px 20px;
+        border-radius: 14px;
+        border: 1px solid transparent;
+        text-decoration: none;
+        color: inherit;
+        font-weight: 600;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--accent), #74f2ce);
+        color: #08111f;
+      }
+
+      .btn-secondary {
+        border-color: var(--line);
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(20px);
+      }
+
+      .mockup {
+        padding: 22px;
+      }
+
+      .mockup-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+
+      .lesson-card, .stat-card, .feature {
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+      }
+
+      .lesson-card {
+        padding: 18px;
+      }
+
+      .lesson-card h3 {
+        margin: 0 0 10px;
+        font-size: 22px;
+      }
+
+      .tag-row, .stat-grid, .feature-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .tag-row {
+        grid-template-columns: repeat(3, 1fr);
+        margin-top: 14px;
+      }
+
+      .tag {
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: rgba(105, 210, 231, 0.12);
+        color: var(--primary);
+        text-align: center;
+        font-size: 14px;
+      }
+
+      .stat-grid {
+        grid-template-columns: repeat(2, 1fr);
+        margin-top: 14px;
+      }
+
+      .stat-card {
+        padding: 16px;
+      }
+
+      .stat-card strong {
+        display: block;
+        font-size: 28px;
+        margin-bottom: 6px;
+      }
+
+      section {
+        padding: 18px 0 52px;
+      }
+
+      .section-title {
+        font-size: 28px;
+        margin-bottom: 8px;
+      }
+
+      .section-desc {
+        color: var(--muted);
+        margin-bottom: 24px;
+      }
+
+      .feature-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .feature {
+        padding: 20px;
+      }
+
+      .feature h3 {
+        margin: 0 0 10px;
+      }
+
+      footer {
+        color: var(--muted);
+        padding: 12px 0 48px;
+        text-align: center;
+      }
+
+      @media (max-width: 860px) {
+        .hero-grid, .feature-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="nav">
+        <div class="brand">
+          <div class="brand-badge">⚗️</div>
+          <span>WebAI Chemistry</span>
+        </div>
+        <div style="color: var(--muted);">Hello World Landing Page</div>
+      </header>
+
+      <main class="hero">
+        <div class="hero-grid">
+          <section>
+            <div class="eyebrow">化学学习网站原型 · GitHub Pages Ready</div>
+            <h1>Hello World, Chemistry.</h1>
+            <p class="lead">
+              这是 WebAI Chemistry 的第一版前端原型。先用一个简洁首页把产品感觉搭起来，后面可以继续加章节学习、题库练习、错题本和学习仪表盘。
+            </p>
+            <div class="actions">
+              <a class="btn btn-primary" href="#features">查看页面模块</a>
+              <a class="btn btn-secondary" href="https://github.com" target="_blank" rel="noreferrer">准备发布到 GitHub Pages</a>
+            </div>
+          </section>
+
+          <aside class="panel mockup">
+            <div class="mockup-top">
+              <span>今日学习</span>
+              <span>Chapter 01</span>
+            </div>
+            <div class="lesson-card">
+              <h3>物质的量入门</h3>
+              <div style="color: var(--muted); line-height: 1.7;">
+                用更清楚的知识卡片、概念关联和练习节奏，帮学生先理解，再做题。
+              </div>
+              <div class="tag-row">
+                <div class="tag">知识点</div>
+                <div class="tag">例题</div>
+                <div class="tag">小测</div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-card">
+                <strong>12</strong>
+                <span>今日练习题</span>
+              </div>
+              <div class="stat-card">
+                <strong>89%</strong>
+                <span>阶段正确率</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </main>
+
+      <section id="features">
+        <div class="section-title">第一版可以往这 3 个模块扩展</div>
+        <div class="section-desc">
+          先把产品感做出来，再逐步增加真实学习功能，不急着上后端。
+        </div>
+        <div class="feature-grid">
+          <article class="feature">
+            <h3>章节学习</h3>
+            <p>按知识点拆分内容，配合重点总结和常见误区，适合先做内容表达。</p>
+          </article>
+          <article class="feature">
+            <h3>刷题练习</h3>
+            <p>按章节和难度练题，后面可以继续扩展解析、收藏和错题回顾。</p>
+          </article>
+          <article class="feature">
+            <h3>学习仪表盘</h3>
+            <p>展示学习进度、正确率和薄弱点，让这个网站更像一个真正的学习产品。</p>
+          </article>
+        </div>
+      </section>
+
+      <footer>
+        Built by WebAI · Frontend-only MVP for GitHub Pages
+      </footer>
+    </div>
+  </body>
+</html>
