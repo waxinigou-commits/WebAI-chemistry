@@ -3,34 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebAI Chemistry Lab · 化学平衡交互学习台</title>
+    <title>WebAI Chemistry Lab · 化学平衡实验平台</title>
     <meta
       name="description"
-      content="WebAI Chemistry v0.4，面向化学平衡主题的交互式学习实验台原型。"
+      content="WebAI Chemistry v0.5，面向化学平衡主题的实验平台版网页原型。"
     />
     <style>
       :root {
-        --bg: #071018;
-        --bg-2: #0b1622;
-        --panel: rgba(12, 19, 28, 0.78);
+        --bg: #071019;
+        --bg-2: #0b1620;
+        --panel: rgba(11, 18, 26, 0.82);
         --panel-line: rgba(255, 255, 255, 0.08);
-        --board: #133025;
-        --board-edge: #274c3c;
-        --text: #eef5f4;
-        --muted: #9db0b9;
-        --muted-2: #7d9098;
+        --board: #153125;
+        --board-edge: #2b4d3c;
+        --text: #eff5f3;
+        --muted: #98acb4;
+        --muted-2: #768993;
         --green: #afff84;
         --green-soft: rgba(175, 255, 132, 0.12);
         --cyan: #79e8ff;
         --cyan-soft: rgba(121, 232, 255, 0.12);
         --yellow: #ffd76b;
         --yellow-soft: rgba(255, 215, 107, 0.12);
-        --danger: #ff8e8e;
-        --danger-soft: rgba(255, 142, 142, 0.12);
+        --danger: #ff9f9f;
+        --danger-soft: rgba(255, 159, 159, 0.12);
         --purple: #b599ff;
-        --purple-soft: rgba(181, 153, 255, 0.12);
         --shadow: 0 28px 80px rgba(0, 0, 0, 0.34);
-        --radius: 22px;
       }
 
       * { box-sizing: border-box; }
@@ -40,13 +38,13 @@
         font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         color: var(--text);
         background:
-          radial-gradient(circle at top left, rgba(121, 232, 255, 0.08), transparent 26%),
+          radial-gradient(circle at top left, rgba(121, 232, 255, 0.08), transparent 24%),
           radial-gradient(circle at top right, rgba(175, 255, 132, 0.06), transparent 24%),
           linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
       }
 
       .container {
-        width: min(1380px, calc(100% - 28px));
+        width: min(1440px, calc(100% - 28px));
         margin: 0 auto;
         padding: 18px 0 36px;
       }
@@ -88,7 +86,7 @@
         background: linear-gradient(180deg, var(--board) 0%, #10241c 100%);
         border: 6px solid var(--board-edge);
         box-shadow: var(--shadow);
-        padding: 26px 28px;
+        padding: 24px 28px;
         overflow: hidden;
       }
 
@@ -109,8 +107,8 @@
       .board-head {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
         gap: 18px;
+        align-items: flex-start;
       }
 
       .eyebrow {
@@ -121,15 +119,15 @@
       }
 
       h1 {
-        font-size: clamp(30px, 4.6vw, 50px);
-        margin: 10px 0 10px;
-        line-height: 1.06;
+        font-size: clamp(30px, 4.4vw, 50px);
+        margin: 10px 0;
+        line-height: 1.05;
         font-weight: 800;
       }
 
       .board-subtitle {
-        max-width: 900px;
-        color: rgba(238, 245, 244, 0.92);
+        max-width: 920px;
+        color: rgba(239, 245, 243, 0.92);
         font-size: 17px;
         line-height: 1.8;
         margin: 0;
@@ -167,7 +165,7 @@
 
       .board-meta {
         display: grid;
-        grid-template-columns: 1.2fr 0.85fr 0.95fr;
+        grid-template-columns: 1.3fr 1fr 1fr;
         gap: 14px;
         margin-top: 22px;
       }
@@ -181,24 +179,18 @@
 
       .chalk-card strong {
         display: block;
-        color: #b7c7ba;
+        color: #bbcbc1;
         font-size: 13px;
         margin-bottom: 6px;
         letter-spacing: 0.04em;
         text-transform: uppercase;
       }
 
-      .equation {
-        font-size: 19px;
-        line-height: 1.7;
-      }
-
       .layout {
         display: grid;
-        grid-template-columns: 300px minmax(0, 1fr) 320px;
+        grid-template-columns: 280px minmax(0, 1fr) 300px;
         gap: 16px;
         margin-top: 16px;
-        align-items: stretch;
       }
 
       .panel,
@@ -211,7 +203,8 @@
         backdrop-filter: blur(12px);
       }
 
-      .panel {
+      .panel,
+      .journal {
         padding: 18px;
       }
 
@@ -228,32 +221,16 @@
         margin-bottom: 14px;
       }
 
-      .control-card,
-      .status-card,
-      .tab-card,
-      .summary-card,
-      .question-card,
-      .feedback-card,
-      .meta-chip,
-      .legend-card {
-        border-radius: 18px;
-        border: 1px solid rgba(255,255,255,0.08);
-        background: rgba(255,255,255,0.03);
-      }
-
-      .control-card,
-      .status-card,
-      .tab-card,
-      .summary-card,
-      .question-card,
-      .feedback-card,
-      .legend-card {
-        padding: 16px;
-      }
-
       .stack {
         display: grid;
         gap: 14px;
+      }
+
+      .card {
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.03);
+        padding: 16px;
       }
 
       .label {
@@ -265,109 +242,119 @@
         text-transform: uppercase;
       }
 
-      .toggle-row,
-      .action-row,
-      .option-list,
-      .tab-row,
-      .stat-row,
-      .summary-list,
-      .legend-list {
+      .shelf-grid,
+      .tool-grid,
+      .info-list,
+      .record-list,
+      .state-list,
+      .step-list {
         display: grid;
         gap: 10px;
       }
 
-      .toggle-row { grid-template-columns: repeat(3, 1fr); }
+      .shelf-item,
+      .tool-item,
+      .step-item,
+      .info-item,
+      .record-item,
+      .state-item {
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.03);
+        padding: 14px;
+      }
 
-      .toggle {
+      .shelf-item {
+        cursor: pointer;
+        transition: 0.2s ease;
+      }
+
+      .shelf-item:hover,
+      .shelf-item.active {
+        background: rgba(121,232,255,0.12);
+        border-color: rgba(121,232,255,0.38);
+      }
+
+      .shelf-item strong,
+      .tool-item strong,
+      .step-item strong,
+      .info-item strong,
+      .record-item strong,
+      .state-item strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .shelf-item span,
+      .tool-item span,
+      .step-item span,
+      .info-item span,
+      .record-item span,
+      .state-item span {
+        color: var(--muted);
+        line-height: 1.7;
+        font-size: 14px;
+      }
+
+      .tool-row,
+      .action-row,
+      .segment-row {
+        display: grid;
+        gap: 10px;
+      }
+
+      .segment-row {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .segment-btn,
+      .solid-btn,
+      .ghost-btn,
+      .tool-btn {
         border-radius: 14px;
         border: 1px solid rgba(255,255,255,0.08);
         background: rgba(255,255,255,0.03);
         color: var(--text);
-        padding: 12px 10px;
-        cursor: pointer;
-        font-weight: 700;
-      }
-
-      .toggle.active {
-        border-color: rgba(121, 232, 255, 0.42);
-        background: rgba(121, 232, 255, 0.12);
-      }
-
-      .slider-card {
-        border-radius: 16px;
-        padding: 14px;
-        background: rgba(255,255,255,0.02);
-        border: 1px solid rgba(255,255,255,0.06);
-      }
-
-      .slider-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 12px;
-      }
-
-      .slider-header strong {
-        font-size: 15px;
-      }
-
-      .slider-value {
-        color: var(--cyan);
-        font-weight: 700;
-      }
-
-      input[type="range"] {
-        width: 100%;
-        accent-color: var(--cyan);
-      }
-
-      .range-hint {
-        display: flex;
-        justify-content: space-between;
-        color: var(--muted-2);
-        font-size: 12px;
-      }
-
-      .action-row { grid-template-columns: 1fr 1fr; }
-
-      .ghost-btn,
-      .solid-btn,
-      .option-btn,
-      .tab-btn {
-        border-radius: 14px;
-        border: 1px solid rgba(255,255,255,0.08);
         cursor: pointer;
         font: inherit;
+      }
+
+      .segment-btn,
+      .tool-btn,
+      .solid-btn,
+      .ghost-btn {
+        padding: 12px 14px;
+        font-weight: 700;
+      }
+
+      .segment-btn.active,
+      .tool-btn.active {
+        background: rgba(121,232,255,0.12);
+        border-color: rgba(121,232,255,0.38);
       }
 
       .solid-btn {
         background: linear-gradient(135deg, var(--cyan), #73b2ff);
         color: #071017;
-        padding: 12px 14px;
         font-weight: 800;
       }
 
-      .ghost-btn {
-        background: rgba(255,255,255,0.03);
-        color: var(--text);
-        padding: 12px 14px;
-        font-weight: 700;
+      .action-row {
+        grid-template-columns: 1fr 1fr;
       }
 
       .stage {
         position: relative;
-        min-height: 740px;
+        min-height: 880px;
         overflow: hidden;
         padding: 18px;
         background:
           linear-gradient(180deg, rgba(28, 38, 47, 0.96), rgba(16, 24, 31, 0.98));
       }
 
-      .taskbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+      .console {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
         gap: 14px;
         padding: 14px 16px;
         border-radius: 18px;
@@ -375,52 +362,24 @@
         border: 1px solid rgba(255,255,255,0.07);
       }
 
-      .taskbar h3 {
+      .console h3 {
         margin: 0 0 4px;
-        font-size: 24px;
+        font-size: 25px;
       }
 
-      .taskbar p {
+      .console p {
         margin: 0;
         color: var(--muted);
         line-height: 1.6;
       }
 
-      .progress-chip {
-        min-width: 120px;
-        text-align: right;
+      .console-chip {
+        display: grid;
+        gap: 8px;
+        align-content: center;
       }
 
-      .progress-chip strong {
-        display: block;
-        font-size: 28px;
-        color: var(--green);
-      }
-
-      .scene {
-        position: relative;
-        margin-top: 16px;
-        min-height: 458px;
-        border-radius: 24px;
-        overflow: hidden;
-        background:
-          radial-gradient(circle at top, rgba(121,232,255,0.12), transparent 32%),
-          linear-gradient(180deg, rgba(18, 29, 37, 0.96), rgba(10, 17, 24, 0.98));
-        border: 1px solid rgba(255,255,255,0.07);
-      }
-
-      .scene-topline {
-        position: absolute;
-        top: 18px;
-        left: 18px;
-        right: 18px;
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        z-index: 2;
-      }
-
-      .badge {
+      .chip {
         display: inline-flex;
         align-items: center;
         gap: 8px;
@@ -430,9 +389,10 @@
         border: 1px solid rgba(255,255,255,0.08);
         color: var(--text);
         font-size: 13px;
+        width: fit-content;
       }
 
-      .badge-dot {
+      .chip-dot {
         width: 10px;
         height: 10px;
         border-radius: 50%;
@@ -440,44 +400,187 @@
         box-shadow: 0 0 14px rgba(175, 255, 132, 0.55);
       }
 
-      .reaction-area {
+      .lab-room {
+        position: relative;
+        margin-top: 16px;
+        min-height: 560px;
+        border-radius: 24px;
+        overflow: hidden;
+        background:
+          linear-gradient(180deg, rgba(27, 38, 46, 0.98), rgba(12, 20, 27, 0.98));
+        border: 1px solid rgba(255,255,255,0.07);
+      }
+
+      .wall {
         position: absolute;
-        left: 36px;
-        right: 36px;
-        top: 86px;
-        bottom: 34px;
+        inset: 0 0 126px 0;
+        background:
+          radial-gradient(circle at top, rgba(121,232,255,0.08), transparent 30%),
+          linear-gradient(180deg, rgba(44, 59, 70, 0.96), rgba(23, 31, 38, 0.98));
+      }
+
+      .ceiling-screen {
+        position: absolute;
+        top: 26px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(76%, 760px);
+        border-radius: 18px;
+        background: rgba(6, 12, 16, 0.58);
+        border: 1px solid rgba(255,255,255,0.08);
+        padding: 16px 18px;
+        z-index: 2;
+      }
+
+      .ceiling-screen strong {
+        color: var(--green);
+        letter-spacing: 0.06em;
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+
+      .ceiling-screen h4 {
+        margin: 8px 0;
+        font-size: 24px;
+      }
+
+      .ceiling-screen p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .bench {
+        position: absolute;
+        left: 24px;
+        right: 24px;
+        bottom: 0;
+        height: 154px;
+        border-top-left-radius: 24px;
+        border-top-right-radius: 24px;
+        background: linear-gradient(180deg, #74523a 0%, #50372a 100%);
+        border-top: 3px solid rgba(255,255,255,0.08);
+      }
+
+      .bench-shadow {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 106px;
+        width: 620px;
+        height: 140px;
+        background: radial-gradient(circle, rgba(121,232,255,0.13), transparent 68%);
+        pointer-events: none;
+      }
+
+      .equipment-zone {
+        position: absolute;
+        left: 28px;
+        right: 28px;
+        top: 146px;
+        bottom: 146px;
+        display: grid;
+        grid-template-columns: 220px 1fr 220px;
+        gap: 16px;
+        align-items: end;
+      }
+
+      .rack,
+      .console-side {
+        height: 320px;
+        border-radius: 22px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(0,0,0,0.18);
+        position: relative;
+        padding: 16px;
+      }
+
+      .rack h4,
+      .console-side h4 {
+        margin: 0 0 10px;
+        font-size: 16px;
+      }
+
+      .rack p,
+      .console-side p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+        font-size: 13px;
+      }
+
+      .rack-shelves {
+        display: grid;
+        gap: 12px;
+        margin-top: 12px;
+      }
+
+      .rack-bottle,
+      .condition-card {
+        border-radius: 16px;
+        padding: 12px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.07);
+      }
+
+      .rack-bottle.active,
+      .condition-card.active {
+        border-color: rgba(121,232,255,0.38);
+        background: rgba(121,232,255,0.1);
+      }
+
+      .rack-bottle strong,
+      .condition-card strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .reactor-zone {
+        position: relative;
+        min-height: 360px;
         display: grid;
         grid-template-columns: 1fr 240px 1fr;
         align-items: end;
-        gap: 12px;
+        gap: 10px;
       }
 
-      .chamber {
+      .reactor {
         position: relative;
-        height: 280px;
-        border-radius: 28px 28px 38px 38px;
-        border: 4px solid rgba(255,255,255,0.72);
+        height: 288px;
+        border-radius: 28px 28px 40px 40px;
+        border: 4px solid rgba(255,255,255,0.74);
         background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
         overflow: hidden;
-        box-shadow: inset 0 0 36px rgba(255,255,255,0.03);
       }
 
-      .chamber::after {
+      .reactor::after {
         content: "";
         position: absolute;
         left: 12px;
         right: 12px;
         bottom: 12px;
-        height: var(--fluid-height, 168px);
+        height: var(--liquid-height, 160px);
         border-radius: 18px 18px 30px 30px;
-        background: var(--fluid-color, rgba(120, 160, 255, 0.76));
-        transition: height 0.45s ease, background 0.45s ease;
+        background: var(--liquid-color, rgba(121,232,255,0.75));
+        transition: height 0.55s ease, background 0.4s ease;
       }
 
-      .chamber-label {
+      .reactor-neck {
         position: absolute;
         left: 50%;
-        bottom: -46px;
+        top: -36px;
+        transform: translateX(-50%);
+        width: 54px;
+        height: 62px;
+        border-radius: 18px 18px 8px 8px;
+        background: rgba(255,255,255,0.12);
+        border: 4px solid rgba(255,255,255,0.7);
+      }
+
+      .reactor-label {
+        position: absolute;
+        left: 50%;
+        bottom: -48px;
         transform: translateX(-50%);
         padding: 8px 14px;
         border-radius: 999px;
@@ -499,82 +602,109 @@
         width: 14px;
         height: 14px;
         border-radius: 50%;
-        opacity: 0.88;
-        animation: float 5.5s infinite ease-in-out;
+        opacity: 0.9;
+        animation: float 5.4s infinite ease-in-out;
       }
 
       .particle.a { background: rgba(121, 232, 255, 0.96); }
       .particle.b { background: rgba(255, 215, 107, 0.92); }
-      .particle.c { background: rgba(181, 153, 255, 0.9); }
+      .particle.c { background: rgba(181, 153, 255, 0.92); }
 
       @keyframes float {
         0%, 100% { transform: translateY(0px) scale(0.96); }
         50% { transform: translateY(-18px) scale(1.06); }
       }
 
-      .arrow-zone {
+      .bridge {
         position: relative;
-        height: 220px;
+        height: 210px;
         align-self: center;
-        display: grid;
-        place-items: center;
+      }
+
+      .pipe {
+        position: absolute;
+        left: 24px;
+        right: 24px;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 22px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.52), rgba(255,255,255,0.22));
+      }
+
+      .equilibrium-panel {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 210px;
+        border-radius: 22px;
+        background: rgba(5, 10, 14, 0.62);
+        border: 1px solid rgba(255,255,255,0.08);
+        padding: 16px;
+        text-align: center;
+      }
+
+      .equilibrium-panel strong {
+        display: block;
+        margin-bottom: 8px;
       }
 
       .equilibrium-arrow {
-        width: 100%;
-        height: 120px;
         position: relative;
+        width: 100%;
+        height: 76px;
+        margin: 6px 0;
       }
 
       .equilibrium-arrow::before,
       .equilibrium-arrow::after {
         content: "";
         position: absolute;
-        left: 12px;
-        right: 12px;
+        left: 14px;
+        right: 14px;
         height: 6px;
         border-radius: 999px;
-        background: rgba(255,255,255,0.16);
+        background: rgba(255,255,255,0.14);
       }
 
-      .equilibrium-arrow::before { top: 40px; }
-      .equilibrium-arrow::after { bottom: 40px; }
+      .equilibrium-arrow::before { top: 18px; }
+      .equilibrium-arrow::after { bottom: 18px; }
 
       .flow-arrow {
         position: absolute;
-        top: 22px;
+        top: 0;
         left: 16px;
         right: 16px;
-        height: 42px;
+        height: 30px;
         border-radius: 999px;
         background: linear-gradient(90deg, rgba(121,232,255,0.18), rgba(121,232,255,0.9));
         clip-path: polygon(0 25%, 74% 25%, 74% 0, 100% 50%, 74% 100%, 74% 75%, 0 75%);
-        opacity: var(--forward-opacity, 0.65);
-        transition: opacity 0.35s ease;
+        opacity: var(--forward-opacity, 0.7);
       }
 
       .back-arrow {
         position: absolute;
-        bottom: 22px;
+        bottom: 0;
         left: 16px;
         right: 16px;
-        height: 42px;
+        height: 30px;
         border-radius: 999px;
         background: linear-gradient(90deg, rgba(255,215,107,0.9), rgba(255,215,107,0.18));
         clip-path: polygon(26% 0, 26% 25%, 100% 25%, 100% 75%, 26% 75%, 26% 100%, 0 50%);
-        opacity: var(--backward-opacity, 0.65);
-        transition: opacity 0.35s ease;
+        opacity: var(--backward-opacity, 0.7);
       }
 
-      .arrow-caption {
-        text-align: center;
-        color: var(--muted);
-        line-height: 1.7;
+      .equipment-toolbar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-top: 16px;
       }
 
       .meter-strip {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 12px;
         margin-top: 16px;
       }
@@ -616,83 +746,13 @@
         transition: width 0.35s ease;
       }
 
-      .status-card p,
-      .tab-card p,
-      .summary-card p,
-      .feedback-card p,
-      .question-card p,
-      .legend-card p {
-        margin: 0;
-        color: var(--muted);
-        line-height: 1.75;
-      }
-
-      .status-title {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 10px;
-      }
-
-      .status-pill {
-        padding: 7px 12px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 800;
-        background: var(--green-soft);
-        color: var(--green);
-      }
-
-      .tab-row { grid-template-columns: repeat(3, 1fr); }
-
-      .tab-btn {
-        background: rgba(255,255,255,0.03);
-        color: var(--text);
-        padding: 11px 10px;
-        font-weight: 700;
-      }
-
-      .tab-btn.active {
-        background: rgba(121,232,255,0.12);
-        border-color: rgba(121,232,255,0.38);
-      }
-
-      .option-btn {
-        text-align: left;
-        padding: 14px;
-        background: rgba(255,255,255,0.03);
-        color: var(--text);
-      }
-
-      .option-btn.active {
-        background: rgba(121,232,255,0.12);
-        border-color: rgba(121,232,255,0.38);
-      }
-
-      .option-btn.correct {
-        background: rgba(175,255,132,0.12);
-        border-color: rgba(175,255,132,0.42);
-      }
-
-      .option-btn.wrong {
-        background: rgba(255,142,142,0.12);
-        border-color: rgba(255,142,142,0.4);
-      }
-
-      .feedback-card.good {
-        border-color: rgba(175,255,132,0.34);
-        background: rgba(175,255,132,0.08);
-      }
-
-      .feedback-card.bad {
-        border-color: rgba(255,142,142,0.3);
-        background: rgba(255,142,142,0.08);
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--cyan);
       }
 
       .journal {
         margin-top: 16px;
-        padding: 18px;
       }
 
       .journal-grid {
@@ -702,51 +762,14 @@
         margin-top: 14px;
       }
 
-      .journal-card {
-        border-radius: 18px;
-        border: 1px solid rgba(255,255,255,0.08);
-        background: rgba(255,255,255,0.03);
-        padding: 16px;
-      }
-
-      .journal-card strong {
-        display: block;
-        margin-bottom: 10px;
-        font-size: 16px;
-      }
-
-      .chip-list,
-      .summary-list,
-      .legend-list,
-      .stat-row {
-        display: grid;
-        gap: 10px;
-      }
-
-      .chip,
-      .summary-item,
-      .legend-item,
-      .stat-item {
-        border-radius: 14px;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.07);
-        padding: 12px 13px;
-        color: var(--muted);
-        line-height: 1.7;
-        font-size: 14px;
-      }
-
-      .stat-item strong,
-      .legend-item strong {
-        display: block;
-        color: var(--text);
-        margin-bottom: 4px;
-      }
-
-      @media (max-width: 1220px) {
+      @media (max-width: 1260px) {
         .layout,
         .board-meta,
-        .journal-grid {
+        .journal-grid,
+        .console,
+        .equipment-zone,
+        .meter-strip,
+        .equipment-toolbar {
           grid-template-columns: 1fr;
         }
 
@@ -755,7 +778,7 @@
         }
 
         .stage {
-          min-height: 860px;
+          min-height: 1180px;
         }
       }
 
@@ -764,25 +787,9 @@
           width: min(100%, calc(100% - 16px));
         }
 
-        .toggle-row,
-        .tab-row,
-        .meter-strip,
-        .reaction-area,
+        .segment-row,
         .action-row {
           grid-template-columns: 1fr;
-        }
-
-        .reaction-area {
-          top: 116px;
-          bottom: 24px;
-        }
-
-        .arrow-zone {
-          height: 140px;
-        }
-
-        .scene {
-          min-height: 760px;
         }
       }
     </style>
@@ -794,842 +801,717 @@
           <div class="brand-badge">⚗️</div>
           <div>WebAI Chemistry Lab</div>
         </div>
-        <div class="version">v0.4.0 · 化学平衡交互学习台</div>
+        <div class="version">v0.5.0 · 化学平衡实验平台版</div>
       </header>
 
       <section class="board">
         <div class="board-head">
           <div>
-            <div class="eyebrow">Interactive Equilibrium Studio</div>
-            <h1>化学平衡不该只背定义，而该在操作里看懂“为什么会移动”。</h1>
+            <div class="eyebrow">Chemistry Experiment Platform</div>
+            <h1>把化学平衡做成一个实验工作台，而不是一页会解释原理的内容页。</h1>
             <p class="board-subtitle">
-              这一版把页面从实验场景页推进成学习实验台。用户先预测，再调变量，再看系统如何从失衡走向新平衡，把宏观现象、微观变化和原理解释连成一条完整理解链路。
+              这一版不再以“三栏学习面板”为中心，而是把实验台、容器、试剂、加热、加压和观察记录作为核心。用户要先选择实验条件，再对反应体系做对象化操作，最后观察平衡如何被打破并重新建立。
             </p>
           </div>
           <div class="board-actions">
-            <button class="btn btn-primary" id="runSimulation">应用变化</button>
-            <button class="btn btn-secondary" id="resetAll">恢复初始实验</button>
+            <button class="btn btn-primary" id="applyAction">执行当前操作</button>
+            <button class="btn btn-secondary" id="resetLab">重置实验平台</button>
           </div>
         </div>
         <div class="board-meta">
           <div class="chalk-card">
-            <strong>学习目标</strong>
-            <div class="equation">先预测，再验证条件变化如何打破平衡，并理解系统为何会向某个方向重新建立动态平衡。</div>
+            <strong>当前实验任务</strong>
+            <div id="missionText">在动态平衡状态下，向左侧反应体系加入反应物，观察系统如何重新建立平衡。</div>
           </div>
           <div class="chalk-card">
-            <strong>核心原则</strong>
-            <div class="equation">改变条件 → 速率失衡 → 平衡移动 → 新平衡形成</div>
+            <strong>首版实验动作</strong>
+            <div>加入试剂 / 升温 / 增压 / 恢复初始</div>
           </div>
           <div class="chalk-card">
-            <strong>首版变量</strong>
-            <div class="equation">浓度 / 温度 / 压强</div>
+            <strong>首版目标</strong>
+            <div>先建立“实验平台感”，再逐步增加真实过程和更细的操作链路。</div>
           </div>
         </div>
       </section>
 
       <section class="layout">
         <aside class="panel">
-          <h2>条件调节</h2>
-          <div class="side-note">先选择本轮主变量，再用滑杆改变条件。首版默认每次聚焦一个主变量，减少认知干扰。</div>
+          <h2>试剂与实验材料</h2>
+          <div class="side-note">左侧不再只是变量表单，而是实验架。先选本轮要加入或改变的实验对象，再执行操作。</div>
           <div class="stack">
-            <div class="control-card">
-              <span class="label">变量选择</span>
-              <div class="toggle-row" id="variableToggles"></div>
+            <div class="card">
+              <span class="label">试剂架</span>
+              <div class="shelf-grid" id="reagentShelf"></div>
             </div>
-
-            <div class="control-card">
-              <span class="label">参数调节</span>
-              <div class="stack">
-                <div class="slider-card">
-                  <div class="slider-header">
-                    <strong id="sliderLabel">反应物浓度</strong>
-                    <span class="slider-value" id="sliderValue">1.0</span>
-                  </div>
-                  <input id="mainSlider" type="range" min="0" max="200" value="100" />
-                  <div class="range-hint">
-                    <span id="sliderMinText">较低</span>
-                    <span id="sliderMaxText">较高</span>
-                  </div>
-                </div>
-                <div class="meta-chip" style="padding: 14px;">
-                  <span class="label" style="margin-bottom: 6px;">操作提示</span>
-                  <p id="controlHint">建议先提交预测，再点击“应用变化”观察系统如何重新建立平衡。</p>
-                </div>
-              </div>
+            <div class="card">
+              <span class="label">实验模式</span>
+              <div class="segment-row" id="modeTabs"></div>
             </div>
-
-            <div class="control-card">
-              <span class="label">实验操作</span>
+            <div class="card">
+              <span class="label">当前操作说明</span>
+              <div class="info-list" id="operationInfo"></div>
+            </div>
+            <div class="card">
+              <span class="label">操作按钮</span>
               <div class="action-row">
-                <button class="solid-btn" id="applyButton">应用变化</button>
+                <button class="solid-btn" id="executeLeft">执行当前操作</button>
                 <button class="ghost-btn" id="resetRound">重置本轮</button>
               </div>
-            </div>
-
-            <div class="status-card">
-              <div class="status-title">
-                <strong>当前状态</strong>
-                <span class="status-pill" id="statusPill">动态平衡</span>
-              </div>
-              <p id="statusText">系统当前处于动态平衡，正逆反应速率相等。请先预测当条件改变后会发生什么。</p>
-            </div>
-
-            <div class="legend-card">
-              <strong style="display:block; margin-bottom:10px;">变量说明</strong>
-              <div class="legend-list" id="legendList"></div>
             </div>
           </div>
         </aside>
 
         <main class="stage">
-          <div class="taskbar">
+          <section class="console">
             <div>
-              <h3 id="taskTitle">浓度变化 · 增加反应物</h3>
-              <p id="taskText">请先预测：增加反应物浓度后，平衡会向哪个方向移动？</p>
+              <h3 id="consoleTitle">化学平衡实验台 · 加入反应物</h3>
+              <p id="consoleDesc">当前系统处于动态平衡。请从左侧选择一种操作，再在实验台上执行，观察反应体系如何从平衡态进入调整过程。</p>
             </div>
-            <div class="progress-chip">
-              <div class="label" style="margin-bottom:4px;">学习进度</div>
-              <strong id="progressValue">1 / 3</strong>
-              <div style="color: var(--muted); font-size: 13px;">当前主题：浓度</div>
-            </div>
-          </div>
-
-          <section class="scene" id="scene">
-            <div class="scene-topline">
-              <div class="badge"><span class="badge-dot" id="badgeDot"></span><span id="sceneBadge">系统处于动态平衡</span></div>
-              <div class="badge" id="shiftBadge">当前判断：等待操作</div>
-            </div>
-
-            <div class="reaction-area">
-              <div>
-                <div class="chamber" id="leftChamber" style="--fluid-height: 162px; --fluid-color: rgba(121,232,255,0.72);">
-                  <div class="particle-layer" id="reactantParticles"></div>
-                  <div class="chamber-label">反应物一侧</div>
-                </div>
-              </div>
-
-              <div class="arrow-zone">
-                <div>
-                  <div class="equilibrium-arrow" id="arrowArea" style="--forward-opacity: 0.68; --backward-opacity: 0.68;">
-                    <div class="flow-arrow"></div>
-                    <div class="back-arrow"></div>
-                  </div>
-                  <div class="arrow-caption" id="arrowCaption">当前处于稳定平衡状态，正逆反应速率保持相等。</div>
-                </div>
-              </div>
-
-              <div>
-                <div class="chamber" id="rightChamber" style="--fluid-height: 138px; --fluid-color: rgba(255,215,107,0.72);">
-                  <div class="particle-layer" id="productParticles"></div>
-                  <div class="chamber-label">生成物一侧</div>
-                </div>
-              </div>
+            <div class="console-chip">
+              <div class="chip"><span class="chip-dot" id="statusDot"></span><span id="statusChip">系统处于动态平衡</span></div>
+              <div class="chip" id="stageChip">当前动作：等待操作</div>
             </div>
           </section>
+
+          <section class="lab-room">
+            <div class="wall"></div>
+            <div class="ceiling-screen">
+              <strong>实验指引</strong>
+              <h4 id="screenTitle">先选择实验动作，再在工作台上触发变化</h4>
+              <p id="screenDesc">首版先模拟三种常见干预方式：加入反应物、升高温度、增大压强。目标不是看卡片，而是感受到实验动作正在改变体系。</p>
+            </div>
+            <div class="bench-shadow"></div>
+            <div class="equipment-zone">
+              <div class="rack">
+                <h4>左侧实验架</h4>
+                <p>这里放置当前可加入的试剂和反应条件。平台感的关键是“对象可操作”，不是单纯滑杆。</p>
+                <div class="rack-shelves" id="leftRack"></div>
+              </div>
+
+              <div class="reactor-zone">
+                <div>
+                  <div class="reactor" id="leftReactor" style="--liquid-height: 168px; --liquid-color: rgba(121,232,255,0.76);">
+                    <div class="reactor-neck"></div>
+                    <div class="particle-layer" id="leftParticles"></div>
+                    <div class="reactor-label">反应物侧主容器</div>
+                  </div>
+                </div>
+
+                <div class="bridge">
+                  <div class="pipe"></div>
+                  <div class="equilibrium-panel" id="equilibriumPanel" style="--forward-opacity:0.72; --backward-opacity:0.72;">
+                    <strong id="panelTitle">动态平衡</strong>
+                    <div class="equilibrium-arrow">
+                      <div class="flow-arrow"></div>
+                      <div class="back-arrow"></div>
+                    </div>
+                    <span id="panelText" style="color: var(--muted); line-height: 1.7; font-size: 14px;">正逆反应速率相等，体系暂时稳定。</span>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="reactor" id="rightReactor" style="--liquid-height: 144px; --liquid-color: rgba(255,215,107,0.76);">
+                    <div class="reactor-neck"></div>
+                    <div class="particle-layer" id="rightParticles"></div>
+                    <div class="reactor-label">生成物侧观察容器</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="console-side">
+                <h4>环境控制台</h4>
+                <p>实验平台不只看结果，还要看你正在怎么干预条件。</p>
+                <div class="rack-shelves" id="conditionRack"></div>
+              </div>
+            </div>
+            <div class="bench"></div>
+          </section>
+
+          <div class="equipment-toolbar">
+            <button class="tool-btn active" id="toolbarAction">当前工具：加样滴管</button>
+            <button class="tool-btn" id="toolbarHeat">加热模块：待机</button>
+            <button class="tool-btn" id="toolbarPressure">压强调节：待机</button>
+            <button class="tool-btn" id="toolbarObserve">观察模式：实验台</button>
+          </div>
 
           <div class="meter-strip">
             <div class="meter">
               <strong>正向反应速率</strong>
-              <div class="meter-value" id="forwardRateText">1.0x</div>
+              <div class="meter-value" id="forwardRate">1.0x</div>
               <div class="bar"><div class="bar-fill" id="forwardBar" style="width: 50%;"></div></div>
             </div>
             <div class="meter">
               <strong>逆向反应速率</strong>
-              <div class="meter-value" id="backwardRateText">1.0x</div>
+              <div class="meter-value" id="backwardRate">1.0x</div>
               <div class="bar"><div class="bar-fill" id="backwardBar" style="width: 50%; background: linear-gradient(90deg, var(--yellow), #ffd76b);"></div></div>
             </div>
             <div class="meter">
-              <strong>平衡移动方向</strong>
-              <div class="meter-value" id="shiftText">暂未移动</div>
+              <strong>平衡移动</strong>
+              <div class="meter-value" id="shiftDirection">暂未移动</div>
               <div class="bar"><div class="bar-fill" id="shiftBar" style="width: 50%; background: linear-gradient(90deg, var(--purple), #e1c7ff);"></div></div>
+            </div>
+            <div class="meter">
+              <strong>操作强度</strong>
+              <div class="meter-value" id="effectStrength">标准</div>
+              <input id="intensitySlider" type="range" min="60" max="160" value="100" />
             </div>
           </div>
         </main>
 
         <aside class="panel">
-          <h2>理解面板</h2>
-          <div class="side-note">右侧不放说明书，而是跟着你的操作同步解释“看到什么、微观发生什么、为什么会这样”。</div>
+          <h2>实验记录与状态</h2>
+          <div class="side-note">右侧不再是讲解 tab，而是像实验记录板，记录当前状态、操作步骤、观察结果和平台解释。</div>
           <div class="stack">
-            <div class="tab-card">
-              <div class="tab-row" id="tabRow"></div>
+            <div class="card">
+              <span class="label">当前状态</span>
+              <div class="state-list" id="stateList"></div>
             </div>
-
-            <div class="tab-card">
-              <strong style="display:block; margin-bottom:10px;" id="tabTitle">你现在看到了什么</strong>
-              <p id="tabContent">当前系统处于动态平衡，宏观现象稳定，但微观层面正逆反应仍在持续发生。</p>
+            <div class="card">
+              <span class="label">本轮步骤</span>
+              <div class="step-list" id="stepList"></div>
             </div>
-
-            <div class="question-card">
-              <strong style="display:block; margin-bottom:10px;">先做判断</strong>
-              <p id="questionText">若增加反应物浓度，平衡会如何移动？</p>
-              <div class="option-list" id="optionList" style="margin-top: 12px;"></div>
-              <div class="action-row" style="margin-top: 12px;">
-                <button class="solid-btn" id="submitPrediction">提交预测</button>
-                <button class="ghost-btn" id="clearPrediction">清空选择</button>
-              </div>
+            <div class="card">
+              <span class="label">观察记录</span>
+              <div class="record-list" id="recordList"></div>
             </div>
-
-            <div class="feedback-card" id="feedbackCard">
-              <strong style="display:block; margin-bottom:10px;">结果反馈</strong>
-              <p id="feedbackText">先选择一个判断，并提交你的预测。这里会在你完成操作后告诉你判断是否正确。</p>
-            </div>
-
-            <div class="summary-card">
-              <strong style="display:block; margin-bottom:10px;">本轮结论</strong>
-              <div class="summary-list" id="summaryList"></div>
+            <div class="card">
+              <span class="label">平台解释</span>
+              <div class="info-list" id="insightList"></div>
             </div>
           </div>
         </aside>
       </section>
 
       <section class="journal">
-        <h2>学习记录</h2>
-        <div class="side-note">把本轮关键观察、微观解释和原理抽出来，帮助用户建立清晰因果链。</div>
+        <h2>实验总结</h2>
+        <div class="side-note">首版先用三个实验动作，建立“对象操作 → 系统变化 → 观察记录”的平台感。</div>
         <div class="journal-grid">
-          <div class="journal-card">
-            <strong>宏观现象</strong>
-            <div class="chip-list" id="macroList"></div>
+          <div class="card">
+            <span class="label">为什么这版更像实验平台</span>
+            <div class="info-list">
+              <div class="info-item"><strong>主角变了</strong><span>页面中心改成实验台、容器、试剂架和环境控制台。</span></div>
+              <div class="info-item"><strong>动作变了</strong><span>不再先强调理解 tab，而是先执行加样、升温、增压等实验动作。</span></div>
+            </div>
           </div>
-          <div class="journal-card">
-            <strong>微观变化</strong>
-            <div class="chip-list" id="microList"></div>
+          <div class="card">
+            <span class="label">当前仍是原型</span>
+            <div class="info-list">
+              <div class="info-item"><strong>过程还可更细</strong><span>后续可增加滴加动画、加热过程、压力变化细节、气泡与颜色反馈。</span></div>
+              <div class="info-item"><strong>对象还能更真实</strong><span>后续可继续引入器材拖拽、容器读数和更真实的实验步骤链。</span></div>
+            </div>
           </div>
-          <div class="journal-card">
-            <strong>原理提醒</strong>
-            <div class="chip-list" id="principleList"></div>
+          <div class="card">
+            <span class="label">下一步方向</span>
+            <div class="info-list">
+              <div class="info-item"><strong>强化实验动作</strong><span>加入加样路径、条件开关和更可见的时间过程。</span></div>
+              <div class="info-item"><strong>强化平台结构</strong><span>增加实验台切换、实验记录保存、更多反应体系。</span></div>
+            </div>
           </div>
         </div>
       </section>
     </div>
 
     <script>
-      const scenarios = {
-        concentration: {
-          id: "concentration",
-          name: "浓度",
-          progress: "1 / 3",
-          taskTitle: "浓度变化 · 增加反应物",
-          taskText: "请先预测：增加反应物浓度后，平衡会向哪个方向移动？",
-          sliderLabel: "反应物浓度",
-          sliderValueFormatter: (value) => `${value.toFixed(1)} mol/L`,
-          sliderMinText: "较低",
-          sliderMaxText: "较高",
-          defaultSlider: 100,
-          variableHint: "增加反应物浓度后，系统会先出现正逆速率不再相等的状态。",
-          question: "若增加反应物浓度，平衡会如何移动？",
-          options: [
-            { id: "right", text: "向生成物方向移动" },
-            { id: "left", text: "向反应物方向移动" },
-            { id: "stay", text: "不发生变化" }
+      const experiments = {
+        reagent: {
+          id: "reagent",
+          mode: "加样实验",
+          title: "加入反应物",
+          mission: "在动态平衡状态下，向左侧反应体系加入反应物，观察系统如何重新建立平衡。",
+          desc: "当前系统处于动态平衡。请从左侧选择“补加反应物溶液”，执行后观察正向反应如何先增强。",
+          screenTitle: "使用滴管向左侧主容器补加反应物",
+          screenDesc: "加样是最直接的实验干预方式。你不是在改参数，而是在向体系中实际加入某种试剂。",
+          toolbarAction: "当前工具：加样滴管",
+          toolbarHeat: "加热模块：待机",
+          toolbarPressure: "压强调节：待机",
+          toolbarObserve: "观察模式：实验台",
+          reagentItems: [
+            { id: "feed", name: "反应物补加液", desc: "用于提高左侧反应物浓度。" },
+            { id: "dilute", name: "稀释液", desc: "用于做轻微稀释对照。" },
+            { id: "indicator", name: "指示染色液", desc: "帮助更直观看到体系偏移。" }
           ],
-          correctOption: "right",
-          legend: [
-            { title: "反应物浓度", text: "提高后会先提升正向反应的碰撞机会。" },
-            { title: "直接结果", text: "正向反应速率先增大，系统短暂失衡。" },
-            { title: "最终趋势", text: "平衡向生成物方向移动，直到新平衡建立。" }
+          leftRack: [
+            { title: "滴定瓶 A", text: "装有反应物补加液，适合直接干预浓度。", active: true },
+            { title: "洗瓶", text: "装有稀释液，可做反向或弱扰动对照。", active: false }
           ],
-          tabs: {
-            phenomenon: {
-              title: "你现在看到了什么",
-              content: "当前反应物一侧浓度被提高，系统先从稳定状态被打破，然后生成物一侧逐渐增加。"
-            },
-            micro: {
-              title: "微观层面发生了什么",
-              content: "反应物粒子数量增加后，有效碰撞机会变多，正向反应速率先上升，随后逆向反应也逐渐追上。"
-            },
-            principle: {
-              title: "为什么会这样",
-              content: "系统会倾向于消耗新增的反应物，以减弱这次外部变化，所以平衡向生成物方向移动。"
-            }
-          },
+          conditionRack: [
+            { title: "温控模块", text: "当前未启用加热。", active: false },
+            { title: "压强调节阀", text: "当前保持常压。", active: false }
+          ],
+          operationInfo: [
+            { title: "当前实验动作", text: "补加反应物溶液" },
+            { title: "平台判断", text: "加样后正向反应会先增强。" }
+          ],
           initial: {
-            leftFluid: 162,
-            rightFluid: 138,
-            leftColor: "rgba(121,232,255,0.72)",
-            rightColor: "rgba(255,215,107,0.72)",
+            statusChip: "系统处于动态平衡",
+            stageChip: "当前动作：等待操作",
+            panelTitle: "动态平衡",
+            panelText: "正逆反应速率相等，体系暂时稳定。",
+            statusList: [
+              { title: "平衡状态", text: "动态平衡，正逆反应速率相等。" },
+              { title: "当前条件", text: "常温常压，未额外加样。" }
+            ],
+            stepList: [
+              { title: "步骤 1", text: "选择反应物补加液。" },
+              { title: "步骤 2", text: "点击执行当前操作。" },
+              { title: "步骤 3", text: "观察左侧容器浓度与平衡方向变化。" }
+            ],
+            recordList: [
+              { title: "观察记录", text: "系统稳定，暂未出现新的偏移。" },
+              { title: "实验备注", text: "当前仍是基线平衡状态。" }
+            ],
+            insightList: [
+              { title: "平台解释", text: "实验平台要让用户感觉自己在操作对象，而不是在填写一个参数。" }
+            ],
+            leftLiquid: 168,
+            rightLiquid: 144,
+            leftColor: "rgba(121,232,255,0.76)",
+            rightColor: "rgba(255,215,107,0.76)",
             forward: 1.0,
             backward: 1.0,
-            shiftText: "暂未移动",
+            shift: "暂未移动",
             shiftBar: 50,
-            shiftBadge: "当前判断：等待操作",
-            statusPill: "动态平衡",
-            statusText: "系统当前处于动态平衡，正逆反应速率相等。请先预测当条件改变后会发生什么。",
-            sceneBadge: "系统处于动态平衡",
-            arrowCaption: "当前处于稳定平衡状态，正逆反应速率保持相等。",
-            forwardOpacity: 0.68,
-            backwardOpacity: 0.68,
-            macro: [
-              "两侧宏观状态稳定，没有继续单向变化。",
-              "表面看似平静，但系统并不是静止不动。"
-            ],
-            micro: [
-              "正逆反应都在持续发生。",
-              "只是两个方向的速率此时相等。"
-            ],
-            principle: [
-              "动态平衡不是不反应，而是两个方向反应速率相等。",
-              "真正关键的是改变条件后，哪个方向会先被增强。"
-            ],
-            summary: [
-              "当前只是起始平衡状态，还没有施加外界改变。",
-              "先做预测，再观察系统如何响应。"
-            ]
+            effectStrength: "标准",
+            forwardOpacity: 0.72,
+            backwardOpacity: 0.72
           },
-          applied: (slider) => {
-            const delta = (slider - 100) / 100;
-            const forward = Math.max(0.5, 1 + delta * 1.1);
-            const backward = 1.0;
-            const moveRight = slider >= 100;
+          applied: (intensity) => {
+            const delta = (intensity - 100) / 100;
+            const boost = Math.max(0.2, 1 + delta * 1.1);
             return {
-              leftFluid: 162 + Math.max(0, delta) * 44,
-              rightFluid: 138 + Math.max(0, delta) * 34,
-              leftColor: "rgba(121,232,255,0.84)",
-              rightColor: "rgba(255,215,107,0.82)",
-              forward,
-              backward,
-              shiftText: moveRight ? "向生成物方向移动" : "向反应物方向回拉",
-              shiftBar: moveRight ? 78 : 34,
-              shiftBadge: moveRight ? "当前判断：系统正在向右移动" : "当前判断：改变较弱，移动不明显",
-              statusPill: moveRight ? "重新建立平衡" : "轻微扰动",
-              statusText: moveRight
-                ? "你提高了反应物浓度，正向反应速率先增大，系统正在通过生成更多产物来减弱这次变化。"
-                : "当前没有明显提高反应物浓度，系统只出现轻微扰动，整体仍接近平衡。",
-              sceneBadge: moveRight ? "失衡后正在向右重建平衡" : "变化较小，系统接近平衡",
-              arrowCaption: moveRight
-                ? "正向反应速率先高于逆向反应速率，因此平衡向生成物方向移动。"
-                : "条件变化较小，两个方向速率差距不大，所以移动不明显。",
-              forwardOpacity: moveRight ? 0.95 : 0.58,
-              backwardOpacity: moveRight ? 0.45 : 0.62,
-              macro: [
-                "反应物一侧被提高后，系统不再保持原来的平衡状态。",
-                "生成物一侧逐步增加，说明平衡正在向右移动。"
+              statusChip: "系统正在重新建立平衡",
+              stageChip: "当前动作：已补加反应物",
+              panelTitle: "向生成物方向移动",
+              panelText: "左侧补加反应物后，正向反应先增强，系统开始消耗新增反应物。",
+              statusList: [
+                { title: "平衡状态", text: "原平衡已被打破，系统正向右移动。" },
+                { title: "当前条件", text: `已完成一次加样，扰动强度 ${intensity}%。` }
               ],
-              micro: [
-                "更多反应物粒子带来了更高的有效碰撞机会。",
-                "正向反应速率先上升，随后逆向速率才逐渐追上。"
+              stepList: [
+                { title: "步骤 1", text: "已选择反应物补加液。" },
+                { title: "步骤 2", text: "已向左侧主容器完成加样。" },
+                { title: "步骤 3", text: "观察生成物侧逐步增加。" }
               ],
-              principle: [
-                "系统会倾向于减弱外部施加的改变。",
-                "增加反应物浓度后，最直接的减弱方式就是消耗一部分新增反应物。"
+              recordList: [
+                { title: "观察记录", text: "左侧液面与粒子密度上升，正向反应先增强。" },
+                { title: "实验备注", text: "平衡开始向生成物方向移动。" }
               ],
-              summary: [
-                "增加反应物浓度时，平衡向生成物方向移动。",
-                "本质原因不是“哪边更多”，而是哪一方向更能减弱这次改变。"
-              ]
+              insightList: [
+                { title: "平台解释", text: "这不是改数字，而是一次实验动作。系统通过消耗新增反应物来减弱扰动。" }
+              ],
+              leftLiquid: 168 + Math.max(0, delta) * 44,
+              rightLiquid: 144 + Math.max(0, delta) * 38,
+              leftColor: "rgba(121,232,255,0.88)",
+              rightColor: "rgba(255,215,107,0.86)",
+              forward: boost,
+              backward: 1.0,
+              shift: "向生成物方向移动",
+              shiftBar: 80,
+              effectStrength: intensity >= 120 ? "强" : intensity <= 80 ? "弱" : "标准",
+              forwardOpacity: 0.95,
+              backwardOpacity: 0.48
             };
           }
         },
-        temperature: {
-          id: "temperature",
-          name: "温度",
-          progress: "2 / 3",
-          taskTitle: "温度变化 · 升高温度",
-          taskText: "请先预测：如果该反应正向吸热，升高温度后平衡会向哪个方向移动？",
-          sliderLabel: "体系温度",
-          sliderValueFormatter: (value) => `${Math.round(10 + value * 0.4)} ℃`,
-          sliderMinText: "更低温",
-          sliderMaxText: "更高温",
-          defaultSlider: 120,
-          variableHint: "首版把情境设定为“正向反应吸热”，因此升高温度等于更有利于正向反应。",
-          question: "若该反应正向吸热，升高温度后平衡会如何移动？",
-          options: [
-            { id: "right", text: "向生成物方向移动" },
-            { id: "left", text: "向反应物方向移动" },
-            { id: "stay", text: "完全不受影响" }
+        heat: {
+          id: "heat",
+          mode: "加热实验",
+          title: "升高温度",
+          mission: "启动温控模块并升高温度，在“正向吸热”的实验设定下观察平衡如何向右移动。",
+          desc: "这次不是改滑杆，而是开启实验台上的加热模块。目标是让用户感受到环境条件被真实改变。",
+          screenTitle: "启动加热模块，逐步提升体系温度",
+          screenDesc: "平台感来自实验动作。升温不是切题，而是像在实验室里真的打开了加热源。",
+          toolbarAction: "当前工具：温控模块",
+          toolbarHeat: "加热模块：准备升温",
+          toolbarPressure: "压强调节：待机",
+          toolbarObserve: "观察模式：加热实验",
+          reagentItems: [
+            { id: "heater", name: "加热模块", desc: "提高体系温度，模拟正向吸热条件。" },
+            { id: "cooler", name: "冷却模块", desc: "用于温度对照实验。" },
+            { id: "probe", name: "温度探针", desc: "观察当前温度变化。" }
           ],
-          correctOption: "right",
-          legend: [
-            { title: "温度变化", text: "温度改变影响的是两个方向速率常数，不只是某一侧数量。" },
-            { title: "本轮设定", text: "正向反应吸热，因此升温更有利于正向反应。" },
-            { title: "最终趋势", text: "平衡向吸热方向移动。" }
+          leftRack: [
+            { title: "加热模块", text: "可对主反应体系持续供热。", active: true },
+            { title: "温度探针", text: "用于查看升温过程。", active: true }
           ],
-          tabs: {
-            phenomenon: {
-              title: "你现在看到了什么",
-              content: "随着温度升高，系统重新调整，两侧比例开始变化，生成物一侧逐渐占优。"
-            },
-            micro: {
-              title: "微观层面发生了什么",
-              content: "升高温度后，粒子能量更高。由于本轮正向吸热，正向反应速率提升更明显。"
-            },
-            principle: {
-              title: "为什么会这样",
-              content: "可以把热量理解为反应条件的一部分。升高温度相当于增加了“热”这一条件，系统会向吸热方向移动。"
-            }
-          },
+          conditionRack: [
+            { title: "温控模块", text: "当前将以正向吸热情境执行升温。", active: true },
+            { title: "压强调节阀", text: "本轮不启用。", active: false }
+          ],
+          operationInfo: [
+            { title: "当前实验动作", text: "启动加热并提升体系温度" },
+            { title: "平台判断", text: "在正向吸热设定下，升温更有利于正向反应。" }
+          ],
           initial: {
-            leftFluid: 160,
-            rightFluid: 140,
-            leftColor: "rgba(121,232,255,0.68)",
-            rightColor: "rgba(255,215,107,0.68)",
+            statusChip: "系统处于动态平衡",
+            stageChip: "当前动作：加热模块待机",
+            panelTitle: "动态平衡",
+            panelText: "温度尚未改变，两个方向反应速率仍相等。",
+            statusList: [
+              { title: "平衡状态", text: "当前温度下维持动态平衡。" },
+              { title: "当前条件", text: "加热模块尚未启动。" }
+            ],
+            stepList: [
+              { title: "步骤 1", text: "启动加热模块。" },
+              { title: "步骤 2", text: "观察体系温度上升。" },
+              { title: "步骤 3", text: "记录平衡朝吸热方向移动。" }
+            ],
+            recordList: [
+              { title: "观察记录", text: "当前仍处于初始温度，未发生新的偏移。" },
+              { title: "实验备注", text: "本轮设定为正向吸热。" }
+            ],
+            insightList: [
+              { title: "平台解释", text: "实验平台里，温度变化应该像真实环境操作，而不是一条抽象参数。" }
+            ],
+            leftLiquid: 162,
+            rightLiquid: 146,
+            leftColor: "rgba(121,232,255,0.74)",
+            rightColor: "rgba(255,215,107,0.72)",
             forward: 1.0,
             backward: 1.0,
-            shiftText: "暂未移动",
+            shift: "暂未移动",
             shiftBar: 50,
-            shiftBadge: "当前判断：等待操作",
-            statusPill: "动态平衡",
-            statusText: "当前温度下系统维持动态平衡。接下来请判断升温后，系统会向哪个方向重新建立平衡。",
-            sceneBadge: "当前温度下保持平衡",
-            arrowCaption: "温度尚未改变时，两个方向速率相等。",
-            forwardOpacity: 0.68,
-            backwardOpacity: 0.68,
-            macro: [
-              "系统还在原始温度条件下运行。",
-              "目前没有出现新的偏移趋势。"
-            ],
-            micro: [
-              "粒子能量分布保持在原始温度对应的状态。",
-              "两个方向速率相等。"
-            ],
-            principle: [
-              "温度影响的是反应速率与平衡位置。",
-              "是否向右还是向左，要看哪个方向吸热。"
-            ],
-            summary: [
-              "当前只是基线状态。",
-              "本轮重点是理解“温度为什么会影响平衡位置”。"
-            ]
+            effectStrength: "标准",
+            forwardOpacity: 0.72,
+            backwardOpacity: 0.72
           },
-          applied: (slider) => {
-            const delta = (slider - 100) / 100;
-            const forward = Math.max(0.5, 1 + delta * 0.95);
-            const backward = Math.max(0.5, 1 + delta * 0.45);
-            const moveRight = slider >= 100;
+          applied: (intensity) => {
+            const delta = (intensity - 100) / 100;
+            const forward = Math.max(0.8, 1 + delta * 0.95);
+            const backward = Math.max(0.7, 1 + delta * 0.45);
             return {
-              leftFluid: 160 - Math.max(0, delta) * 20,
-              rightFluid: 140 + Math.max(0, delta) * 42,
-              leftColor: "rgba(122,224,255,0.72)",
-              rightColor: "rgba(255,165,107,0.82)",
+              statusChip: "系统正在向吸热方向重建平衡",
+              stageChip: "当前动作：已启动加热模块",
+              panelTitle: "向吸热方向移动",
+              panelText: "升温后两个方向速率都提高，但正向吸热反应提升更明显。",
+              statusList: [
+                { title: "平衡状态", text: "温度条件已变化，系统开始向吸热方向偏移。" },
+                { title: "当前条件", text: `已完成升温，强度 ${intensity}%。` }
+              ],
+              stepList: [
+                { title: "步骤 1", text: "已启动加热模块。" },
+                { title: "步骤 2", text: "温度探针显示体系升温。" },
+                { title: "步骤 3", text: "观察生成物一侧逐步占优。" }
+              ],
+              recordList: [
+                { title: "观察记录", text: "升温后两侧都更活跃，但右侧增长更明显。" },
+                { title: "实验备注", text: "平衡向正向吸热方向移动。" }
+              ],
+              insightList: [
+                { title: "平台解释", text: "在实验平台语境里，升温是环境干预。系统通过偏向吸热方向来减弱这次变化。" }
+              ],
+              leftLiquid: 162 - Math.max(0, delta) * 18,
+              rightLiquid: 146 + Math.max(0, delta) * 44,
+              leftColor: "rgba(122,224,255,0.78)",
+              rightColor: "rgba(255,172,112,0.86)",
               forward,
               backward,
-              shiftText: moveRight ? "向吸热方向移动" : "向放热方向回移",
-              shiftBar: moveRight ? 74 : 32,
-              shiftBadge: moveRight ? "当前判断：升温后向右移动" : "当前判断：低温更利于放热方向",
-              statusPill: moveRight ? "重新建立平衡" : "温度回落",
-              statusText: moveRight
-                ? "在“正向吸热”的设定下，升高温度更有利于正向反应，因此系统向生成物方向移动。"
-                : "如果温度没有升高，或反向降低温度，系统会更偏向放热方向。",
-              sceneBadge: moveRight ? "升温后系统向吸热方向重建平衡" : "低温更有利于放热方向",
-              arrowCaption: moveRight
-                ? "两个方向速率都会变快，但正向吸热反应提升更明显，所以平衡向右移动。"
-                : "温度变化不足或降低时，系统不会向吸热方向继续偏移。",
-              forwardOpacity: moveRight ? 0.94 : 0.54,
-              backwardOpacity: moveRight ? 0.66 : 0.72,
-              macro: [
-                "升温后，生成物一侧比例逐步提高。",
-                "系统不是瞬间跳到答案，而是在重新建立新平衡。"
-              ],
-              micro: [
-                "粒子平均能量升高后，两个方向速率都增大。",
-                "由于正向吸热，正向反应提升幅度更大。"
-              ],
-              principle: [
-                "温度对平衡的影响，本质上取决于反应的吸放热方向。",
-                "系统会向能够消耗这次温度变化影响的方向偏移。"
-              ],
-              summary: [
-                "若正向反应吸热，则升高温度时平衡向生成物方向移动。",
-                "温度不是简单“加快反应”，它还会改变平衡位置。"
-              ]
+              shift: "向吸热方向移动",
+              shiftBar: 76,
+              effectStrength: intensity >= 120 ? "强" : intensity <= 80 ? "弱" : "标准",
+              forwardOpacity: 0.92,
+              backwardOpacity: 0.64
             };
           }
         },
         pressure: {
           id: "pressure",
-          name: "压强",
-          progress: "3 / 3",
-          taskTitle: "压强变化 · 增大压强",
-          taskText: "请先预测：若生成物一侧气体物质的量更少，增大压强后平衡会向哪个方向移动？",
-          sliderLabel: "体系压强",
-          sliderValueFormatter: (value) => `${(0.5 + value / 100).toFixed(1)} atm`,
-          sliderMinText: "较低压",
-          sliderMaxText: "较高压",
-          defaultSlider: 130,
-          variableHint: "首版设定为“右侧气体物质的量更少”的情境，用来帮助理解压强影响的判断逻辑。",
-          question: "若右侧气体总物质的量更少，增大压强后平衡会如何移动？",
-          options: [
-            { id: "right", text: "向生成物方向移动" },
-            { id: "left", text: "向反应物方向移动" },
-            { id: "stay", text: "任何气体平衡都不受压强影响" }
+          mode: "压强实验",
+          title: "增大压强",
+          mission: "通过右侧控制台调高压强，在“右侧气体总量更少”的实验设定下观察平衡如何向右移动。",
+          desc: "这次操作的中心不是解释，而是调节实验台上的压强控制阀，让用户感受到环境被压缩。",
+          screenTitle: "转动压强调节阀，提高体系压强",
+          screenDesc: "如果要像实验平台，就必须让“加压”像真正的设备动作，而不是一段文字。",
+          toolbarAction: "当前工具：压强调节阀",
+          toolbarHeat: "加热模块：待机",
+          toolbarPressure: "压强调节：准备增压",
+          toolbarObserve: "观察模式：压强实验",
+          reagentItems: [
+            { id: "valve", name: "压强调节阀", desc: "调高体系压强，观察平衡偏移。" },
+            { id: "gauge", name: "压力表", desc: "查看当前压强变化。" },
+            { id: "release", name: "泄压阀", desc: "用于反向对照。" }
           ],
-          correctOption: "right",
-          legend: [
-            { title: "压强影响前提", text: "只对涉及气体且两侧气体物质的量不同的平衡有明显影响。" },
-            { title: "本轮设定", text: "右侧气体物质的量更少。" },
-            { title: "最终趋势", text: "增大压强后，平衡向气体总量更少的一侧移动。" }
+          leftRack: [
+            { title: "压力表", text: "显示当前体系压强变化。", active: true },
+            { title: "泄压阀", text: "可用于后续做反向实验。", active: false }
           ],
-          tabs: {
-            phenomenon: {
-              title: "你现在看到了什么",
-              content: "压强升高后，系统会逐步偏向气体总物质的量更少的一侧，右侧比例开始提高。"
-            },
-            micro: {
-              title: "微观层面发生了什么",
-              content: "压缩体系后，气体粒子更加密集。系统会通过偏向气体总数更少的一侧来减弱压强变化。"
-            },
-            principle: {
-              title: "为什么会这样",
-              content: "增大压强相当于压缩体积。若右侧气体总量更少，系统向右移动能更好地减弱这次压缩带来的影响。"
-            }
-          },
+          conditionRack: [
+            { title: "温控模块", text: "本轮不启用。", active: false },
+            { title: "压强调节阀", text: "将对体系施加更高压强。", active: true }
+          ],
+          operationInfo: [
+            { title: "当前实验动作", text: "转动压强调节阀，提高体系压强" },
+            { title: "平台判断", text: "在右侧气体总量更少的设定下，增压更有利于向右移动。" }
+          ],
           initial: {
-            leftFluid: 168,
-            rightFluid: 132,
-            leftColor: "rgba(121,232,255,0.7)",
-            rightColor: "rgba(255,215,107,0.7)",
+            statusChip: "系统处于动态平衡",
+            stageChip: "当前动作：压强调节待机",
+            panelTitle: "动态平衡",
+            panelText: "压强还未变化，体系维持原有平衡。",
+            statusList: [
+              { title: "平衡状态", text: "当前压强下维持动态平衡。" },
+              { title: "当前条件", text: "尚未调整压强阀门。" }
+            ],
+            stepList: [
+              { title: "步骤 1", text: "调高压强调节阀。" },
+              { title: "步骤 2", text: "观察压力表读数变化。" },
+              { title: "步骤 3", text: "记录体系向气体总量更少的一侧移动。" }
+            ],
+            recordList: [
+              { title: "观察记录", text: "当前仍是基线压强条件。" },
+              { title: "实验备注", text: "本轮设定为右侧气体总量更少。" }
+            ],
+            insightList: [
+              { title: "平台解释", text: "压强变化要像环境控制，而不是抽象参数切换。" }
+            ],
+            leftLiquid: 170,
+            rightLiquid: 140,
+            leftColor: "rgba(121,232,255,0.76)",
+            rightColor: "rgba(255,215,107,0.74)",
             forward: 1.0,
             backward: 1.0,
-            shiftText: "暂未移动",
+            shift: "暂未移动",
             shiftBar: 50,
-            shiftBadge: "当前判断：等待操作",
-            statusPill: "动态平衡",
-            statusText: "当前压强下系统处于动态平衡。接下来请判断增大压强后平衡如何移动。",
-            sceneBadge: "当前压强下保持平衡",
-            arrowCaption: "还没有改变压强，系统仍维持原平衡。",
-            forwardOpacity: 0.68,
-            backwardOpacity: 0.68,
-            macro: [
-              "两侧比例维持稳定。",
-              "尚未体现压强变化的影响。"
-            ],
-            micro: [
-              "气体粒子密度保持原状。",
-              "正逆反应速率相等。"
-            ],
-            principle: [
-              "压强影响平衡的前提，是两侧气体总量不同。",
-              "判断时要先看哪一侧气体物质的量更少。"
-            ],
-            summary: [
-              "当前只是参考基线。",
-              "本轮重点是建立“压强影响看气体总量差异”的判断方式。"
-            ]
+            effectStrength: "标准",
+            forwardOpacity: 0.72,
+            backwardOpacity: 0.72
           },
-          applied: (slider) => {
-            const delta = (slider - 100) / 100;
-            const forward = Math.max(0.5, 1 + delta * 0.82);
-            const backward = Math.max(0.5, 1 + delta * 0.5);
-            const moveRight = slider >= 100;
+          applied: (intensity) => {
+            const delta = (intensity - 100) / 100;
+            const forward = Math.max(0.8, 1 + delta * 0.82);
+            const backward = Math.max(0.7, 1 + delta * 0.5);
             return {
-              leftFluid: 168 - Math.max(0, delta) * 28,
-              rightFluid: 132 + Math.max(0, delta) * 38,
-              leftColor: "rgba(109,210,245,0.78)",
-              rightColor: "rgba(255,215,107,0.84)",
+              statusChip: "系统正在向右移动",
+              stageChip: "当前动作：已调高压强",
+              panelTitle: "向气体总量更少的一侧移动",
+              panelText: "增压后，系统通过偏向右侧来减弱压缩效应。",
+              statusList: [
+                { title: "平衡状态", text: "压强扰动已发生，体系正向气体总量更少的一侧移动。" },
+                { title: "当前条件", text: `压强已提高，强度 ${intensity}%。` }
+              ],
+              stepList: [
+                { title: "步骤 1", text: "已调高压强调节阀。" },
+                { title: "步骤 2", text: "压力表显示压强上升。" },
+                { title: "步骤 3", text: "观察右侧比例上升。" }
+              ],
+              recordList: [
+                { title: "观察记录", text: "增压后体系偏向右侧，生成物侧液面和粒子占比提高。" },
+                { title: "实验备注", text: "系统通过减少气体总量来减弱压强变化。" }
+              ],
+              insightList: [
+                { title: "平台解释", text: "实验平台强调设备动作。调压是一个环境设备操作，而不是纯概念输入。" }
+              ],
+              leftLiquid: 170 - Math.max(0, delta) * 24,
+              rightLiquid: 140 + Math.max(0, delta) * 40,
+              leftColor: "rgba(108,210,245,0.8)",
+              rightColor: "rgba(255,215,107,0.88)",
               forward,
               backward,
-              shiftText: moveRight ? "向气体总量更少的一侧移动" : "向气体总量更多的一侧回移",
-              shiftBar: moveRight ? 76 : 28,
-              shiftBadge: moveRight ? "当前判断：系统正在向右移动" : "当前判断：压强变化不足",
-              statusPill: moveRight ? "重新建立平衡" : "轻微扰动",
-              statusText: moveRight
-                ? "你增大了压强。由于右侧气体总物质的量更少，系统正在向生成物方向移动，以减弱压缩影响。"
-                : "当前压强变化较小，系统只表现出轻微调整。",
-              sceneBadge: moveRight ? "增压后向气体总量更少一侧移动" : "压强扰动较轻",
-              arrowCaption: moveRight
-                ? "压强升高后，系统更偏向气体总数更少的一侧，因此平衡向右移动。"
-                : "压强变化不足时，平衡移动趋势不明显。",
-              forwardOpacity: moveRight ? 0.92 : 0.56,
-              backwardOpacity: moveRight ? 0.64 : 0.64,
-              macro: [
-                "压强升高后，右侧占比逐渐提升。",
-                "系统通过改变组成来减弱压缩带来的影响。"
-              ],
-              micro: [
-                "气体粒子更密集后，系统会偏向粒子总数更少的一侧。",
-                "正向反应更有利于形成“总量更少”的新平衡。"
-              ],
-              principle: [
-                "压强判断不是看反应物还是生成物，而是看哪边气体总量更少。",
-                "只有气体平衡且两侧气体物质的量不同，这个规律才明显成立。"
-              ],
-              summary: [
-                "若右侧气体总物质的量更少，则增大压强时平衡向生成物方向移动。",
-                "压强影响的核心是系统如何减弱体积压缩。"
-              ]
+              shift: "向右侧移动",
+              shiftBar: 78,
+              effectStrength: intensity >= 120 ? "强" : intensity <= 80 ? "弱" : "标准",
+              forwardOpacity: 0.9,
+              backwardOpacity: 0.62
             };
           }
         }
       };
 
-      const tabs = [
-        { id: "phenomenon", label: "现象" },
-        { id: "micro", label: "微观" },
-        { id: "principle", label: "原理" }
-      ];
+      let activeExperimentId = "reagent";
+      let selectedReagentId = null;
+      let applied = false;
 
-      let activeScenarioId = "concentration";
-      let activeTab = "phenomenon";
-      let selectedOption = null;
-      let predictionSubmitted = false;
-      let roundApplied = false;
-
-      const variableToggles = document.getElementById("variableToggles");
-      const sliderLabel = document.getElementById("sliderLabel");
-      const sliderValue = document.getElementById("sliderValue");
-      const sliderMinText = document.getElementById("sliderMinText");
-      const sliderMaxText = document.getElementById("sliderMaxText");
-      const mainSlider = document.getElementById("mainSlider");
-      const controlHint = document.getElementById("controlHint");
-      const statusPill = document.getElementById("statusPill");
-      const statusText = document.getElementById("statusText");
-      const legendList = document.getElementById("legendList");
-      const taskTitle = document.getElementById("taskTitle");
-      const taskText = document.getElementById("taskText");
-      const progressValue = document.getElementById("progressValue");
-      const sceneBadge = document.getElementById("sceneBadge");
-      const shiftBadge = document.getElementById("shiftBadge");
-      const arrowArea = document.getElementById("arrowArea");
-      const arrowCaption = document.getElementById("arrowCaption");
-      const leftChamber = document.getElementById("leftChamber");
-      const rightChamber = document.getElementById("rightChamber");
-      const reactantParticles = document.getElementById("reactantParticles");
-      const productParticles = document.getElementById("productParticles");
-      const forwardRateText = document.getElementById("forwardRateText");
-      const backwardRateText = document.getElementById("backwardRateText");
-      const shiftText = document.getElementById("shiftText");
+      const reagentShelf = document.getElementById("reagentShelf");
+      const modeTabs = document.getElementById("modeTabs");
+      const operationInfo = document.getElementById("operationInfo");
+      const missionText = document.getElementById("missionText");
+      const consoleTitle = document.getElementById("consoleTitle");
+      const consoleDesc = document.getElementById("consoleDesc");
+      const screenTitle = document.getElementById("screenTitle");
+      const screenDesc = document.getElementById("screenDesc");
+      const statusChip = document.getElementById("statusChip");
+      const stageChip = document.getElementById("stageChip");
+      const panelTitle = document.getElementById("panelTitle");
+      const panelText = document.getElementById("panelText");
+      const leftRack = document.getElementById("leftRack");
+      const conditionRack = document.getElementById("conditionRack");
+      const leftReactor = document.getElementById("leftReactor");
+      const rightReactor = document.getElementById("rightReactor");
+      const leftParticles = document.getElementById("leftParticles");
+      const rightParticles = document.getElementById("rightParticles");
+      const equilibriumPanel = document.getElementById("equilibriumPanel");
+      const toolbarAction = document.getElementById("toolbarAction");
+      const toolbarHeat = document.getElementById("toolbarHeat");
+      const toolbarPressure = document.getElementById("toolbarPressure");
+      const toolbarObserve = document.getElementById("toolbarObserve");
+      const forwardRate = document.getElementById("forwardRate");
+      const backwardRate = document.getElementById("backwardRate");
+      const shiftDirection = document.getElementById("shiftDirection");
+      const effectStrength = document.getElementById("effectStrength");
       const forwardBar = document.getElementById("forwardBar");
       const backwardBar = document.getElementById("backwardBar");
       const shiftBar = document.getElementById("shiftBar");
-      const tabRow = document.getElementById("tabRow");
-      const tabTitle = document.getElementById("tabTitle");
-      const tabContent = document.getElementById("tabContent");
-      const questionText = document.getElementById("questionText");
-      const optionList = document.getElementById("optionList");
-      const feedbackCard = document.getElementById("feedbackCard");
-      const feedbackText = document.getElementById("feedbackText");
-      const summaryList = document.getElementById("summaryList");
-      const macroList = document.getElementById("macroList");
-      const microList = document.getElementById("microList");
-      const principleList = document.getElementById("principleList");
+      const intensitySlider = document.getElementById("intensitySlider");
+      const stateList = document.getElementById("stateList");
+      const stepList = document.getElementById("stepList");
+      const recordList = document.getElementById("recordList");
+      const insightList = document.getElementById("insightList");
 
-      function getScenario() {
-        return scenarios[activeScenarioId];
-      }
-
-      function renderVariableToggles() {
-        variableToggles.innerHTML = Object.values(scenarios)
-          .map((scenario) => `
-            <button class="toggle ${scenario.id === activeScenarioId ? "active" : ""}" data-scenario="${scenario.id}">${scenario.name}</button>
-          `)
-          .join("");
-      }
-
-      function renderTabs() {
-        tabRow.innerHTML = tabs
-          .map((tab) => `
-            <button class="tab-btn ${tab.id === activeTab ? "active" : ""}" data-tab="${tab.id}">${tab.label}</button>
-          `)
-          .join("");
-      }
-
-      function renderLegend(items) {
-        legendList.innerHTML = items
-          .map((item) => `
-            <div class="legend-item">
-              <strong>${item.title}</strong>
-              <span>${item.text}</span>
-            </div>
-          `)
-          .join("");
-      }
-
-      function renderList(container, items, className) {
-        container.innerHTML = items.map((item) => `<div class="${className}">${item}</div>`).join("");
+      function getExperiment() {
+        return experiments[activeExperimentId];
       }
 
       function createParticles(container, countA, countB, countC) {
         const html = [];
         const pushParticles = (count, type, startX) => {
           for (let i = 0; i < count; i += 1) {
-            const left = (startX + (i * 13)) % 86;
-            const bottom = 16 + ((i * 19) % 62);
-            const delay = (i % 7) * 0.3;
+            const left = (startX + (i * 12)) % 86;
+            const bottom = 18 + ((i * 17) % 64);
+            const delay = (i % 7) * 0.28;
             html.push(`<span class="particle ${type}" style="left:${left}%; bottom:${bottom}px; animation-delay:${delay}s;"></span>`);
           }
         };
         pushParticles(countA, "a", 8);
-        pushParticles(countB, "b", 22);
-        pushParticles(countC, "c", 44);
+        pushParticles(countB, "b", 24);
+        pushParticles(countC, "c", 46);
         container.innerHTML = html.join("");
       }
 
-      function updateParticleScene(view) {
-        const leftCount = Math.max(5, Math.round(view.leftFluid / 12));
-        const rightCount = Math.max(5, Math.round(view.rightFluid / 12));
-        createParticles(reactantParticles, Math.round(leftCount * 0.5), Math.round(leftCount * 0.35), Math.round(leftCount * 0.15));
-        createParticles(productParticles, Math.round(rightCount * 0.4), Math.round(rightCount * 0.45), Math.round(rightCount * 0.15));
-      }
-
-      function applyView(view) {
-        leftChamber.style.setProperty("--fluid-height", `${view.leftFluid}px`);
-        leftChamber.style.setProperty("--fluid-color", view.leftColor);
-        rightChamber.style.setProperty("--fluid-height", `${view.rightFluid}px`);
-        rightChamber.style.setProperty("--fluid-color", view.rightColor);
-        forwardRateText.textContent = `${view.forward.toFixed(1)}x`;
-        backwardRateText.textContent = `${view.backward.toFixed(1)}x`;
-        shiftText.textContent = view.shiftText;
-        forwardBar.style.width = `${Math.min(100, view.forward * 50)}%`;
-        backwardBar.style.width = `${Math.min(100, view.backward * 50)}%`;
-        shiftBar.style.width = `${view.shiftBar}%`;
-        shiftBadge.textContent = view.shiftBadge;
-        statusPill.textContent = view.statusPill;
-        statusText.textContent = view.statusText;
-        sceneBadge.textContent = view.sceneBadge;
-        arrowCaption.textContent = view.arrowCaption;
-        arrowArea.style.setProperty("--forward-opacity", view.forwardOpacity);
-        arrowArea.style.setProperty("--backward-opacity", view.backwardOpacity);
-        renderList(macroList, view.macro, "chip");
-        renderList(microList, view.micro, "chip");
-        renderList(principleList, view.principle, "chip");
-        renderList(summaryList, view.summary, "summary-item");
-        updateParticleScene(view);
-      }
-
-      function getActiveView() {
-        const scenario = getScenario();
-        if (!roundApplied) return scenario.initial;
-        return scenario.applied(Number(mainSlider.value));
-      }
-
-      function updateTabContent() {
-        const scenario = getScenario();
-        const tabData = scenario.tabs[activeTab];
-        tabTitle.textContent = tabData.title;
-        tabContent.textContent = tabData.content;
-      }
-
-      function updateSliderMeta() {
-        const scenario = getScenario();
-        sliderLabel.textContent = scenario.sliderLabel;
-        sliderValue.textContent = scenario.sliderValueFormatter(Number(mainSlider.value));
-      }
-
-      function renderOptions() {
-        const scenario = getScenario();
-        optionList.innerHTML = scenario.options
-          .map((option) => {
-            let cls = "option-btn";
-            if (selectedOption === option.id) cls += " active";
-            if (predictionSubmitted) {
-              if (option.id === scenario.correctOption) cls += " correct";
-              else if (selectedOption === option.id) cls += " wrong";
-            }
-            return `<button class="${cls}" data-option="${option.id}">${option.text}</button>`;
-          })
+      function renderSimpleList(container, items, cls) {
+        container.innerHTML = items
+          .map((item) => `<div class="${cls}"><strong>${item.title}</strong><span>${item.text}</span></div>`)
           .join("");
       }
 
-      function updateFeedback() {
-        const scenario = getScenario();
-        feedbackCard.className = "feedback-card";
-        if (!predictionSubmitted) {
-          feedbackText.textContent = "先选择一个判断，并提交你的预测。这里会在你完成操作后告诉你判断是否正确。";
-          return;
-        }
-        if (!roundApplied) {
-          feedbackText.textContent = "预测已提交。现在点击“应用变化”，看看系统是否按你的判断发生了平衡移动。";
-          return;
-        }
-        if (selectedOption === scenario.correctOption) {
-          feedbackCard.classList.add("good");
-          feedbackText.textContent = "你判断对了。关键不是记住答案，而是看懂系统为什么会朝这个方向移动。";
-        } else {
-          feedbackCard.classList.add("bad");
-          feedbackText.textContent = "这次判断不对。别只盯着“哪边更多”，要回到“系统会怎样减弱这次外界改变”这条逻辑上。";
-        }
+      function renderReagentShelf() {
+        const experiment = getExperiment();
+        reagentShelf.innerHTML = experiment.reagentItems
+          .map((item, index) => `
+            <div class="shelf-item ${(selectedReagentId ? selectedReagentId === item.id : index === 0) ? "active" : ""}" data-reagent="${item.id}">
+              <strong>${item.name}</strong>
+              <span>${item.desc}</span>
+            </div>
+          `)
+          .join("");
       }
 
-      function resetRoundState(keepScenario = true) {
-        selectedOption = null;
-        predictionSubmitted = false;
-        roundApplied = false;
-        if (!keepScenario) activeTab = "phenomenon";
+      function renderModeTabs() {
+        modeTabs.innerHTML = Object.values(experiments)
+          .map((experiment) => `
+            <button class="segment-btn ${experiment.id === activeExperimentId ? "active" : ""}" data-mode="${experiment.id}">${experiment.mode}</button>
+          `)
+          .join("");
       }
 
-      function renderScenario() {
-        const scenario = getScenario();
-        taskTitle.textContent = scenario.taskTitle;
-        taskText.textContent = scenario.taskText;
-        progressValue.textContent = scenario.progress;
-        sliderMinText.textContent = scenario.sliderMinText;
-        sliderMaxText.textContent = scenario.sliderMaxText;
-        controlHint.textContent = scenario.variableHint;
-        questionText.textContent = scenario.question;
-        mainSlider.value = scenario.defaultSlider;
-        updateSliderMeta();
-        renderLegend(scenario.legend);
-        renderVariableToggles();
-        renderTabs();
-        renderOptions();
-        updateFeedback();
-        updateTabContent();
-        applyView(getActiveView());
+      function renderOperationInfo() {
+        renderSimpleList(operationInfo, getExperiment().operationInfo, "info-item");
       }
 
-      variableToggles.addEventListener("click", (event) => {
-        const button = event.target.closest("[data-scenario]");
-        if (!button) return;
-        activeScenarioId = button.dataset.scenario;
-        resetRoundState(false);
-        renderScenario();
-      });
-
-      tabRow.addEventListener("click", (event) => {
-        const button = event.target.closest("[data-tab]");
-        if (!button) return;
-        activeTab = button.dataset.tab;
-        renderTabs();
-        updateTabContent();
-      });
-
-      optionList.addEventListener("click", (event) => {
-        const button = event.target.closest("[data-option]");
-        if (!button || predictionSubmitted) return;
-        selectedOption = button.dataset.option;
-        renderOptions();
-      });
-
-      mainSlider.addEventListener("input", () => {
-        updateSliderMeta();
-      });
-
-      document.getElementById("submitPrediction").addEventListener("click", () => {
-        if (!selectedOption) {
-          feedbackText.textContent = "请先选一个判断，再提交预测。";
-          return;
-        }
-        predictionSubmitted = true;
-        renderOptions();
-        updateFeedback();
-      });
-
-      document.getElementById("clearPrediction").addEventListener("click", () => {
-        if (predictionSubmitted) return;
-        selectedOption = null;
-        renderOptions();
-      });
-
-      function applyChange() {
-        roundApplied = true;
-        applyView(getActiveView());
-        updateFeedback();
+      function getView() {
+        const experiment = getExperiment();
+        return applied ? experiment.applied(Number(intensitySlider.value)) : experiment.initial;
       }
 
-      document.getElementById("applyButton").addEventListener("click", applyChange);
-      document.getElementById("runSimulation").addEventListener("click", applyChange);
+      function applyView(view) {
+        statusChip.textContent = view.statusChip;
+        stageChip.textContent = view.stageChip;
+        panelTitle.textContent = view.panelTitle;
+        panelText.textContent = view.panelText;
+        renderSimpleList(stateList, view.statusList, "state-item");
+        renderSimpleList(stepList, view.stepList, "step-item");
+        renderSimpleList(recordList, view.recordList, "record-item");
+        renderSimpleList(insightList, view.insightList, "info-item");
+        leftReactor.style.setProperty("--liquid-height", `${view.leftLiquid}px`);
+        leftReactor.style.setProperty("--liquid-color", view.leftColor);
+        rightReactor.style.setProperty("--liquid-height", `${view.rightLiquid}px`);
+        rightReactor.style.setProperty("--liquid-color", view.rightColor);
+        forwardRate.textContent = `${view.forward.toFixed(1)}x`;
+        backwardRate.textContent = `${view.backward.toFixed(1)}x`;
+        shiftDirection.textContent = view.shift;
+        effectStrength.textContent = view.effectStrength;
+        forwardBar.style.width = `${Math.min(100, view.forward * 50)}%`;
+        backwardBar.style.width = `${Math.min(100, view.backward * 50)}%`;
+        shiftBar.style.width = `${view.shiftBar}%`;
+        equilibriumPanel.style.setProperty("--forward-opacity", view.forwardOpacity);
+        equilibriumPanel.style.setProperty("--backward-opacity", view.backwardOpacity);
+        const leftCount = Math.max(6, Math.round(view.leftLiquid / 12));
+        const rightCount = Math.max(6, Math.round(view.rightLiquid / 12));
+        createParticles(leftParticles, Math.round(leftCount * 0.5), Math.round(leftCount * 0.35), Math.round(leftCount * 0.15));
+        createParticles(rightParticles, Math.round(rightCount * 0.4), Math.round(rightCount * 0.45), Math.round(rightCount * 0.15));
+      }
+
+      function renderRacks() {
+        const experiment = getExperiment();
+        leftRack.innerHTML = experiment.leftRack
+          .map((item) => `<div class="rack-bottle ${item.active ? "active" : ""}"><strong>${item.title}</strong><span>${item.text}</span></div>`)
+          .join("");
+        conditionRack.innerHTML = experiment.conditionRack
+          .map((item) => `<div class="condition-card ${item.active ? "active" : ""}"><strong>${item.title}</strong><span>${item.text}</span></div>`)
+          .join("");
+      }
+
+      function renderExperiment() {
+        const experiment = getExperiment();
+        missionText.textContent = experiment.mission;
+        consoleTitle.textContent = `化学平衡实验台 · ${experiment.title}`;
+        consoleDesc.textContent = experiment.desc;
+        screenTitle.textContent = experiment.screenTitle;
+        screenDesc.textContent = experiment.screenDesc;
+        toolbarAction.textContent = experiment.toolbarAction;
+        toolbarHeat.textContent = experiment.toolbarHeat;
+        toolbarPressure.textContent = experiment.toolbarPressure;
+        toolbarObserve.textContent = experiment.toolbarObserve;
+        renderModeTabs();
+        renderReagentShelf();
+        renderOperationInfo();
+        renderRacks();
+        applyView(getView());
+      }
+
+      reagentShelf.addEventListener("click", (event) => {
+        const item = event.target.closest("[data-reagent]");
+        if (!item) return;
+        selectedReagentId = item.dataset.reagent;
+        renderReagentShelf();
+      });
+
+      modeTabs.addEventListener("click", (event) => {
+        const item = event.target.closest("[data-mode]");
+        if (!item) return;
+        activeExperimentId = item.dataset.mode;
+        selectedReagentId = null;
+        applied = false;
+        intensitySlider.value = 100;
+        renderExperiment();
+      });
+
+      function executeAction() {
+        applied = true;
+        applyView(getView());
+      }
+
+      document.getElementById("executeLeft").addEventListener("click", executeAction);
+      document.getElementById("applyAction").addEventListener("click", executeAction);
 
       document.getElementById("resetRound").addEventListener("click", () => {
-        resetRoundState(true);
-        renderScenario();
+        applied = false;
+        intensitySlider.value = 100;
+        applyView(getView());
       });
 
-      document.getElementById("resetAll").addEventListener("click", () => {
-        activeScenarioId = "concentration";
-        resetRoundState(false);
-        renderScenario();
+      document.getElementById("resetLab").addEventListener("click", () => {
+        activeExperimentId = "reagent";
+        selectedReagentId = null;
+        applied = false;
+        intensitySlider.value = 100;
+        renderExperiment();
       });
 
-      renderScenario();
+      intensitySlider.addEventListener("input", () => {
+        if (applied) applyView(getView());
+      });
+
+      renderExperiment();
     </script>
   </body>
 </html>
