@@ -29,6 +29,7 @@
 
       * { box-sizing: border-box; }
       html, body { margin: 0; padding: 0; }
+      .apparatus, .apparatus * { touch-action: none; }
       body {
         min-height: 100vh;
         font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -898,6 +899,7 @@
 
       function enableDragging() {
         const items = document.querySelectorAll('.apparatus.draggable');
+        const workspace = document.getElementById('workspace');
         items.forEach(item => {
           let startX = 0;
           let startY = 0;
@@ -909,31 +911,39 @@
             if (!dragging) return;
             const dx = event.clientX - startX;
             const dy = event.clientY - startY;
-            item.style.left = `${initialLeft + dx}px`;
-            item.style.top = `${initialTop + dy}px`;
+            const nextLeft = initialLeft + dx;
+            const nextTop = initialTop + dy;
+            item.style.left = `${nextLeft}px`;
+            item.style.top = `${nextTop}px`;
           };
 
           const stopDragging = () => {
             if (!dragging) return;
             dragging = false;
             item.classList.remove('dragging');
+            document.body.style.userSelect = '';
             window.removeEventListener('pointermove', onPointerMove);
             window.removeEventListener('pointerup', stopDragging);
+            window.removeEventListener('pointercancel', stopDragging);
           };
 
           item.addEventListener('pointerdown', (event) => {
             if (event.button !== 0) return;
+            event.preventDefault();
+            event.stopPropagation();
             document.querySelectorAll('.apparatus.selected').forEach(el => el.classList.remove('selected'));
             item.classList.add('selected');
+            workspace.appendChild(item);
             dragging = true;
             startX = event.clientX;
             startY = event.clientY;
             initialLeft = parseFloat(item.style.left || 0);
             initialTop = parseFloat(item.style.top || 0);
             item.classList.add('dragging');
-            item.setPointerCapture?.(event.pointerId);
-            window.addEventListener('pointermove', onPointerMove);
+            document.body.style.userSelect = 'none';
+            window.addEventListener('pointermove', onPointerMove, { passive: false });
             window.addEventListener('pointerup', stopDragging);
+            window.addEventListener('pointercancel', stopDragging);
           });
         });
       }
