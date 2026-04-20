@@ -4,28 +4,27 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WebAI Chemistry Lab · 实验器材画布版</title>
-    <meta
-      name="description"
-      content="WebAI Chemistry v0.6，NB 风格的实验器材画布版原型。"
-    />
+    <meta name="description" content="WebAI Chemistry v0.6.1，带基础拖拽的实验器材画布版原型。" />
     <style>
       :root {
-        --bg: #262c35;
-        --bg-2: #1f252d;
-        --panel: #2b323b;
-        --panel-soft: #303845;
-        --panel-line: rgba(255, 255, 255, 0.08);
-        --text: #eef3f7;
-        --muted: #9ba7b4;
-        --muted-2: #7e8a96;
-        --cyan: #67d8ff;
-        --cyan-soft: rgba(103, 216, 255, 0.12);
-        --green: #9cff88;
-        --green-soft: rgba(156, 255, 136, 0.12);
-        --yellow: #ffd76b;
-        --yellow-soft: rgba(255, 215, 107, 0.12);
-        --orange: #ffb769;
-        --shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+        --bg: #1f242c;
+        --bg-2: #252b34;
+        --canvas: #313842;
+        --canvas-2: #2b313a;
+        --panel: rgba(31, 38, 48, 0.94);
+        --panel-soft: rgba(44, 52, 64, 0.96);
+        --panel-line: rgba(255,255,255,0.08);
+        --text: #eef3f8;
+        --muted: #97a4b2;
+        --muted-2: #768291;
+        --cyan: #76d8ff;
+        --cyan-soft: rgba(118, 216, 255, 0.12);
+        --green: #93f28f;
+        --green-soft: rgba(147, 242, 143, 0.12);
+        --yellow: #ffd776;
+        --orange: #ffb36a;
+        --danger: #ff8f8f;
+        --shadow: 0 18px 48px rgba(0,0,0,0.26);
       }
 
       * { box-sizing: border-box; }
@@ -37,10 +36,12 @@
         color: var(--text);
       }
 
+      button { font: inherit; }
+
       .app {
         min-height: 100vh;
         display: grid;
-        grid-template-rows: 56px 1fr 76px;
+        grid-template-rows: 56px 1fr 78px;
       }
 
       .topbar {
@@ -49,9 +50,9 @@
         align-items: center;
         gap: 16px;
         padding: 0 16px;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-        background: rgba(20, 26, 33, 0.44);
-        backdrop-filter: blur(8px);
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        background: rgba(19, 24, 31, 0.82);
+        backdrop-filter: blur(12px);
       }
 
       .brand {
@@ -67,14 +68,16 @@
         border-radius: 10px;
         display: grid;
         place-items: center;
-        background: linear-gradient(135deg, var(--cyan), #6a8cff);
+        background: linear-gradient(135deg, #67d8ff, #74a2ff);
         color: #162029;
+        box-shadow: var(--shadow);
       }
 
       .experiment-title {
         text-align: center;
         color: var(--muted);
-        font-size: 14px;
+        font-size: 13px;
+        letter-spacing: 0.02em;
       }
 
       .toolbar {
@@ -82,15 +85,12 @@
         gap: 8px;
       }
 
-      .tool-btn,
       .icon-btn,
-      .step-btn,
       .category-btn,
-      .library-item {
+      .library-item,
+      .step-btn,
+      .primary-action {
         border: 1px solid rgba(255,255,255,0.08);
-        background: rgba(255,255,255,0.03);
-        color: var(--text);
-        font: inherit;
       }
 
       .icon-btn {
@@ -100,11 +100,13 @@
         display: grid;
         place-items: center;
         cursor: pointer;
+        background: rgba(255,255,255,0.03);
+        color: var(--text);
       }
 
       .main {
         display: grid;
-        grid-template-columns: 1fr 312px;
+        grid-template-columns: 1fr 320px;
         min-height: 0;
       }
 
@@ -112,24 +114,60 @@
         position: relative;
         overflow: hidden;
         background:
-          radial-gradient(circle at center, rgba(255,255,255,0.02), transparent 48%),
-          linear-gradient(180deg, #353c46 0%, #262c35 100%);
+          radial-gradient(circle at 50% 10%, rgba(255,255,255,0.03), transparent 34%),
+          linear-gradient(180deg, var(--canvas) 0%, var(--canvas-2) 100%);
       }
 
-      .canvas-stage {
+      .canvas-shell::after {
+        content: "";
         position: absolute;
-        inset: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 160px;
+        background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,0.08));
+        pointer-events: none;
       }
 
       .bench-grid {
         position: absolute;
         inset: 0;
         background-image:
-          linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-        background-size: 48px 48px;
+          linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+        background-size: 44px 44px;
         opacity: 0.35;
         pointer-events: none;
+      }
+
+      .workspace {
+        position: absolute;
+        inset: 0;
+      }
+
+      .hint-tag {
+        position: absolute;
+        left: 16px;
+        top: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(18, 23, 29, 0.82);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: var(--text);
+        font-size: 13px;
+        z-index: 5;
+        box-shadow: var(--shadow);
+      }
+
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 14px rgba(147, 242, 143, 0.55);
       }
 
       .zoom-tag {
@@ -138,45 +176,47 @@
         bottom: 12px;
         padding: 8px 12px;
         border-radius: 10px;
-        background: rgba(20,26,33,0.72);
+        background: rgba(19,24,31,0.82);
         border: 1px solid rgba(255,255,255,0.08);
         color: var(--muted);
         font-size: 13px;
+        z-index: 5;
       }
 
-      .hint-tag {
+      .drag-tip {
         position: absolute;
-        left: 16px;
+        right: 18px;
         top: 14px;
-        display: inline-flex;
-        gap: 10px;
-        align-items: center;
-        padding: 10px 14px;
-        border-radius: 999px;
-        background: rgba(20,26,33,0.68);
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(19,24,31,0.82);
         border: 1px solid rgba(255,255,255,0.08);
-        color: var(--text);
-        font-size: 13px;
+        color: var(--muted);
+        font-size: 12px;
+        z-index: 5;
       }
 
-      .dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: var(--green);
-        box-shadow: 0 0 14px rgba(156, 255, 136, 0.5);
-      }
-
-      .workspace {
+      .apparatus {
         position: absolute;
-        inset: 0;
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+        user-select: none;
+      }
+
+      .apparatus.draggable { cursor: grab; }
+      .apparatus.dragging {
+        cursor: grabbing;
+        z-index: 30 !important;
+        transform: scale(1.02);
+        filter: drop-shadow(0 16px 24px rgba(0,0,0,0.28));
+      }
+
+      .apparatus.selected {
+        filter: drop-shadow(0 0 18px rgba(118,216,255,0.24));
       }
 
       .stand {
-        position: absolute;
-        bottom: 120px;
-        width: 130px;
-        height: 360px;
+        width: 140px;
+        height: 380px;
       }
 
       .stand-base {
@@ -184,96 +224,107 @@
         bottom: 0;
         left: 50%;
         transform: translateX(-50%);
-        width: 110px;
-        height: 24px;
-        border-radius: 10px;
-        background: linear-gradient(180deg, #4a515c, #2f3741);
+        width: 102px;
+        height: 20px;
+        border-radius: 8px 8px 12px 12px;
+        background: linear-gradient(180deg, #606a75, #404854);
+        box-shadow: 0 8px 14px rgba(0,0,0,0.16);
       }
 
       .stand-rod {
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
-        bottom: 22px;
+        bottom: 18px;
         width: 6px;
-        height: 312px;
+        height: 330px;
         border-radius: 999px;
-        background: linear-gradient(180deg, #b2bbc3, #6b747e);
+        background: linear-gradient(180deg, #c8d0d8, #78818c);
       }
 
       .clamp-bar {
         position: absolute;
-        top: 122px;
-        left: 28px;
-        width: 74px;
-        height: 10px;
+        top: 140px;
+        left: 34px;
+        width: 72px;
+        height: 8px;
         border-radius: 999px;
-        background: linear-gradient(180deg, #9aa3ab, #6b747e);
+        background: linear-gradient(180deg, #b7bec6, #717983);
       }
 
-      .apparatus {
-        position: absolute;
-        transition: 0.35s ease;
+      .main-tube {
+        width: 560px;
+        height: 84px;
       }
 
       .tube-body {
         position: absolute;
-        left: 0;
-        top: 0;
-        width: 520px;
-        height: 26px;
+        left: 48px;
+        top: 16px;
+        width: 410px;
+        height: 24px;
         border-radius: 999px;
-        border: 3px solid rgba(255,255,255,0.7);
-        background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
-        box-shadow: inset 0 0 22px rgba(255,255,255,0.06);
+        border: 3px solid rgba(255,255,255,0.72);
+        background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.03));
+        box-shadow: inset 0 0 18px rgba(255,255,255,0.08);
       }
 
       .tube-fill {
         position: absolute;
-        left: 10px;
-        top: 7px;
+        left: 56px;
+        top: 23px;
         height: 10px;
-        width: var(--tube-fill, 120px);
+        width: var(--tube-fill, 110px);
         border-radius: 999px;
-        background: linear-gradient(90deg, rgba(255,215,107,0.96), rgba(255,183,105,0.8));
+        background: linear-gradient(90deg, #ffe58e, #ffb86c);
       }
 
       .tube-tip {
         position: absolute;
-        right: -24px;
-        top: 7px;
-        width: 34px;
-        height: 12px;
+        left: 454px;
+        top: 23px;
+        width: 24px;
+        height: 10px;
         border-radius: 999px;
-        background: linear-gradient(180deg, #d8c29f, #b48f63);
+        background: linear-gradient(180deg, #dab98e, #bb9260);
+      }
+
+      .tube-bend {
+        position: absolute;
+        left: 468px;
+        top: 20px;
+        width: 30px;
+        height: 70px;
+        border-right: 4px solid rgba(255,255,255,0.7);
+        border-top: 4px solid rgba(255,255,255,0.7);
+        border-top-right-radius: 18px;
       }
 
       .gasbag {
         position: absolute;
-        left: -108px;
-        top: -8px;
-        width: 96px;
-        height: 44px;
+        left: 0;
+        top: 8px;
+        width: 62px;
+        height: 40px;
         border-radius: 999px;
-        background: radial-gradient(circle at 28% 28%, #f2cc7d, #b57e28);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.18);
+        background: radial-gradient(circle at 32% 28%, #f5d88f, #b47f2d);
+        box-shadow: 0 10px 18px rgba(0,0,0,0.2);
       }
 
       .gasbag::after {
-        content: "CO";
+        content: 'CO';
         position: absolute;
         inset: 0;
         display: grid;
         place-items: center;
-        color: #432b10;
+        color: #52340f;
+        font-size: 13px;
         font-weight: 800;
-        font-size: 14px;
       }
 
       .burner {
-        position: absolute;
-        width: 90px;
-        height: 112px;
+        width: 96px;
+        height: 128px;
       }
 
       .burner-stand {
@@ -282,85 +333,95 @@
         left: 50%;
         transform: translateX(-50%);
         width: 74px;
-        height: 20px;
+        height: 18px;
         border-radius: 10px;
-        background: linear-gradient(180deg, #b8bec7, #868e98);
+        background: linear-gradient(180deg, #c7cdd5, #808995);
       }
 
       .burner-body {
         position: absolute;
-        bottom: 16px;
+        bottom: 14px;
         left: 50%;
         transform: translateX(-50%);
-        width: 44px;
-        height: 54px;
+        width: 42px;
+        height: 52px;
         border-radius: 16px 16px 10px 10px;
-        background: linear-gradient(180deg, #c68a24, #8b5c13);
+        background: linear-gradient(180deg, #d3942a, #8c5c14);
+        box-shadow: 0 10px 14px rgba(0,0,0,0.16);
+      }
+
+      .burner-neck {
+        position: absolute;
+        bottom: 58px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 14px;
+        height: 20px;
+        border-radius: 7px;
+        background: linear-gradient(180deg, #b58c51, #7b5b2a);
       }
 
       .burner-flame {
         position: absolute;
-        bottom: 62px;
+        bottom: 74px;
         left: 50%;
         transform: translateX(-50%);
         width: 18px;
-        height: 34px;
-        border-radius: 50% 50% 40% 40%;
-        background: radial-gradient(circle at 50% 20%, #fff4b6, #ff8a3d 72%);
-        opacity: var(--flame-opacity, 0.2);
+        height: 32px;
+        border-radius: 50% 50% 42% 42%;
+        background: radial-gradient(circle at 50% 18%, #fff6c3, #ff9343 72%);
+        opacity: var(--flame-opacity, 0.16);
       }
 
-      .test-tube {
-        position: absolute;
-        width: 70px;
-        height: 190px;
+      .tail-tube {
+        width: 88px;
+        height: 214px;
       }
 
-      .test-tube-body {
+      .tail-glass {
         position: absolute;
-        bottom: 0;
         left: 50%;
         transform: translateX(-50%);
-        width: 34px;
-        height: 170px;
+        bottom: 0;
+        width: 38px;
+        height: 190px;
         border-radius: 0 0 20px 20px;
         border: 3px solid rgba(255,255,255,0.72);
-        background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.03));
+        background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.02));
       }
 
-      .test-tube-liquid {
+      .tail-liquid {
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
         bottom: 10px;
         width: 24px;
-        height: var(--tube-liquid, 44px);
+        height: var(--tail-liquid, 46px);
         border-radius: 0 0 16px 16px;
-        background: linear-gradient(180deg, rgba(121,232,255,0.9), rgba(74,151,255,0.78));
+        background: linear-gradient(180deg, rgba(121,232,255,0.92), rgba(74,151,255,0.78));
       }
 
-      .tube-hose {
+      .tail-hose {
         position: absolute;
-        left: -30px;
+        left: 0;
         top: 16px;
-        width: 70px;
+        width: 56px;
         height: 10px;
         border-radius: 999px;
-        background: linear-gradient(180deg, #d7c19a, #b48f63);
-        transform: rotate(-10deg);
+        background: linear-gradient(180deg, #d9bd95, #bb905c);
+        transform: rotate(-12deg);
         transform-origin: right center;
       }
 
-      .chemical-group {
-        position: absolute;
+      .bottle-group {
         display: flex;
-        gap: 18px;
+        gap: 16px;
         align-items: end;
       }
 
       .bottle {
-        width: 54px;
-        height: 76px;
+        width: 56px;
+        height: 82px;
         position: relative;
       }
 
@@ -372,53 +433,78 @@
         width: 24px;
         height: 12px;
         border-radius: 6px 6px 0 0;
-        background: #b8bec7;
+        background: #c1c7cf;
       }
 
       .bottle-body {
         position: absolute;
         bottom: 0;
         width: 100%;
-        height: 62px;
-        border-radius: 12px;
-        border: 2px solid rgba(255,255,255,0.5);
-        background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
+        height: 68px;
+        border-radius: 14px;
+        border: 2px solid rgba(255,255,255,0.55);
+        background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04));
       }
 
       .bottle-label {
         position: absolute;
         left: 6px;
         right: 6px;
-        top: 24px;
+        top: 28px;
         padding: 4px 6px;
         border-radius: 6px;
-        background: rgba(255,255,255,0.74);
-        color: #22303a;
+        background: rgba(255,255,255,0.78);
+        color: #25323c;
         font-size: 11px;
-        text-align: center;
         font-weight: 700;
+        text-align: center;
       }
 
       .small-tool {
         position: absolute;
-        border-radius: 999px;
       }
 
-      .spoon {
-        width: 90px;
+      .spoon-shape {
+        width: 96px;
         height: 10px;
-        background: linear-gradient(90deg, #c96f48, #f99a5b);
+        border-radius: 999px;
+        background: linear-gradient(90deg, #cc744f, #ff9f63);
+        position: relative;
       }
 
-      .match {
-        width: 60px;
+      .spoon-shape::before {
+        content: '';
+        position: absolute;
+        right: -8px;
+        top: -4px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: linear-gradient(180deg, #ffb27d, #dd7e4e);
+      }
+
+      .match-shape {
+        width: 62px;
         height: 8px;
-        background: linear-gradient(90deg, #c7b18a, #8b5c13);
+        border-radius: 999px;
+        background: linear-gradient(90deg, #d1bc99, #8d6030);
+        position: relative;
+      }
+
+      .match-shape::before {
+        content: '';
+        position: absolute;
+        left: -2px;
+        top: -2px;
+        width: 10px;
+        height: 12px;
+        border-radius: 6px;
+        background: #b74d32;
       }
 
       .library {
-        border-left: 1px solid rgba(255,255,255,0.06);
-        background: linear-gradient(180deg, #2a313a 0%, #232a33 100%);
+        border-left: 1px solid rgba(255,255,255,0.05);
+        background: linear-gradient(180deg, rgba(33,39,48,0.98) 0%, rgba(28,34,43,0.98) 100%);
         display: grid;
         grid-template-rows: auto auto 1fr;
         min-height: 0;
@@ -453,11 +539,13 @@
         border-radius: 12px;
         padding: 10px 8px;
         cursor: pointer;
+        background: rgba(255,255,255,0.03);
+        color: var(--text);
       }
 
       .category-btn.active {
-        background: rgba(103,216,255,0.12);
-        border-color: rgba(103,216,255,0.34);
+        background: rgba(118,216,255,0.12);
+        border-color: rgba(118,216,255,0.34);
       }
 
       .library-list {
@@ -472,13 +560,15 @@
         border-radius: 14px;
         padding: 12px;
         cursor: pointer;
-        transition: 0.2s ease;
+        background: rgba(255,255,255,0.03);
+        color: var(--text);
+        text-align: left;
       }
 
       .library-item:hover,
       .library-item.active {
-        background: rgba(103,216,255,0.12);
-        border-color: rgba(103,216,255,0.34);
+        background: rgba(118,216,255,0.12);
+        border-color: rgba(118,216,255,0.34);
       }
 
       .library-item strong {
@@ -494,13 +584,13 @@
 
       .bottombar {
         display: grid;
-        grid-template-columns: 1.2fr 1.4fr 1fr auto;
+        grid-template-columns: 1.2fr 1.2fr 1fr auto;
         gap: 14px;
         align-items: center;
         padding: 0 14px;
-        border-top: 1px solid rgba(255,255,255,0.06);
-        background: rgba(20, 26, 33, 0.54);
-        backdrop-filter: blur(8px);
+        border-top: 1px solid rgba(255,255,255,0.05);
+        background: rgba(19,24,31,0.84);
+        backdrop-filter: blur(12px);
       }
 
       .stepper,
@@ -516,11 +606,13 @@
         border-radius: 12px;
         padding: 10px 12px;
         cursor: pointer;
+        background: rgba(255,255,255,0.03);
+        color: var(--text);
       }
 
       .step-btn.active {
-        background: rgba(156,255,136,0.1);
-        border-color: rgba(156,255,136,0.32);
+        background: rgba(147,242,143,0.1);
+        border-color: rgba(147,242,143,0.34);
       }
 
       .status-pill,
@@ -537,22 +629,15 @@
       .primary-action {
         padding: 12px 16px;
         border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.08);
-        background: linear-gradient(135deg, var(--cyan), #7bf0d9);
+        background: linear-gradient(135deg, #6ad6ff, #83f0db);
         color: #1a242d;
         font-weight: 800;
         cursor: pointer;
       }
 
       @media (max-width: 1180px) {
-        .main {
-          grid-template-columns: 1fr;
-        }
-
-        .library {
-          min-height: 420px;
-        }
-
+        .main { grid-template-columns: 1fr; }
+        .library { min-height: 420px; }
         .bottombar {
           grid-template-columns: 1fr;
           padding: 10px 14px;
@@ -568,7 +653,7 @@
           <div class="brand-badge">⚗️</div>
           <div>WebAI Chemistry Lab</div>
         </div>
-        <div class="experiment-title" id="experimentTitle">一氧化碳还原氧化铜 · 实验器材画布版 v0.6.0</div>
+        <div class="experiment-title">一氧化碳还原氧化铜 · 实验器材画布 v0.6.1</div>
         <div class="toolbar">
           <button class="icon-btn" title="重置">↺</button>
           <button class="icon-btn" title="缩小">－</button>
@@ -579,70 +664,74 @@
 
       <main class="main">
         <section class="canvas-shell">
-          <div class="canvas-stage">
-            <div class="bench-grid"></div>
-            <div class="hint-tag"><span class="dot"></span><span id="hintText">当前步骤：搭好装置后，点火加热氧化铜，再观察试管与尾气处理部分。</span></div>
-            <div class="workspace">
-              <div class="stand" style="left: 210px;">
-                <div class="stand-rod"></div>
-                <div class="clamp-bar"></div>
-                <div class="stand-base"></div>
-              </div>
-              <div class="stand" style="left: 470px;">
-                <div class="stand-rod"></div>
-                <div class="clamp-bar"></div>
-                <div class="stand-base"></div>
-              </div>
-
-              <div class="apparatus" id="mainTube" style="left: 240px; top: 188px; width: 560px; height: 60px;">
-                <div class="gasbag"></div>
-                <div class="tube-body">
-                  <div class="tube-fill" id="tubeFill"></div>
-                </div>
-                <div class="tube-tip"></div>
-              </div>
-
-              <div class="apparatus burner" id="burner" style="left: 470px; top: 288px;">
-                <div class="burner-flame" id="burnerFlame"></div>
-                <div class="burner-body"></div>
-                <div class="burner-stand"></div>
-              </div>
-
-              <div class="apparatus test-tube" style="left: 720px; top: 175px;">
-                <div class="tube-hose"></div>
-                <div class="test-tube-body"></div>
-                <div class="test-tube-liquid" id="tailLiquid"></div>
-              </div>
-
-              <div class="chemical-group" style="left: 770px; top: 330px;">
-                <div class="bottle">
-                  <div class="bottle-cap"></div>
-                  <div class="bottle-body"></div>
-                  <div class="bottle-label">CuO</div>
-                </div>
-                <div class="bottle">
-                  <div class="bottle-cap"></div>
-                  <div class="bottle-body"></div>
-                  <div class="bottle-label">Ca(OH)₂</div>
-                </div>
-                <div class="bottle">
-                  <div class="bottle-cap"></div>
-                  <div class="bottle-body"></div>
-                  <div class="bottle-label">Cu</div>
-                </div>
-              </div>
-
-              <div class="small-tool spoon" style="left: 846px; top: 430px;"></div>
-              <div class="small-tool match" style="left: 792px; top: 428px;"></div>
+          <div class="bench-grid"></div>
+          <div class="hint-tag"><span class="dot"></span><span id="hintText">当前步骤：确认装置位置后，点火加热，再观察试管与尾气处理变化。</span></div>
+          <div class="drag-tip">可直接拖动画布中的器材</div>
+          <div class="workspace" id="workspace">
+            <div class="apparatus stand draggable" data-drag="stand-left" style="left: 96px; top: 320px; z-index: 2;">
+              <div class="stand-rod"></div>
+              <div class="clamp-bar"></div>
+              <div class="stand-base"></div>
             </div>
-            <div class="zoom-tag">73%</div>
+            <div class="apparatus stand draggable" data-drag="stand-right" style="left: 238px; top: 320px; z-index: 2;">
+              <div class="stand-rod"></div>
+              <div class="clamp-bar"></div>
+              <div class="stand-base"></div>
+            </div>
+
+            <div class="apparatus main-tube draggable selected" data-drag="main-tube" style="left: 54px; top: 86px; z-index: 6;">
+              <div class="gasbag"></div>
+              <div class="tube-body"></div>
+              <div class="tube-fill" id="tubeFill"></div>
+              <div class="tube-tip"></div>
+              <div class="tube-bend"></div>
+            </div>
+
+            <div class="apparatus burner draggable" data-drag="burner" style="left: 174px; top: 178px; z-index: 5;">
+              <div class="burner-flame" id="burnerFlame"></div>
+              <div class="burner-neck"></div>
+              <div class="burner-body"></div>
+              <div class="burner-stand"></div>
+            </div>
+
+            <div class="apparatus tail-tube draggable" data-drag="tail-tube" style="left: 324px; top: 118px; z-index: 7;">
+              <div class="tail-hose"></div>
+              <div class="tail-glass"></div>
+              <div class="tail-liquid" id="tailLiquid"></div>
+            </div>
+
+            <div class="apparatus bottle-group draggable" data-drag="bottles" style="left: 374px; top: 198px; z-index: 7;">
+              <div class="bottle">
+                <div class="bottle-cap"></div>
+                <div class="bottle-body"></div>
+                <div class="bottle-label">CuO</div>
+              </div>
+              <div class="bottle">
+                <div class="bottle-cap"></div>
+                <div class="bottle-body"></div>
+                <div class="bottle-label">Ca(OH)₂</div>
+              </div>
+              <div class="bottle">
+                <div class="bottle-cap"></div>
+                <div class="bottle-body"></div>
+                <div class="bottle-label">Cu</div>
+              </div>
+            </div>
+
+            <div class="apparatus small-tool draggable" data-drag="match" style="left: 382px; top: 272px; z-index: 7;">
+              <div class="match-shape"></div>
+            </div>
+            <div class="apparatus small-tool draggable" data-drag="spoon" style="left: 430px; top: 266px; z-index: 7;">
+              <div class="spoon-shape"></div>
+            </div>
           </div>
+          <div class="zoom-tag">73%</div>
         </section>
 
         <aside class="library">
           <div class="library-head">
             <h2>器材与药品库</h2>
-            <p>这版不再是信息页，而是器材画布。右侧是器材库，中心是实验画布，底部是步骤与记录。</p>
+            <p>先把形态做成器材画布，再逐步补真实装配关系。当前已支持基础拖动，先解决“像页面，不像实验台”的问题。</p>
           </div>
           <div class="categories" id="categories"></div>
           <div class="library-list" id="libraryList"></div>
@@ -652,12 +741,12 @@
       <footer class="bottombar">
         <div class="stepper" id="stepper"></div>
         <div class="status-line">
-          <div class="status-pill" id="statusPill">装置状态：已搭建基础实验装置</div>
+          <div class="status-pill" id="statusPill">装置状态：基础装置已摆放</div>
           <div class="status-pill" id="reactionPill">反应状态：尚未加热</div>
           <div class="status-pill" id="tailPill">尾气处理：待观察</div>
         </div>
         <div class="records">
-          <div class="record-pill" id="recordPill">观察记录：当前画布更强调器材、装置和实验空间。</div>
+          <div class="record-pill" id="recordPill">观察记录：这版先解决质感、图标与不可拖动问题。</div>
         </div>
         <button class="primary-action" id="primaryAction">执行当前步骤</button>
       </footer>
@@ -665,74 +754,62 @@
 
     <script>
       const categories = [
-        {
-          id: 'device',
-          name: '仪器',
-          items: [
-            { id: 'stand', name: '铁架台', desc: '搭建实验装置的支撑结构。' },
-            { id: 'tube', name: '硬质玻璃管', desc: '主反应发生区域。' },
-            { id: 'burner', name: '酒精灯', desc: '提供持续加热。' },
-            { id: 'tailtube', name: '试管', desc: '观察尾气处理效果。' }
-          ]
-        },
-        {
-          id: 'reagent',
-          name: '药品',
-          items: [
-            { id: 'co', name: '一氧化碳', desc: '作为还原剂通过导气装置进入主反应管。' },
-            { id: 'cuo', name: '氧化铜', desc: '被还原的黑色固体。' },
-            { id: 'lime', name: '澄清石灰水', desc: '用于尾气处理和现象观察。' },
-            { id: 'cu', name: '铜', desc: '实验产物对照。' }
-          ]
-        },
-        {
-          id: 'tool',
-          name: '工具',
-          items: [
-            { id: 'match', name: '火柴', desc: '点燃酒精灯。' },
-            { id: 'spoon', name: '药匙', desc: '辅助取放药品。' },
-            { id: 'observe', name: '观察镜头', desc: '用于后续局部放大观察。' },
-            { id: 'reset', name: '复位工具', desc: '恢复当前画布状态。' }
-          ]
-        }
+        { id: 'device', name: '仪器', items: [
+          { id: 'stand', name: '铁架台', desc: '支撑玻璃管与实验装置。' },
+          { id: 'tube', name: '硬质玻璃管', desc: '主反应发生区。' },
+          { id: 'burner', name: '酒精灯', desc: '提供持续加热。' },
+          { id: 'tailtube', name: '尾气试管', desc: '观察尾气处理与液面变化。' }
+        ]},
+        { id: 'reagent', name: '药品', items: [
+          { id: 'co', name: '一氧化碳', desc: '还原剂，经导气系统进入反应区。' },
+          { id: 'cuo', name: '氧化铜', desc: '被还原的黑色固体。' },
+          { id: 'lime', name: '石灰水', desc: '尾气处理与现象观察。' },
+          { id: 'cu', name: '铜', desc: '反应产物对照。' }
+        ]},
+        { id: 'tool', name: '工具', items: [
+          { id: 'match', name: '火柴', desc: '点燃酒精灯。' },
+          { id: 'spoon', name: '药匙', desc: '辅助取放药品。' },
+          { id: 'move', name: '移动模式', desc: '当前画布中的器材可直接拖动。' },
+          { id: 'reset', name: '复位工具', desc: '后续可一键还原装置。' }
+        ]}
       ];
 
       const steps = [
         {
           id: 'setup',
-          name: '步骤 1 · 搭装置',
-          hint: '确认铁架台、玻璃管、尾气试管都已放在正确位置。',
-          status: '装置状态：已搭建基础实验装置',
+          name: '步骤 1 · 摆装置',
+          hint: '拖动铁架台、主玻璃管和试管，先把装置摆顺。',
+          status: '装置状态：基础装置已摆放',
           reaction: '反应状态：尚未加热',
           tail: '尾气处理：待观察',
-          record: '观察记录：当前画布更强调器材、装置和实验空间。',
-          flame: 0.14,
-          fill: 118,
-          tailLiquid: 44
+          record: '观察记录：先把实验台做得像器材画布，而不是信息页。',
+          flame: 0.16,
+          fill: 120,
+          tailLiquid: 46
         },
         {
           id: 'ignite',
           name: '步骤 2 · 点燃酒精灯',
-          hint: '点火后，主反应管下方开始受热，实验进入真正的过程阶段。',
+          hint: '点火后，主反应管开始受热，实验进入过程阶段。',
           status: '装置状态：酒精灯已点燃',
-          reaction: '反应状态：主反应管开始受热',
+          reaction: '反应状态：主反应区开始受热',
           tail: '尾气处理：继续导气',
-          record: '观察记录：酒精灯点燃后，实验终于开始像一个“过程”而不是一张页面。',
-          flame: 0.96,
-          fill: 180,
-          tailLiquid: 44
+          record: '观察记录：点火以后，画布开始有过程感。',
+          flame: 0.98,
+          fill: 190,
+          tailLiquid: 46
         },
         {
           id: 'observe',
           name: '步骤 3 · 观察现象',
-          hint: '观察主反应区颜色变化，以及尾气试管中液体的处理效果。',
+          hint: '观察受热区与尾气试管变化，后续应继续补局部放大与颜色变化。',
           status: '装置状态：加热稳定',
           reaction: '反应状态：氧化铜正在被还原',
-          tail: '尾气处理：液面出现变化',
-          record: '观察记录：主反应区和尾气试管开始出现可观察差异。下一步应继续细化动画与局部观察。',
-          flame: 0.96,
-          fill: 250,
-          tailLiquid: 74
+          tail: '尾气处理：液面变化更明显',
+          record: '观察记录：现在已经更像实验台，但还缺装配关系与真实实验动画。',
+          flame: 0.98,
+          fill: 270,
+          tailLiquid: 78
         }
       ];
 
@@ -784,7 +861,7 @@
         recordPillEl.textContent = current.record;
         tubeFillEl.style.setProperty('--tube-fill', `${current.fill}px`);
         burnerFlameEl.style.setProperty('--flame-opacity', current.flame);
-        tailLiquidEl.style.setProperty('--tube-liquid', `${current.tailLiquid}px`);
+        tailLiquidEl.style.setProperty('--tail-liquid', `${current.tailLiquid}px`);
       }
 
       categoriesEl.addEventListener('click', (event) => {
@@ -814,19 +891,58 @@
 
       primaryActionEl.addEventListener('click', () => {
         const idx = steps.findIndex(step => step.id === activeStep);
-        if (idx < steps.length - 1) {
-          activeStep = steps[idx + 1].id;
-        } else {
-          activeStep = steps[0].id;
-        }
+        activeStep = steps[(idx + 1) % steps.length].id;
         renderSteps();
         applyStepView();
       });
+
+      function enableDragging() {
+        const items = document.querySelectorAll('.apparatus.draggable');
+        items.forEach(item => {
+          let startX = 0;
+          let startY = 0;
+          let initialLeft = 0;
+          let initialTop = 0;
+          let dragging = false;
+
+          const onPointerMove = (event) => {
+            if (!dragging) return;
+            const dx = event.clientX - startX;
+            const dy = event.clientY - startY;
+            item.style.left = `${initialLeft + dx}px`;
+            item.style.top = `${initialTop + dy}px`;
+          };
+
+          const stopDragging = () => {
+            if (!dragging) return;
+            dragging = false;
+            item.classList.remove('dragging');
+            window.removeEventListener('pointermove', onPointerMove);
+            window.removeEventListener('pointerup', stopDragging);
+          };
+
+          item.addEventListener('pointerdown', (event) => {
+            if (event.button !== 0) return;
+            document.querySelectorAll('.apparatus.selected').forEach(el => el.classList.remove('selected'));
+            item.classList.add('selected');
+            dragging = true;
+            startX = event.clientX;
+            startY = event.clientY;
+            initialLeft = parseFloat(item.style.left || 0);
+            initialTop = parseFloat(item.style.top || 0);
+            item.classList.add('dragging');
+            item.setPointerCapture?.(event.pointerId);
+            window.addEventListener('pointermove', onPointerMove);
+            window.addEventListener('pointerup', stopDragging);
+          });
+        });
+      }
 
       renderCategories();
       renderLibrary();
       renderSteps();
       applyStepView();
+      enableDragging();
     </script>
   </body>
 </html>
