@@ -3,32 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebAI Chemistry Lab · 化学平衡实验平台</title>
+    <title>WebAI Chemistry Lab · 实验器材画布版</title>
     <meta
       name="description"
-      content="WebAI Chemistry v0.5，面向化学平衡主题的实验平台版网页原型。"
+      content="WebAI Chemistry v0.6，NB 风格的实验器材画布版原型。"
     />
     <style>
       :root {
-        --bg: #071019;
-        --bg-2: #0b1620;
-        --panel: rgba(11, 18, 26, 0.82);
+        --bg: #262c35;
+        --bg-2: #1f252d;
+        --panel: #2b323b;
+        --panel-soft: #303845;
         --panel-line: rgba(255, 255, 255, 0.08);
-        --board: #153125;
-        --board-edge: #2b4d3c;
-        --text: #eff5f3;
-        --muted: #98acb4;
-        --muted-2: #768993;
-        --green: #afff84;
-        --green-soft: rgba(175, 255, 132, 0.12);
-        --cyan: #79e8ff;
-        --cyan-soft: rgba(121, 232, 255, 0.12);
+        --text: #eef3f7;
+        --muted: #9ba7b4;
+        --muted-2: #7e8a96;
+        --cyan: #67d8ff;
+        --cyan-soft: rgba(103, 216, 255, 0.12);
+        --green: #9cff88;
+        --green-soft: rgba(156, 255, 136, 0.12);
         --yellow: #ffd76b;
         --yellow-soft: rgba(255, 215, 107, 0.12);
-        --danger: #ff9f9f;
-        --danger-soft: rgba(255, 159, 159, 0.12);
-        --purple: #b599ff;
-        --shadow: 0 28px 80px rgba(0, 0, 0, 0.34);
+        --orange: #ffb769;
+        --shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
       }
 
       * { box-sizing: border-box; }
@@ -36,1482 +33,800 @@
       body {
         min-height: 100vh;
         font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
         color: var(--text);
-        background:
-          radial-gradient(circle at top left, rgba(121, 232, 255, 0.08), transparent 24%),
-          radial-gradient(circle at top right, rgba(175, 255, 132, 0.06), transparent 24%),
-          linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
       }
 
-      .container {
-        width: min(1440px, calc(100% - 28px));
-        margin: 0 auto;
-        padding: 18px 0 36px;
+      .app {
+        min-height: 100vh;
+        display: grid;
+        grid-template-rows: 56px 1fr 76px;
       }
 
       .topbar {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 14px;
+        gap: 16px;
+        padding: 0 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        background: rgba(20, 26, 33, 0.44);
+        backdrop-filter: blur(8px);
       }
 
       .brand {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
         font-weight: 700;
       }
 
       .brand-badge {
-        width: 42px;
-        height: 42px;
-        border-radius: 14px;
+        width: 30px;
+        height: 30px;
+        border-radius: 10px;
         display: grid;
         place-items: center;
-        background: linear-gradient(135deg, var(--cyan), #56a7ff);
-        color: #071017;
-        box-shadow: var(--shadow);
+        background: linear-gradient(135deg, var(--cyan), #6a8cff);
+        color: #162029;
       }
 
-      .version {
+      .experiment-title {
+        text-align: center;
         color: var(--muted);
         font-size: 14px;
       }
 
-      .board {
-        position: relative;
-        border-radius: 26px;
-        background: linear-gradient(180deg, var(--board) 0%, #10241c 100%);
-        border: 6px solid var(--board-edge);
-        box-shadow: var(--shadow);
-        padding: 24px 28px;
-        overflow: hidden;
-      }
-
-      .board::before,
-      .board::after {
-        content: "";
-        position: absolute;
-        width: 220px;
-        height: 220px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(255,255,255,0.05), transparent 70%);
-        pointer-events: none;
-      }
-
-      .board::before { top: -100px; left: -60px; }
-      .board::after { bottom: -120px; right: -80px; }
-
-      .board-head {
+      .toolbar {
         display: flex;
-        justify-content: space-between;
-        gap: 18px;
-        align-items: flex-start;
+        gap: 8px;
       }
 
-      .eyebrow {
-        color: var(--green);
-        font-size: 13px;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      h1 {
-        font-size: clamp(30px, 4.4vw, 50px);
-        margin: 10px 0;
-        line-height: 1.05;
-        font-weight: 800;
-      }
-
-      .board-subtitle {
-        max-width: 920px;
-        color: rgba(239, 245, 243, 0.92);
-        font-size: 17px;
-        line-height: 1.8;
-        margin: 0;
-      }
-
-      .board-actions {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-
-      .btn {
-        appearance: none;
-        border: 1px solid transparent;
-        border-radius: 14px;
-        padding: 13px 18px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 700;
-        transition: 0.2s ease;
-      }
-
-      .btn:hover { transform: translateY(-1px); }
-
-      .btn-primary {
-        background: linear-gradient(135deg, var(--green), #79ffd1);
-        color: #071017;
-      }
-
-      .btn-secondary {
-        background: rgba(255,255,255,0.04);
-        color: var(--text);
-        border-color: rgba(255,255,255,0.08);
-      }
-
-      .board-meta {
-        display: grid;
-        grid-template-columns: 1.3fr 1fr 1fr;
-        gap: 14px;
-        margin-top: 22px;
-      }
-
-      .chalk-card {
-        border: 1px dashed rgba(223, 232, 215, 0.18);
-        background: rgba(0,0,0,0.08);
-        border-radius: 18px;
-        padding: 16px 18px;
-      }
-
-      .chalk-card strong {
-        display: block;
-        color: #bbcbc1;
-        font-size: 13px;
-        margin-bottom: 6px;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-      }
-
-      .layout {
-        display: grid;
-        grid-template-columns: 280px minmax(0, 1fr) 300px;
-        gap: 16px;
-        margin-top: 16px;
-      }
-
-      .panel,
-      .stage,
-      .journal {
-        border-radius: 22px;
-        background: var(--panel);
-        border: 1px solid var(--panel-line);
-        box-shadow: var(--shadow);
-        backdrop-filter: blur(12px);
-      }
-
-      .panel,
-      .journal {
-        padding: 18px;
-      }
-
-      .panel h2,
-      .journal h2 {
-        margin: 0 0 8px;
-        font-size: 20px;
-      }
-
-      .side-note {
-        color: var(--muted);
-        line-height: 1.7;
-        font-size: 14px;
-        margin-bottom: 14px;
-      }
-
-      .stack {
-        display: grid;
-        gap: 14px;
-      }
-
-      .card {
-        border-radius: 18px;
-        border: 1px solid rgba(255,255,255,0.08);
-        background: rgba(255,255,255,0.03);
-        padding: 16px;
-      }
-
-      .label {
-        display: block;
-        margin-bottom: 8px;
-        color: var(--muted);
-        font-size: 13px;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-      }
-
-      .shelf-grid,
-      .tool-grid,
-      .info-list,
-      .record-list,
-      .state-list,
-      .step-list {
-        display: grid;
-        gap: 10px;
-      }
-
-      .shelf-item,
-      .tool-item,
-      .step-item,
-      .info-item,
-      .record-item,
-      .state-item {
-        border-radius: 16px;
-        border: 1px solid rgba(255,255,255,0.08);
-        background: rgba(255,255,255,0.03);
-        padding: 14px;
-      }
-
-      .shelf-item {
-        cursor: pointer;
-        transition: 0.2s ease;
-      }
-
-      .shelf-item:hover,
-      .shelf-item.active {
-        background: rgba(121,232,255,0.12);
-        border-color: rgba(121,232,255,0.38);
-      }
-
-      .shelf-item strong,
-      .tool-item strong,
-      .step-item strong,
-      .info-item strong,
-      .record-item strong,
-      .state-item strong {
-        display: block;
-        margin-bottom: 6px;
-      }
-
-      .shelf-item span,
-      .tool-item span,
-      .step-item span,
-      .info-item span,
-      .record-item span,
-      .state-item span {
-        color: var(--muted);
-        line-height: 1.7;
-        font-size: 14px;
-      }
-
-      .tool-row,
-      .action-row,
-      .segment-row {
-        display: grid;
-        gap: 10px;
-      }
-
-      .segment-row {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      .segment-btn,
-      .solid-btn,
-      .ghost-btn,
-      .tool-btn {
-        border-radius: 14px;
+      .tool-btn,
+      .icon-btn,
+      .step-btn,
+      .category-btn,
+      .library-item {
         border: 1px solid rgba(255,255,255,0.08);
         background: rgba(255,255,255,0.03);
         color: var(--text);
-        cursor: pointer;
         font: inherit;
       }
 
-      .segment-btn,
-      .tool-btn,
-      .solid-btn,
-      .ghost-btn {
-        padding: 12px 14px;
-        font-weight: 700;
+      .icon-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
       }
 
-      .segment-btn.active,
-      .tool-btn.active {
-        background: rgba(121,232,255,0.12);
-        border-color: rgba(121,232,255,0.38);
+      .main {
+        display: grid;
+        grid-template-columns: 1fr 312px;
+        min-height: 0;
       }
 
-      .solid-btn {
-        background: linear-gradient(135deg, var(--cyan), #73b2ff);
-        color: #071017;
-        font-weight: 800;
-      }
-
-      .action-row {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .stage {
+      .canvas-shell {
         position: relative;
-        min-height: 880px;
         overflow: hidden;
-        padding: 18px;
         background:
-          linear-gradient(180deg, rgba(28, 38, 47, 0.96), rgba(16, 24, 31, 0.98));
+          radial-gradient(circle at center, rgba(255,255,255,0.02), transparent 48%),
+          linear-gradient(180deg, #353c46 0%, #262c35 100%);
       }
 
-      .console {
-        display: grid;
-        grid-template-columns: 1.1fr 0.9fr;
-        gap: 14px;
-        padding: 14px 16px;
-        border-radius: 18px;
-        background: rgba(5, 10, 14, 0.42);
-        border: 1px solid rgba(255,255,255,0.07);
+      .canvas-stage {
+        position: absolute;
+        inset: 0;
       }
 
-      .console h3 {
-        margin: 0 0 4px;
-        font-size: 25px;
+      .bench-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+        background-size: 48px 48px;
+        opacity: 0.35;
+        pointer-events: none;
       }
 
-      .console p {
-        margin: 0;
+      .zoom-tag {
+        position: absolute;
+        left: 12px;
+        bottom: 12px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        background: rgba(20,26,33,0.72);
+        border: 1px solid rgba(255,255,255,0.08);
         color: var(--muted);
-        line-height: 1.6;
+        font-size: 13px;
       }
 
-      .console-chip {
-        display: grid;
-        gap: 8px;
-        align-content: center;
-      }
-
-      .chip {
+      .hint-tag {
+        position: absolute;
+        left: 16px;
+        top: 14px;
         display: inline-flex;
+        gap: 10px;
         align-items: center;
-        gap: 8px;
         padding: 10px 14px;
         border-radius: 999px;
-        background: rgba(0,0,0,0.28);
+        background: rgba(20,26,33,0.68);
         border: 1px solid rgba(255,255,255,0.08);
         color: var(--text);
         font-size: 13px;
-        width: fit-content;
       }
 
-      .chip-dot {
+      .dot {
         width: 10px;
         height: 10px;
         border-radius: 50%;
         background: var(--green);
-        box-shadow: 0 0 14px rgba(175, 255, 132, 0.55);
+        box-shadow: 0 0 14px rgba(156, 255, 136, 0.5);
       }
 
-      .lab-room {
-        position: relative;
-        margin-top: 16px;
-        min-height: 560px;
-        border-radius: 24px;
-        overflow: hidden;
-        background:
-          linear-gradient(180deg, rgba(27, 38, 46, 0.98), rgba(12, 20, 27, 0.98));
-        border: 1px solid rgba(255,255,255,0.07);
-      }
-
-      .wall {
+      .workspace {
         position: absolute;
-        inset: 0 0 126px 0;
-        background:
-          radial-gradient(circle at top, rgba(121,232,255,0.08), transparent 30%),
-          linear-gradient(180deg, rgba(44, 59, 70, 0.96), rgba(23, 31, 38, 0.98));
+        inset: 0;
       }
 
-      .ceiling-screen {
+      .stand {
         position: absolute;
-        top: 26px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: min(76%, 760px);
-        border-radius: 18px;
-        background: rgba(6, 12, 16, 0.58);
-        border: 1px solid rgba(255,255,255,0.08);
-        padding: 16px 18px;
-        z-index: 2;
+        bottom: 120px;
+        width: 130px;
+        height: 360px;
       }
 
-      .ceiling-screen strong {
-        color: var(--green);
-        letter-spacing: 0.06em;
-        font-size: 12px;
-        text-transform: uppercase;
-      }
-
-      .ceiling-screen h4 {
-        margin: 8px 0;
-        font-size: 24px;
-      }
-
-      .ceiling-screen p {
-        margin: 0;
-        color: var(--muted);
-        line-height: 1.7;
-      }
-
-      .bench {
+      .stand-base {
         position: absolute;
-        left: 24px;
-        right: 24px;
         bottom: 0;
-        height: 154px;
-        border-top-left-radius: 24px;
-        border-top-right-radius: 24px;
-        background: linear-gradient(180deg, #74523a 0%, #50372a 100%);
-        border-top: 3px solid rgba(255,255,255,0.08);
+        left: 50%;
+        transform: translateX(-50%);
+        width: 110px;
+        height: 24px;
+        border-radius: 10px;
+        background: linear-gradient(180deg, #4a515c, #2f3741);
       }
 
-      .bench-shadow {
+      .stand-rod {
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
-        bottom: 106px;
-        width: 620px;
-        height: 140px;
-        background: radial-gradient(circle, rgba(121,232,255,0.13), transparent 68%);
-        pointer-events: none;
+        bottom: 22px;
+        width: 6px;
+        height: 312px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #b2bbc3, #6b747e);
       }
 
-      .equipment-zone {
+      .clamp-bar {
         position: absolute;
+        top: 122px;
         left: 28px;
-        right: 28px;
-        top: 146px;
-        bottom: 146px;
+        width: 74px;
+        height: 10px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #9aa3ab, #6b747e);
+      }
+
+      .apparatus {
+        position: absolute;
+        transition: 0.35s ease;
+      }
+
+      .tube-body {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 520px;
+        height: 26px;
+        border-radius: 999px;
+        border: 3px solid rgba(255,255,255,0.7);
+        background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
+        box-shadow: inset 0 0 22px rgba(255,255,255,0.06);
+      }
+
+      .tube-fill {
+        position: absolute;
+        left: 10px;
+        top: 7px;
+        height: 10px;
+        width: var(--tube-fill, 120px);
+        border-radius: 999px;
+        background: linear-gradient(90deg, rgba(255,215,107,0.96), rgba(255,183,105,0.8));
+      }
+
+      .tube-tip {
+        position: absolute;
+        right: -24px;
+        top: 7px;
+        width: 34px;
+        height: 12px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #d8c29f, #b48f63);
+      }
+
+      .gasbag {
+        position: absolute;
+        left: -108px;
+        top: -8px;
+        width: 96px;
+        height: 44px;
+        border-radius: 999px;
+        background: radial-gradient(circle at 28% 28%, #f2cc7d, #b57e28);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.18);
+      }
+
+      .gasbag::after {
+        content: "CO";
+        position: absolute;
+        inset: 0;
         display: grid;
-        grid-template-columns: 220px 1fr 220px;
-        gap: 16px;
+        place-items: center;
+        color: #432b10;
+        font-weight: 800;
+        font-size: 14px;
+      }
+
+      .burner {
+        position: absolute;
+        width: 90px;
+        height: 112px;
+      }
+
+      .burner-stand {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 74px;
+        height: 20px;
+        border-radius: 10px;
+        background: linear-gradient(180deg, #b8bec7, #868e98);
+      }
+
+      .burner-body {
+        position: absolute;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 44px;
+        height: 54px;
+        border-radius: 16px 16px 10px 10px;
+        background: linear-gradient(180deg, #c68a24, #8b5c13);
+      }
+
+      .burner-flame {
+        position: absolute;
+        bottom: 62px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 18px;
+        height: 34px;
+        border-radius: 50% 50% 40% 40%;
+        background: radial-gradient(circle at 50% 20%, #fff4b6, #ff8a3d 72%);
+        opacity: var(--flame-opacity, 0.2);
+      }
+
+      .test-tube {
+        position: absolute;
+        width: 70px;
+        height: 190px;
+      }
+
+      .test-tube-body {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 34px;
+        height: 170px;
+        border-radius: 0 0 20px 20px;
+        border: 3px solid rgba(255,255,255,0.72);
+        background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.03));
+      }
+
+      .test-tube-liquid {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 10px;
+        width: 24px;
+        height: var(--tube-liquid, 44px);
+        border-radius: 0 0 16px 16px;
+        background: linear-gradient(180deg, rgba(121,232,255,0.9), rgba(74,151,255,0.78));
+      }
+
+      .tube-hose {
+        position: absolute;
+        left: -30px;
+        top: 16px;
+        width: 70px;
+        height: 10px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #d7c19a, #b48f63);
+        transform: rotate(-10deg);
+        transform-origin: right center;
+      }
+
+      .chemical-group {
+        position: absolute;
+        display: flex;
+        gap: 18px;
         align-items: end;
       }
 
-      .rack,
-      .console-side {
-        height: 320px;
-        border-radius: 22px;
-        border: 1px solid rgba(255,255,255,0.08);
-        background: rgba(0,0,0,0.18);
+      .bottle {
+        width: 54px;
+        height: 76px;
         position: relative;
-        padding: 16px;
       }
 
-      .rack h4,
-      .console-side h4 {
-        margin: 0 0 10px;
-        font-size: 16px;
+      .bottle-cap {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 24px;
+        height: 12px;
+        border-radius: 6px 6px 0 0;
+        background: #b8bec7;
       }
 
-      .rack p,
-      .console-side p {
+      .bottle-body {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 62px;
+        border-radius: 12px;
+        border: 2px solid rgba(255,255,255,0.5);
+        background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
+      }
+
+      .bottle-label {
+        position: absolute;
+        left: 6px;
+        right: 6px;
+        top: 24px;
+        padding: 4px 6px;
+        border-radius: 6px;
+        background: rgba(255,255,255,0.74);
+        color: #22303a;
+        font-size: 11px;
+        text-align: center;
+        font-weight: 700;
+      }
+
+      .small-tool {
+        position: absolute;
+        border-radius: 999px;
+      }
+
+      .spoon {
+        width: 90px;
+        height: 10px;
+        background: linear-gradient(90deg, #c96f48, #f99a5b);
+      }
+
+      .match {
+        width: 60px;
+        height: 8px;
+        background: linear-gradient(90deg, #c7b18a, #8b5c13);
+      }
+
+      .library {
+        border-left: 1px solid rgba(255,255,255,0.06);
+        background: linear-gradient(180deg, #2a313a 0%, #232a33 100%);
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        min-height: 0;
+      }
+
+      .library-head {
+        padding: 14px 14px 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+      }
+
+      .library-head h2 {
         margin: 0;
+        font-size: 18px;
+      }
+
+      .library-head p {
+        margin: 8px 0 0;
         color: var(--muted);
-        line-height: 1.7;
+        line-height: 1.6;
         font-size: 13px;
       }
 
-      .rack-shelves {
+      .categories {
         display: grid;
-        gap: 12px;
-        margin-top: 12px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        padding: 12px 14px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
       }
 
-      .rack-bottle,
-      .condition-card {
-        border-radius: 16px;
-        padding: 12px;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.07);
+      .category-btn {
+        border-radius: 12px;
+        padding: 10px 8px;
+        cursor: pointer;
       }
 
-      .rack-bottle.active,
-      .condition-card.active {
-        border-color: rgba(121,232,255,0.38);
-        background: rgba(121,232,255,0.1);
+      .category-btn.active {
+        background: rgba(103,216,255,0.12);
+        border-color: rgba(103,216,255,0.34);
       }
 
-      .rack-bottle strong,
-      .condition-card strong {
-        display: block;
-        margin-bottom: 4px;
-      }
-
-      .reactor-zone {
-        position: relative;
-        min-height: 360px;
+      .library-list {
+        padding: 14px;
+        overflow: auto;
         display: grid;
-        grid-template-columns: 1fr 240px 1fr;
-        align-items: end;
+        align-content: start;
         gap: 10px;
       }
 
-      .reactor {
-        position: relative;
-        height: 288px;
-        border-radius: 28px 28px 40px 40px;
-        border: 4px solid rgba(255,255,255,0.74);
-        background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
-        overflow: hidden;
+      .library-item {
+        border-radius: 14px;
+        padding: 12px;
+        cursor: pointer;
+        transition: 0.2s ease;
       }
 
-      .reactor::after {
-        content: "";
-        position: absolute;
-        left: 12px;
-        right: 12px;
-        bottom: 12px;
-        height: var(--liquid-height, 160px);
-        border-radius: 18px 18px 30px 30px;
-        background: var(--liquid-color, rgba(121,232,255,0.75));
-        transition: height 0.55s ease, background 0.4s ease;
+      .library-item:hover,
+      .library-item.active {
+        background: rgba(103,216,255,0.12);
+        border-color: rgba(103,216,255,0.34);
       }
 
-      .reactor-neck {
-        position: absolute;
-        left: 50%;
-        top: -36px;
-        transform: translateX(-50%);
-        width: 54px;
-        height: 62px;
-        border-radius: 18px 18px 8px 8px;
-        background: rgba(255,255,255,0.12);
-        border: 4px solid rgba(255,255,255,0.7);
+      .library-item strong {
+        display: block;
+        margin-bottom: 6px;
       }
 
-      .reactor-label {
-        position: absolute;
-        left: 50%;
-        bottom: -48px;
-        transform: translateX(-50%);
-        padding: 8px 14px;
-        border-radius: 999px;
-        background: rgba(0,0,0,0.28);
+      .library-item span {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .bottombar {
+        display: grid;
+        grid-template-columns: 1.2fr 1.4fr 1fr auto;
+        gap: 14px;
+        align-items: center;
+        padding: 0 14px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        background: rgba(20, 26, 33, 0.54);
+        backdrop-filter: blur(8px);
+      }
+
+      .stepper,
+      .status-line,
+      .records {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        min-width: 0;
+      }
+
+      .step-btn {
+        border-radius: 12px;
+        padding: 10px 12px;
+        cursor: pointer;
+      }
+
+      .step-btn.active {
+        background: rgba(156,255,136,0.1);
+        border-color: rgba(156,255,136,0.32);
+      }
+
+      .status-pill,
+      .record-pill {
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.04);
         border: 1px solid rgba(255,255,255,0.08);
         color: var(--muted);
         font-size: 13px;
         white-space: nowrap;
       }
 
-      .particle-layer {
-        position: absolute;
-        inset: 0;
-        overflow: hidden;
-      }
-
-      .particle {
-        position: absolute;
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        opacity: 0.9;
-        animation: float 5.4s infinite ease-in-out;
-      }
-
-      .particle.a { background: rgba(121, 232, 255, 0.96); }
-      .particle.b { background: rgba(255, 215, 107, 0.92); }
-      .particle.c { background: rgba(181, 153, 255, 0.92); }
-
-      @keyframes float {
-        0%, 100% { transform: translateY(0px) scale(0.96); }
-        50% { transform: translateY(-18px) scale(1.06); }
-      }
-
-      .bridge {
-        position: relative;
-        height: 210px;
-        align-self: center;
-      }
-
-      .pipe {
-        position: absolute;
-        left: 24px;
-        right: 24px;
-        top: 50%;
-        transform: translateY(-50%);
-        height: 22px;
-        border-radius: 999px;
-        background: linear-gradient(180deg, rgba(255,255,255,0.52), rgba(255,255,255,0.22));
-      }
-
-      .equilibrium-panel {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        width: 210px;
-        border-radius: 22px;
-        background: rgba(5, 10, 14, 0.62);
+      .primary-action {
+        padding: 12px 16px;
+        border-radius: 12px;
         border: 1px solid rgba(255,255,255,0.08);
-        padding: 16px;
-        text-align: center;
-      }
-
-      .equilibrium-panel strong {
-        display: block;
-        margin-bottom: 8px;
-      }
-
-      .equilibrium-arrow {
-        position: relative;
-        width: 100%;
-        height: 76px;
-        margin: 6px 0;
-      }
-
-      .equilibrium-arrow::before,
-      .equilibrium-arrow::after {
-        content: "";
-        position: absolute;
-        left: 14px;
-        right: 14px;
-        height: 6px;
-        border-radius: 999px;
-        background: rgba(255,255,255,0.14);
-      }
-
-      .equilibrium-arrow::before { top: 18px; }
-      .equilibrium-arrow::after { bottom: 18px; }
-
-      .flow-arrow {
-        position: absolute;
-        top: 0;
-        left: 16px;
-        right: 16px;
-        height: 30px;
-        border-radius: 999px;
-        background: linear-gradient(90deg, rgba(121,232,255,0.18), rgba(121,232,255,0.9));
-        clip-path: polygon(0 25%, 74% 25%, 74% 0, 100% 50%, 74% 100%, 74% 75%, 0 75%);
-        opacity: var(--forward-opacity, 0.7);
-      }
-
-      .back-arrow {
-        position: absolute;
-        bottom: 0;
-        left: 16px;
-        right: 16px;
-        height: 30px;
-        border-radius: 999px;
-        background: linear-gradient(90deg, rgba(255,215,107,0.9), rgba(255,215,107,0.18));
-        clip-path: polygon(26% 0, 26% 25%, 100% 25%, 100% 75%, 26% 75%, 26% 100%, 0 50%);
-        opacity: var(--backward-opacity, 0.7);
-      }
-
-      .equipment-toolbar {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 10px;
-        margin-top: 16px;
-      }
-
-      .meter-strip {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
-        margin-top: 16px;
-      }
-
-      .meter {
-        border-radius: 18px;
-        padding: 14px;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.08);
-      }
-
-      .meter strong {
-        display: block;
-        font-size: 13px;
-        color: var(--muted);
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
-
-      .meter-value {
-        font-size: 24px;
+        background: linear-gradient(135deg, var(--cyan), #7bf0d9);
+        color: #1a242d;
         font-weight: 800;
+        cursor: pointer;
       }
 
-      .bar {
-        margin-top: 10px;
-        height: 8px;
-        border-radius: 999px;
-        background: rgba(255,255,255,0.08);
-        overflow: hidden;
-      }
-
-      .bar-fill {
-        height: 100%;
-        border-radius: inherit;
-        background: linear-gradient(90deg, var(--cyan), #8ff0d8);
-        width: 50%;
-        transition: width 0.35s ease;
-      }
-
-      input[type="range"] {
-        width: 100%;
-        accent-color: var(--cyan);
-      }
-
-      .journal {
-        margin-top: 16px;
-      }
-
-      .journal-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 14px;
-        margin-top: 14px;
-      }
-
-      @media (max-width: 1260px) {
-        .layout,
-        .board-meta,
-        .journal-grid,
-        .console,
-        .equipment-zone,
-        .meter-strip,
-        .equipment-toolbar {
+      @media (max-width: 1180px) {
+        .main {
           grid-template-columns: 1fr;
         }
 
-        .board-head {
-          flex-direction: column;
+        .library {
+          min-height: 420px;
         }
 
-        .stage {
-          min-height: 1180px;
-        }
-      }
-
-      @media (max-width: 760px) {
-        .container {
-          width: min(100%, calc(100% - 16px));
-        }
-
-        .segment-row,
-        .action-row {
+        .bottombar {
           grid-template-columns: 1fr;
+          padding: 10px 14px;
+          height: auto;
         }
       }
     </style>
   </head>
   <body>
-    <div class="container">
+    <div class="app">
       <header class="topbar">
         <div class="brand">
           <div class="brand-badge">⚗️</div>
           <div>WebAI Chemistry Lab</div>
         </div>
-        <div class="version">v0.5.0 · 化学平衡实验平台版</div>
+        <div class="experiment-title" id="experimentTitle">一氧化碳还原氧化铜 · 实验器材画布版 v0.6.0</div>
+        <div class="toolbar">
+          <button class="icon-btn" title="重置">↺</button>
+          <button class="icon-btn" title="缩小">－</button>
+          <button class="icon-btn" title="放大">＋</button>
+          <button class="icon-btn" title="帮助">?</button>
+        </div>
       </header>
 
-      <section class="board">
-        <div class="board-head">
-          <div>
-            <div class="eyebrow">Chemistry Experiment Platform</div>
-            <h1>把化学平衡做成一个实验工作台，而不是一页会解释原理的内容页。</h1>
-            <p class="board-subtitle">
-              这一版不再以“三栏学习面板”为中心，而是把实验台、容器、试剂、加热、加压和观察记录作为核心。用户要先选择实验条件，再对反应体系做对象化操作，最后观察平衡如何被打破并重新建立。
-            </p>
-          </div>
-          <div class="board-actions">
-            <button class="btn btn-primary" id="applyAction">执行当前操作</button>
-            <button class="btn btn-secondary" id="resetLab">重置实验平台</button>
-          </div>
-        </div>
-        <div class="board-meta">
-          <div class="chalk-card">
-            <strong>当前实验任务</strong>
-            <div id="missionText">在动态平衡状态下，向左侧反应体系加入反应物，观察系统如何重新建立平衡。</div>
-          </div>
-          <div class="chalk-card">
-            <strong>首版实验动作</strong>
-            <div>加入试剂 / 升温 / 增压 / 恢复初始</div>
-          </div>
-          <div class="chalk-card">
-            <strong>首版目标</strong>
-            <div>先建立“实验平台感”，再逐步增加真实过程和更细的操作链路。</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="layout">
-        <aside class="panel">
-          <h2>试剂与实验材料</h2>
-          <div class="side-note">左侧不再只是变量表单，而是实验架。先选本轮要加入或改变的实验对象，再执行操作。</div>
-          <div class="stack">
-            <div class="card">
-              <span class="label">试剂架</span>
-              <div class="shelf-grid" id="reagentShelf"></div>
-            </div>
-            <div class="card">
-              <span class="label">实验模式</span>
-              <div class="segment-row" id="modeTabs"></div>
-            </div>
-            <div class="card">
-              <span class="label">当前操作说明</span>
-              <div class="info-list" id="operationInfo"></div>
-            </div>
-            <div class="card">
-              <span class="label">操作按钮</span>
-              <div class="action-row">
-                <button class="solid-btn" id="executeLeft">执行当前操作</button>
-                <button class="ghost-btn" id="resetRound">重置本轮</button>
+      <main class="main">
+        <section class="canvas-shell">
+          <div class="canvas-stage">
+            <div class="bench-grid"></div>
+            <div class="hint-tag"><span class="dot"></span><span id="hintText">当前步骤：搭好装置后，点火加热氧化铜，再观察试管与尾气处理部分。</span></div>
+            <div class="workspace">
+              <div class="stand" style="left: 210px;">
+                <div class="stand-rod"></div>
+                <div class="clamp-bar"></div>
+                <div class="stand-base"></div>
               </div>
+              <div class="stand" style="left: 470px;">
+                <div class="stand-rod"></div>
+                <div class="clamp-bar"></div>
+                <div class="stand-base"></div>
+              </div>
+
+              <div class="apparatus" id="mainTube" style="left: 240px; top: 188px; width: 560px; height: 60px;">
+                <div class="gasbag"></div>
+                <div class="tube-body">
+                  <div class="tube-fill" id="tubeFill"></div>
+                </div>
+                <div class="tube-tip"></div>
+              </div>
+
+              <div class="apparatus burner" id="burner" style="left: 470px; top: 288px;">
+                <div class="burner-flame" id="burnerFlame"></div>
+                <div class="burner-body"></div>
+                <div class="burner-stand"></div>
+              </div>
+
+              <div class="apparatus test-tube" style="left: 720px; top: 175px;">
+                <div class="tube-hose"></div>
+                <div class="test-tube-body"></div>
+                <div class="test-tube-liquid" id="tailLiquid"></div>
+              </div>
+
+              <div class="chemical-group" style="left: 770px; top: 330px;">
+                <div class="bottle">
+                  <div class="bottle-cap"></div>
+                  <div class="bottle-body"></div>
+                  <div class="bottle-label">CuO</div>
+                </div>
+                <div class="bottle">
+                  <div class="bottle-cap"></div>
+                  <div class="bottle-body"></div>
+                  <div class="bottle-label">Ca(OH)₂</div>
+                </div>
+                <div class="bottle">
+                  <div class="bottle-cap"></div>
+                  <div class="bottle-body"></div>
+                  <div class="bottle-label">Cu</div>
+                </div>
+              </div>
+
+              <div class="small-tool spoon" style="left: 846px; top: 430px;"></div>
+              <div class="small-tool match" style="left: 792px; top: 428px;"></div>
             </div>
+            <div class="zoom-tag">73%</div>
           </div>
+        </section>
+
+        <aside class="library">
+          <div class="library-head">
+            <h2>器材与药品库</h2>
+            <p>这版不再是信息页，而是器材画布。右侧是器材库，中心是实验画布，底部是步骤与记录。</p>
+          </div>
+          <div class="categories" id="categories"></div>
+          <div class="library-list" id="libraryList"></div>
         </aside>
+      </main>
 
-        <main class="stage">
-          <section class="console">
-            <div>
-              <h3 id="consoleTitle">化学平衡实验台 · 加入反应物</h3>
-              <p id="consoleDesc">当前系统处于动态平衡。请从左侧选择一种操作，再在实验台上执行，观察反应体系如何从平衡态进入调整过程。</p>
-            </div>
-            <div class="console-chip">
-              <div class="chip"><span class="chip-dot" id="statusDot"></span><span id="statusChip">系统处于动态平衡</span></div>
-              <div class="chip" id="stageChip">当前动作：等待操作</div>
-            </div>
-          </section>
-
-          <section class="lab-room">
-            <div class="wall"></div>
-            <div class="ceiling-screen">
-              <strong>实验指引</strong>
-              <h4 id="screenTitle">先选择实验动作，再在工作台上触发变化</h4>
-              <p id="screenDesc">首版先模拟三种常见干预方式：加入反应物、升高温度、增大压强。目标不是看卡片，而是感受到实验动作正在改变体系。</p>
-            </div>
-            <div class="bench-shadow"></div>
-            <div class="equipment-zone">
-              <div class="rack">
-                <h4>左侧实验架</h4>
-                <p>这里放置当前可加入的试剂和反应条件。平台感的关键是“对象可操作”，不是单纯滑杆。</p>
-                <div class="rack-shelves" id="leftRack"></div>
-              </div>
-
-              <div class="reactor-zone">
-                <div>
-                  <div class="reactor" id="leftReactor" style="--liquid-height: 168px; --liquid-color: rgba(121,232,255,0.76);">
-                    <div class="reactor-neck"></div>
-                    <div class="particle-layer" id="leftParticles"></div>
-                    <div class="reactor-label">反应物侧主容器</div>
-                  </div>
-                </div>
-
-                <div class="bridge">
-                  <div class="pipe"></div>
-                  <div class="equilibrium-panel" id="equilibriumPanel" style="--forward-opacity:0.72; --backward-opacity:0.72;">
-                    <strong id="panelTitle">动态平衡</strong>
-                    <div class="equilibrium-arrow">
-                      <div class="flow-arrow"></div>
-                      <div class="back-arrow"></div>
-                    </div>
-                    <span id="panelText" style="color: var(--muted); line-height: 1.7; font-size: 14px;">正逆反应速率相等，体系暂时稳定。</span>
-                  </div>
-                </div>
-
-                <div>
-                  <div class="reactor" id="rightReactor" style="--liquid-height: 144px; --liquid-color: rgba(255,215,107,0.76);">
-                    <div class="reactor-neck"></div>
-                    <div class="particle-layer" id="rightParticles"></div>
-                    <div class="reactor-label">生成物侧观察容器</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="console-side">
-                <h4>环境控制台</h4>
-                <p>实验平台不只看结果，还要看你正在怎么干预条件。</p>
-                <div class="rack-shelves" id="conditionRack"></div>
-              </div>
-            </div>
-            <div class="bench"></div>
-          </section>
-
-          <div class="equipment-toolbar">
-            <button class="tool-btn active" id="toolbarAction">当前工具：加样滴管</button>
-            <button class="tool-btn" id="toolbarHeat">加热模块：待机</button>
-            <button class="tool-btn" id="toolbarPressure">压强调节：待机</button>
-            <button class="tool-btn" id="toolbarObserve">观察模式：实验台</button>
-          </div>
-
-          <div class="meter-strip">
-            <div class="meter">
-              <strong>正向反应速率</strong>
-              <div class="meter-value" id="forwardRate">1.0x</div>
-              <div class="bar"><div class="bar-fill" id="forwardBar" style="width: 50%;"></div></div>
-            </div>
-            <div class="meter">
-              <strong>逆向反应速率</strong>
-              <div class="meter-value" id="backwardRate">1.0x</div>
-              <div class="bar"><div class="bar-fill" id="backwardBar" style="width: 50%; background: linear-gradient(90deg, var(--yellow), #ffd76b);"></div></div>
-            </div>
-            <div class="meter">
-              <strong>平衡移动</strong>
-              <div class="meter-value" id="shiftDirection">暂未移动</div>
-              <div class="bar"><div class="bar-fill" id="shiftBar" style="width: 50%; background: linear-gradient(90deg, var(--purple), #e1c7ff);"></div></div>
-            </div>
-            <div class="meter">
-              <strong>操作强度</strong>
-              <div class="meter-value" id="effectStrength">标准</div>
-              <input id="intensitySlider" type="range" min="60" max="160" value="100" />
-            </div>
-          </div>
-        </main>
-
-        <aside class="panel">
-          <h2>实验记录与状态</h2>
-          <div class="side-note">右侧不再是讲解 tab，而是像实验记录板，记录当前状态、操作步骤、观察结果和平台解释。</div>
-          <div class="stack">
-            <div class="card">
-              <span class="label">当前状态</span>
-              <div class="state-list" id="stateList"></div>
-            </div>
-            <div class="card">
-              <span class="label">本轮步骤</span>
-              <div class="step-list" id="stepList"></div>
-            </div>
-            <div class="card">
-              <span class="label">观察记录</span>
-              <div class="record-list" id="recordList"></div>
-            </div>
-            <div class="card">
-              <span class="label">平台解释</span>
-              <div class="info-list" id="insightList"></div>
-            </div>
-          </div>
-        </aside>
-      </section>
-
-      <section class="journal">
-        <h2>实验总结</h2>
-        <div class="side-note">首版先用三个实验动作，建立“对象操作 → 系统变化 → 观察记录”的平台感。</div>
-        <div class="journal-grid">
-          <div class="card">
-            <span class="label">为什么这版更像实验平台</span>
-            <div class="info-list">
-              <div class="info-item"><strong>主角变了</strong><span>页面中心改成实验台、容器、试剂架和环境控制台。</span></div>
-              <div class="info-item"><strong>动作变了</strong><span>不再先强调理解 tab，而是先执行加样、升温、增压等实验动作。</span></div>
-            </div>
-          </div>
-          <div class="card">
-            <span class="label">当前仍是原型</span>
-            <div class="info-list">
-              <div class="info-item"><strong>过程还可更细</strong><span>后续可增加滴加动画、加热过程、压力变化细节、气泡与颜色反馈。</span></div>
-              <div class="info-item"><strong>对象还能更真实</strong><span>后续可继续引入器材拖拽、容器读数和更真实的实验步骤链。</span></div>
-            </div>
-          </div>
-          <div class="card">
-            <span class="label">下一步方向</span>
-            <div class="info-list">
-              <div class="info-item"><strong>强化实验动作</strong><span>加入加样路径、条件开关和更可见的时间过程。</span></div>
-              <div class="info-item"><strong>强化平台结构</strong><span>增加实验台切换、实验记录保存、更多反应体系。</span></div>
-            </div>
-          </div>
+      <footer class="bottombar">
+        <div class="stepper" id="stepper"></div>
+        <div class="status-line">
+          <div class="status-pill" id="statusPill">装置状态：已搭建基础实验装置</div>
+          <div class="status-pill" id="reactionPill">反应状态：尚未加热</div>
+          <div class="status-pill" id="tailPill">尾气处理：待观察</div>
         </div>
-      </section>
+        <div class="records">
+          <div class="record-pill" id="recordPill">观察记录：当前画布更强调器材、装置和实验空间。</div>
+        </div>
+        <button class="primary-action" id="primaryAction">执行当前步骤</button>
+      </footer>
     </div>
 
     <script>
-      const experiments = {
-        reagent: {
-          id: "reagent",
-          mode: "加样实验",
-          title: "加入反应物",
-          mission: "在动态平衡状态下，向左侧反应体系加入反应物，观察系统如何重新建立平衡。",
-          desc: "当前系统处于动态平衡。请从左侧选择“补加反应物溶液”，执行后观察正向反应如何先增强。",
-          screenTitle: "使用滴管向左侧主容器补加反应物",
-          screenDesc: "加样是最直接的实验干预方式。你不是在改参数，而是在向体系中实际加入某种试剂。",
-          toolbarAction: "当前工具：加样滴管",
-          toolbarHeat: "加热模块：待机",
-          toolbarPressure: "压强调节：待机",
-          toolbarObserve: "观察模式：实验台",
-          reagentItems: [
-            { id: "feed", name: "反应物补加液", desc: "用于提高左侧反应物浓度。" },
-            { id: "dilute", name: "稀释液", desc: "用于做轻微稀释对照。" },
-            { id: "indicator", name: "指示染色液", desc: "帮助更直观看到体系偏移。" }
-          ],
-          leftRack: [
-            { title: "滴定瓶 A", text: "装有反应物补加液，适合直接干预浓度。", active: true },
-            { title: "洗瓶", text: "装有稀释液，可做反向或弱扰动对照。", active: false }
-          ],
-          conditionRack: [
-            { title: "温控模块", text: "当前未启用加热。", active: false },
-            { title: "压强调节阀", text: "当前保持常压。", active: false }
-          ],
-          operationInfo: [
-            { title: "当前实验动作", text: "补加反应物溶液" },
-            { title: "平台判断", text: "加样后正向反应会先增强。" }
-          ],
-          initial: {
-            statusChip: "系统处于动态平衡",
-            stageChip: "当前动作：等待操作",
-            panelTitle: "动态平衡",
-            panelText: "正逆反应速率相等，体系暂时稳定。",
-            statusList: [
-              { title: "平衡状态", text: "动态平衡，正逆反应速率相等。" },
-              { title: "当前条件", text: "常温常压，未额外加样。" }
-            ],
-            stepList: [
-              { title: "步骤 1", text: "选择反应物补加液。" },
-              { title: "步骤 2", text: "点击执行当前操作。" },
-              { title: "步骤 3", text: "观察左侧容器浓度与平衡方向变化。" }
-            ],
-            recordList: [
-              { title: "观察记录", text: "系统稳定，暂未出现新的偏移。" },
-              { title: "实验备注", text: "当前仍是基线平衡状态。" }
-            ],
-            insightList: [
-              { title: "平台解释", text: "实验平台要让用户感觉自己在操作对象，而不是在填写一个参数。" }
-            ],
-            leftLiquid: 168,
-            rightLiquid: 144,
-            leftColor: "rgba(121,232,255,0.76)",
-            rightColor: "rgba(255,215,107,0.76)",
-            forward: 1.0,
-            backward: 1.0,
-            shift: "暂未移动",
-            shiftBar: 50,
-            effectStrength: "标准",
-            forwardOpacity: 0.72,
-            backwardOpacity: 0.72
-          },
-          applied: (intensity) => {
-            const delta = (intensity - 100) / 100;
-            const boost = Math.max(0.2, 1 + delta * 1.1);
-            return {
-              statusChip: "系统正在重新建立平衡",
-              stageChip: "当前动作：已补加反应物",
-              panelTitle: "向生成物方向移动",
-              panelText: "左侧补加反应物后，正向反应先增强，系统开始消耗新增反应物。",
-              statusList: [
-                { title: "平衡状态", text: "原平衡已被打破，系统正向右移动。" },
-                { title: "当前条件", text: `已完成一次加样，扰动强度 ${intensity}%。` }
-              ],
-              stepList: [
-                { title: "步骤 1", text: "已选择反应物补加液。" },
-                { title: "步骤 2", text: "已向左侧主容器完成加样。" },
-                { title: "步骤 3", text: "观察生成物侧逐步增加。" }
-              ],
-              recordList: [
-                { title: "观察记录", text: "左侧液面与粒子密度上升，正向反应先增强。" },
-                { title: "实验备注", text: "平衡开始向生成物方向移动。" }
-              ],
-              insightList: [
-                { title: "平台解释", text: "这不是改数字，而是一次实验动作。系统通过消耗新增反应物来减弱扰动。" }
-              ],
-              leftLiquid: 168 + Math.max(0, delta) * 44,
-              rightLiquid: 144 + Math.max(0, delta) * 38,
-              leftColor: "rgba(121,232,255,0.88)",
-              rightColor: "rgba(255,215,107,0.86)",
-              forward: boost,
-              backward: 1.0,
-              shift: "向生成物方向移动",
-              shiftBar: 80,
-              effectStrength: intensity >= 120 ? "强" : intensity <= 80 ? "弱" : "标准",
-              forwardOpacity: 0.95,
-              backwardOpacity: 0.48
-            };
-          }
+      const categories = [
+        {
+          id: 'device',
+          name: '仪器',
+          items: [
+            { id: 'stand', name: '铁架台', desc: '搭建实验装置的支撑结构。' },
+            { id: 'tube', name: '硬质玻璃管', desc: '主反应发生区域。' },
+            { id: 'burner', name: '酒精灯', desc: '提供持续加热。' },
+            { id: 'tailtube', name: '试管', desc: '观察尾气处理效果。' }
+          ]
         },
-        heat: {
-          id: "heat",
-          mode: "加热实验",
-          title: "升高温度",
-          mission: "启动温控模块并升高温度，在“正向吸热”的实验设定下观察平衡如何向右移动。",
-          desc: "这次不是改滑杆，而是开启实验台上的加热模块。目标是让用户感受到环境条件被真实改变。",
-          screenTitle: "启动加热模块，逐步提升体系温度",
-          screenDesc: "平台感来自实验动作。升温不是切题，而是像在实验室里真的打开了加热源。",
-          toolbarAction: "当前工具：温控模块",
-          toolbarHeat: "加热模块：准备升温",
-          toolbarPressure: "压强调节：待机",
-          toolbarObserve: "观察模式：加热实验",
-          reagentItems: [
-            { id: "heater", name: "加热模块", desc: "提高体系温度，模拟正向吸热条件。" },
-            { id: "cooler", name: "冷却模块", desc: "用于温度对照实验。" },
-            { id: "probe", name: "温度探针", desc: "观察当前温度变化。" }
-          ],
-          leftRack: [
-            { title: "加热模块", text: "可对主反应体系持续供热。", active: true },
-            { title: "温度探针", text: "用于查看升温过程。", active: true }
-          ],
-          conditionRack: [
-            { title: "温控模块", text: "当前将以正向吸热情境执行升温。", active: true },
-            { title: "压强调节阀", text: "本轮不启用。", active: false }
-          ],
-          operationInfo: [
-            { title: "当前实验动作", text: "启动加热并提升体系温度" },
-            { title: "平台判断", text: "在正向吸热设定下，升温更有利于正向反应。" }
-          ],
-          initial: {
-            statusChip: "系统处于动态平衡",
-            stageChip: "当前动作：加热模块待机",
-            panelTitle: "动态平衡",
-            panelText: "温度尚未改变，两个方向反应速率仍相等。",
-            statusList: [
-              { title: "平衡状态", text: "当前温度下维持动态平衡。" },
-              { title: "当前条件", text: "加热模块尚未启动。" }
-            ],
-            stepList: [
-              { title: "步骤 1", text: "启动加热模块。" },
-              { title: "步骤 2", text: "观察体系温度上升。" },
-              { title: "步骤 3", text: "记录平衡朝吸热方向移动。" }
-            ],
-            recordList: [
-              { title: "观察记录", text: "当前仍处于初始温度，未发生新的偏移。" },
-              { title: "实验备注", text: "本轮设定为正向吸热。" }
-            ],
-            insightList: [
-              { title: "平台解释", text: "实验平台里，温度变化应该像真实环境操作，而不是一条抽象参数。" }
-            ],
-            leftLiquid: 162,
-            rightLiquid: 146,
-            leftColor: "rgba(121,232,255,0.74)",
-            rightColor: "rgba(255,215,107,0.72)",
-            forward: 1.0,
-            backward: 1.0,
-            shift: "暂未移动",
-            shiftBar: 50,
-            effectStrength: "标准",
-            forwardOpacity: 0.72,
-            backwardOpacity: 0.72
-          },
-          applied: (intensity) => {
-            const delta = (intensity - 100) / 100;
-            const forward = Math.max(0.8, 1 + delta * 0.95);
-            const backward = Math.max(0.7, 1 + delta * 0.45);
-            return {
-              statusChip: "系统正在向吸热方向重建平衡",
-              stageChip: "当前动作：已启动加热模块",
-              panelTitle: "向吸热方向移动",
-              panelText: "升温后两个方向速率都提高，但正向吸热反应提升更明显。",
-              statusList: [
-                { title: "平衡状态", text: "温度条件已变化，系统开始向吸热方向偏移。" },
-                { title: "当前条件", text: `已完成升温，强度 ${intensity}%。` }
-              ],
-              stepList: [
-                { title: "步骤 1", text: "已启动加热模块。" },
-                { title: "步骤 2", text: "温度探针显示体系升温。" },
-                { title: "步骤 3", text: "观察生成物一侧逐步占优。" }
-              ],
-              recordList: [
-                { title: "观察记录", text: "升温后两侧都更活跃，但右侧增长更明显。" },
-                { title: "实验备注", text: "平衡向正向吸热方向移动。" }
-              ],
-              insightList: [
-                { title: "平台解释", text: "在实验平台语境里，升温是环境干预。系统通过偏向吸热方向来减弱这次变化。" }
-              ],
-              leftLiquid: 162 - Math.max(0, delta) * 18,
-              rightLiquid: 146 + Math.max(0, delta) * 44,
-              leftColor: "rgba(122,224,255,0.78)",
-              rightColor: "rgba(255,172,112,0.86)",
-              forward,
-              backward,
-              shift: "向吸热方向移动",
-              shiftBar: 76,
-              effectStrength: intensity >= 120 ? "强" : intensity <= 80 ? "弱" : "标准",
-              forwardOpacity: 0.92,
-              backwardOpacity: 0.64
-            };
-          }
+        {
+          id: 'reagent',
+          name: '药品',
+          items: [
+            { id: 'co', name: '一氧化碳', desc: '作为还原剂通过导气装置进入主反应管。' },
+            { id: 'cuo', name: '氧化铜', desc: '被还原的黑色固体。' },
+            { id: 'lime', name: '澄清石灰水', desc: '用于尾气处理和现象观察。' },
+            { id: 'cu', name: '铜', desc: '实验产物对照。' }
+          ]
         },
-        pressure: {
-          id: "pressure",
-          mode: "压强实验",
-          title: "增大压强",
-          mission: "通过右侧控制台调高压强，在“右侧气体总量更少”的实验设定下观察平衡如何向右移动。",
-          desc: "这次操作的中心不是解释，而是调节实验台上的压强控制阀，让用户感受到环境被压缩。",
-          screenTitle: "转动压强调节阀，提高体系压强",
-          screenDesc: "如果要像实验平台，就必须让“加压”像真正的设备动作，而不是一段文字。",
-          toolbarAction: "当前工具：压强调节阀",
-          toolbarHeat: "加热模块：待机",
-          toolbarPressure: "压强调节：准备增压",
-          toolbarObserve: "观察模式：压强实验",
-          reagentItems: [
-            { id: "valve", name: "压强调节阀", desc: "调高体系压强，观察平衡偏移。" },
-            { id: "gauge", name: "压力表", desc: "查看当前压强变化。" },
-            { id: "release", name: "泄压阀", desc: "用于反向对照。" }
-          ],
-          leftRack: [
-            { title: "压力表", text: "显示当前体系压强变化。", active: true },
-            { title: "泄压阀", text: "可用于后续做反向实验。", active: false }
-          ],
-          conditionRack: [
-            { title: "温控模块", text: "本轮不启用。", active: false },
-            { title: "压强调节阀", text: "将对体系施加更高压强。", active: true }
-          ],
-          operationInfo: [
-            { title: "当前实验动作", text: "转动压强调节阀，提高体系压强" },
-            { title: "平台判断", text: "在右侧气体总量更少的设定下，增压更有利于向右移动。" }
-          ],
-          initial: {
-            statusChip: "系统处于动态平衡",
-            stageChip: "当前动作：压强调节待机",
-            panelTitle: "动态平衡",
-            panelText: "压强还未变化，体系维持原有平衡。",
-            statusList: [
-              { title: "平衡状态", text: "当前压强下维持动态平衡。" },
-              { title: "当前条件", text: "尚未调整压强阀门。" }
-            ],
-            stepList: [
-              { title: "步骤 1", text: "调高压强调节阀。" },
-              { title: "步骤 2", text: "观察压力表读数变化。" },
-              { title: "步骤 3", text: "记录体系向气体总量更少的一侧移动。" }
-            ],
-            recordList: [
-              { title: "观察记录", text: "当前仍是基线压强条件。" },
-              { title: "实验备注", text: "本轮设定为右侧气体总量更少。" }
-            ],
-            insightList: [
-              { title: "平台解释", text: "压强变化要像环境控制，而不是抽象参数切换。" }
-            ],
-            leftLiquid: 170,
-            rightLiquid: 140,
-            leftColor: "rgba(121,232,255,0.76)",
-            rightColor: "rgba(255,215,107,0.74)",
-            forward: 1.0,
-            backward: 1.0,
-            shift: "暂未移动",
-            shiftBar: 50,
-            effectStrength: "标准",
-            forwardOpacity: 0.72,
-            backwardOpacity: 0.72
-          },
-          applied: (intensity) => {
-            const delta = (intensity - 100) / 100;
-            const forward = Math.max(0.8, 1 + delta * 0.82);
-            const backward = Math.max(0.7, 1 + delta * 0.5);
-            return {
-              statusChip: "系统正在向右移动",
-              stageChip: "当前动作：已调高压强",
-              panelTitle: "向气体总量更少的一侧移动",
-              panelText: "增压后，系统通过偏向右侧来减弱压缩效应。",
-              statusList: [
-                { title: "平衡状态", text: "压强扰动已发生，体系正向气体总量更少的一侧移动。" },
-                { title: "当前条件", text: `压强已提高，强度 ${intensity}%。` }
-              ],
-              stepList: [
-                { title: "步骤 1", text: "已调高压强调节阀。" },
-                { title: "步骤 2", text: "压力表显示压强上升。" },
-                { title: "步骤 3", text: "观察右侧比例上升。" }
-              ],
-              recordList: [
-                { title: "观察记录", text: "增压后体系偏向右侧，生成物侧液面和粒子占比提高。" },
-                { title: "实验备注", text: "系统通过减少气体总量来减弱压强变化。" }
-              ],
-              insightList: [
-                { title: "平台解释", text: "实验平台强调设备动作。调压是一个环境设备操作，而不是纯概念输入。" }
-              ],
-              leftLiquid: 170 - Math.max(0, delta) * 24,
-              rightLiquid: 140 + Math.max(0, delta) * 40,
-              leftColor: "rgba(108,210,245,0.8)",
-              rightColor: "rgba(255,215,107,0.88)",
-              forward,
-              backward,
-              shift: "向右侧移动",
-              shiftBar: 78,
-              effectStrength: intensity >= 120 ? "强" : intensity <= 80 ? "弱" : "标准",
-              forwardOpacity: 0.9,
-              backwardOpacity: 0.62
-            };
-          }
+        {
+          id: 'tool',
+          name: '工具',
+          items: [
+            { id: 'match', name: '火柴', desc: '点燃酒精灯。' },
+            { id: 'spoon', name: '药匙', desc: '辅助取放药品。' },
+            { id: 'observe', name: '观察镜头', desc: '用于后续局部放大观察。' },
+            { id: 'reset', name: '复位工具', desc: '恢复当前画布状态。' }
+          ]
         }
-      };
+      ];
 
-      let activeExperimentId = "reagent";
-      let selectedReagentId = null;
-      let applied = false;
+      const steps = [
+        {
+          id: 'setup',
+          name: '步骤 1 · 搭装置',
+          hint: '确认铁架台、玻璃管、尾气试管都已放在正确位置。',
+          status: '装置状态：已搭建基础实验装置',
+          reaction: '反应状态：尚未加热',
+          tail: '尾气处理：待观察',
+          record: '观察记录：当前画布更强调器材、装置和实验空间。',
+          flame: 0.14,
+          fill: 118,
+          tailLiquid: 44
+        },
+        {
+          id: 'ignite',
+          name: '步骤 2 · 点燃酒精灯',
+          hint: '点火后，主反应管下方开始受热，实验进入真正的过程阶段。',
+          status: '装置状态：酒精灯已点燃',
+          reaction: '反应状态：主反应管开始受热',
+          tail: '尾气处理：继续导气',
+          record: '观察记录：酒精灯点燃后，实验终于开始像一个“过程”而不是一张页面。',
+          flame: 0.96,
+          fill: 180,
+          tailLiquid: 44
+        },
+        {
+          id: 'observe',
+          name: '步骤 3 · 观察现象',
+          hint: '观察主反应区颜色变化，以及尾气试管中液体的处理效果。',
+          status: '装置状态：加热稳定',
+          reaction: '反应状态：氧化铜正在被还原',
+          tail: '尾气处理：液面出现变化',
+          record: '观察记录：主反应区和尾气试管开始出现可观察差异。下一步应继续细化动画与局部观察。',
+          flame: 0.96,
+          fill: 250,
+          tailLiquid: 74
+        }
+      ];
 
-      const reagentShelf = document.getElementById("reagentShelf");
-      const modeTabs = document.getElementById("modeTabs");
-      const operationInfo = document.getElementById("operationInfo");
-      const missionText = document.getElementById("missionText");
-      const consoleTitle = document.getElementById("consoleTitle");
-      const consoleDesc = document.getElementById("consoleDesc");
-      const screenTitle = document.getElementById("screenTitle");
-      const screenDesc = document.getElementById("screenDesc");
-      const statusChip = document.getElementById("statusChip");
-      const stageChip = document.getElementById("stageChip");
-      const panelTitle = document.getElementById("panelTitle");
-      const panelText = document.getElementById("panelText");
-      const leftRack = document.getElementById("leftRack");
-      const conditionRack = document.getElementById("conditionRack");
-      const leftReactor = document.getElementById("leftReactor");
-      const rightReactor = document.getElementById("rightReactor");
-      const leftParticles = document.getElementById("leftParticles");
-      const rightParticles = document.getElementById("rightParticles");
-      const equilibriumPanel = document.getElementById("equilibriumPanel");
-      const toolbarAction = document.getElementById("toolbarAction");
-      const toolbarHeat = document.getElementById("toolbarHeat");
-      const toolbarPressure = document.getElementById("toolbarPressure");
-      const toolbarObserve = document.getElementById("toolbarObserve");
-      const forwardRate = document.getElementById("forwardRate");
-      const backwardRate = document.getElementById("backwardRate");
-      const shiftDirection = document.getElementById("shiftDirection");
-      const effectStrength = document.getElementById("effectStrength");
-      const forwardBar = document.getElementById("forwardBar");
-      const backwardBar = document.getElementById("backwardBar");
-      const shiftBar = document.getElementById("shiftBar");
-      const intensitySlider = document.getElementById("intensitySlider");
-      const stateList = document.getElementById("stateList");
-      const stepList = document.getElementById("stepList");
-      const recordList = document.getElementById("recordList");
-      const insightList = document.getElementById("insightList");
+      let activeCategory = 'device';
+      let activeTool = 'stand';
+      let activeStep = 'setup';
 
-      function getExperiment() {
-        return experiments[activeExperimentId];
+      const categoriesEl = document.getElementById('categories');
+      const libraryListEl = document.getElementById('libraryList');
+      const stepperEl = document.getElementById('stepper');
+      const hintTextEl = document.getElementById('hintText');
+      const statusPillEl = document.getElementById('statusPill');
+      const reactionPillEl = document.getElementById('reactionPill');
+      const tailPillEl = document.getElementById('tailPill');
+      const recordPillEl = document.getElementById('recordPill');
+      const primaryActionEl = document.getElementById('primaryAction');
+      const tubeFillEl = document.getElementById('tubeFill');
+      const burnerFlameEl = document.getElementById('burnerFlame');
+      const tailLiquidEl = document.getElementById('tailLiquid');
+
+      function renderCategories() {
+        categoriesEl.innerHTML = categories.map(category => `
+          <button class="category-btn ${category.id === activeCategory ? 'active' : ''}" data-category="${category.id}">${category.name}</button>
+        `).join('');
       }
 
-      function createParticles(container, countA, countB, countC) {
-        const html = [];
-        const pushParticles = (count, type, startX) => {
-          for (let i = 0; i < count; i += 1) {
-            const left = (startX + (i * 12)) % 86;
-            const bottom = 18 + ((i * 17) % 64);
-            const delay = (i % 7) * 0.28;
-            html.push(`<span class="particle ${type}" style="left:${left}%; bottom:${bottom}px; animation-delay:${delay}s;"></span>`);
-          }
-        };
-        pushParticles(countA, "a", 8);
-        pushParticles(countB, "b", 24);
-        pushParticles(countC, "c", 46);
-        container.innerHTML = html.join("");
+      function renderLibrary() {
+        const current = categories.find(category => category.id === activeCategory);
+        libraryListEl.innerHTML = current.items.map(item => `
+          <button class="library-item ${item.id === activeTool ? 'active' : ''}" data-item="${item.id}">
+            <strong>${item.name}</strong>
+            <span>${item.desc}</span>
+          </button>
+        `).join('');
       }
 
-      function renderSimpleList(container, items, cls) {
-        container.innerHTML = items
-          .map((item) => `<div class="${cls}"><strong>${item.title}</strong><span>${item.text}</span></div>`)
-          .join("");
+      function renderSteps() {
+        stepperEl.innerHTML = steps.map(step => `
+          <button class="step-btn ${step.id === activeStep ? 'active' : ''}" data-step="${step.id}">${step.name}</button>
+        `).join('');
       }
 
-      function renderReagentShelf() {
-        const experiment = getExperiment();
-        reagentShelf.innerHTML = experiment.reagentItems
-          .map((item, index) => `
-            <div class="shelf-item ${(selectedReagentId ? selectedReagentId === item.id : index === 0) ? "active" : ""}" data-reagent="${item.id}">
-              <strong>${item.name}</strong>
-              <span>${item.desc}</span>
-            </div>
-          `)
-          .join("");
+      function applyStepView() {
+        const current = steps.find(step => step.id === activeStep);
+        hintTextEl.textContent = `当前步骤：${current.hint}`;
+        statusPillEl.textContent = current.status;
+        reactionPillEl.textContent = current.reaction;
+        tailPillEl.textContent = current.tail;
+        recordPillEl.textContent = current.record;
+        tubeFillEl.style.setProperty('--tube-fill', `${current.fill}px`);
+        burnerFlameEl.style.setProperty('--flame-opacity', current.flame);
+        tailLiquidEl.style.setProperty('--tube-liquid', `${current.tailLiquid}px`);
       }
 
-      function renderModeTabs() {
-        modeTabs.innerHTML = Object.values(experiments)
-          .map((experiment) => `
-            <button class="segment-btn ${experiment.id === activeExperimentId ? "active" : ""}" data-mode="${experiment.id}">${experiment.mode}</button>
-          `)
-          .join("");
-      }
-
-      function renderOperationInfo() {
-        renderSimpleList(operationInfo, getExperiment().operationInfo, "info-item");
-      }
-
-      function getView() {
-        const experiment = getExperiment();
-        return applied ? experiment.applied(Number(intensitySlider.value)) : experiment.initial;
-      }
-
-      function applyView(view) {
-        statusChip.textContent = view.statusChip;
-        stageChip.textContent = view.stageChip;
-        panelTitle.textContent = view.panelTitle;
-        panelText.textContent = view.panelText;
-        renderSimpleList(stateList, view.statusList, "state-item");
-        renderSimpleList(stepList, view.stepList, "step-item");
-        renderSimpleList(recordList, view.recordList, "record-item");
-        renderSimpleList(insightList, view.insightList, "info-item");
-        leftReactor.style.setProperty("--liquid-height", `${view.leftLiquid}px`);
-        leftReactor.style.setProperty("--liquid-color", view.leftColor);
-        rightReactor.style.setProperty("--liquid-height", `${view.rightLiquid}px`);
-        rightReactor.style.setProperty("--liquid-color", view.rightColor);
-        forwardRate.textContent = `${view.forward.toFixed(1)}x`;
-        backwardRate.textContent = `${view.backward.toFixed(1)}x`;
-        shiftDirection.textContent = view.shift;
-        effectStrength.textContent = view.effectStrength;
-        forwardBar.style.width = `${Math.min(100, view.forward * 50)}%`;
-        backwardBar.style.width = `${Math.min(100, view.backward * 50)}%`;
-        shiftBar.style.width = `${view.shiftBar}%`;
-        equilibriumPanel.style.setProperty("--forward-opacity", view.forwardOpacity);
-        equilibriumPanel.style.setProperty("--backward-opacity", view.backwardOpacity);
-        const leftCount = Math.max(6, Math.round(view.leftLiquid / 12));
-        const rightCount = Math.max(6, Math.round(view.rightLiquid / 12));
-        createParticles(leftParticles, Math.round(leftCount * 0.5), Math.round(leftCount * 0.35), Math.round(leftCount * 0.15));
-        createParticles(rightParticles, Math.round(rightCount * 0.4), Math.round(rightCount * 0.45), Math.round(rightCount * 0.15));
-      }
-
-      function renderRacks() {
-        const experiment = getExperiment();
-        leftRack.innerHTML = experiment.leftRack
-          .map((item) => `<div class="rack-bottle ${item.active ? "active" : ""}"><strong>${item.title}</strong><span>${item.text}</span></div>`)
-          .join("");
-        conditionRack.innerHTML = experiment.conditionRack
-          .map((item) => `<div class="condition-card ${item.active ? "active" : ""}"><strong>${item.title}</strong><span>${item.text}</span></div>`)
-          .join("");
-      }
-
-      function renderExperiment() {
-        const experiment = getExperiment();
-        missionText.textContent = experiment.mission;
-        consoleTitle.textContent = `化学平衡实验台 · ${experiment.title}`;
-        consoleDesc.textContent = experiment.desc;
-        screenTitle.textContent = experiment.screenTitle;
-        screenDesc.textContent = experiment.screenDesc;
-        toolbarAction.textContent = experiment.toolbarAction;
-        toolbarHeat.textContent = experiment.toolbarHeat;
-        toolbarPressure.textContent = experiment.toolbarPressure;
-        toolbarObserve.textContent = experiment.toolbarObserve;
-        renderModeTabs();
-        renderReagentShelf();
-        renderOperationInfo();
-        renderRacks();
-        applyView(getView());
-      }
-
-      reagentShelf.addEventListener("click", (event) => {
-        const item = event.target.closest("[data-reagent]");
-        if (!item) return;
-        selectedReagentId = item.dataset.reagent;
-        renderReagentShelf();
+      categoriesEl.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-category]');
+        if (!button) return;
+        activeCategory = button.dataset.category;
+        const current = categories.find(category => category.id === activeCategory);
+        activeTool = current.items[0].id;
+        renderCategories();
+        renderLibrary();
       });
 
-      modeTabs.addEventListener("click", (event) => {
-        const item = event.target.closest("[data-mode]");
-        if (!item) return;
-        activeExperimentId = item.dataset.mode;
-        selectedReagentId = null;
-        applied = false;
-        intensitySlider.value = 100;
-        renderExperiment();
+      libraryListEl.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-item]');
+        if (!button) return;
+        activeTool = button.dataset.item;
+        renderLibrary();
       });
 
-      function executeAction() {
-        applied = true;
-        applyView(getView());
-      }
-
-      document.getElementById("executeLeft").addEventListener("click", executeAction);
-      document.getElementById("applyAction").addEventListener("click", executeAction);
-
-      document.getElementById("resetRound").addEventListener("click", () => {
-        applied = false;
-        intensitySlider.value = 100;
-        applyView(getView());
+      stepperEl.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-step]');
+        if (!button) return;
+        activeStep = button.dataset.step;
+        renderSteps();
+        applyStepView();
       });
 
-      document.getElementById("resetLab").addEventListener("click", () => {
-        activeExperimentId = "reagent";
-        selectedReagentId = null;
-        applied = false;
-        intensitySlider.value = 100;
-        renderExperiment();
+      primaryActionEl.addEventListener('click', () => {
+        const idx = steps.findIndex(step => step.id === activeStep);
+        if (idx < steps.length - 1) {
+          activeStep = steps[idx + 1].id;
+        } else {
+          activeStep = steps[0].id;
+        }
+        renderSteps();
+        applyStepView();
       });
 
-      intensitySlider.addEventListener("input", () => {
-        if (applied) applyView(getView());
-      });
-
-      renderExperiment();
+      renderCategories();
+      renderLibrary();
+      renderSteps();
+      applyStepView();
     </script>
   </body>
 </html>
