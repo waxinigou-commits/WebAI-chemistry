@@ -3,658 +3,642 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebAI Chemistry Lab · 实验器材画布版</title>
-    <meta name="description" content="WebAI Chemistry v0.6.1，带基础拖拽的实验器材画布版原型。" />
+    <title>WebAI Chemistry Lab · 3D 实验台原型</title>
+    <meta
+      name="description"
+      content="WebAI Chemistry 最小实验台原型，包含实验台、酒精灯、试管、拖动交互与加热反馈。"
+    />
     <style>
       :root {
-        --bg: #1f242c;
-        --bg-2: #252b34;
-        --canvas: #313842;
-        --canvas-2: #2b313a;
-        --panel: rgba(31, 38, 48, 0.94);
-        --panel-soft: rgba(44, 52, 64, 0.96);
-        --panel-line: rgba(255,255,255,0.08);
-        --text: #eef3f8;
-        --muted: #97a4b2;
-        --muted-2: #768291;
-        --cyan: #76d8ff;
-        --cyan-soft: rgba(118, 216, 255, 0.12);
-        --green: #93f28f;
-        --green-soft: rgba(147, 242, 143, 0.12);
-        --yellow: #ffd776;
-        --orange: #ffb36a;
-        --danger: #ff8f8f;
-        --shadow: 0 18px 48px rgba(0,0,0,0.26);
+        --bg: #11161c;
+        --bg-2: #18202a;
+        --panel: rgba(18, 24, 32, 0.84);
+        --panel-line: rgba(255, 255, 255, 0.08);
+        --text: #edf4fb;
+        --muted: #91a0af;
+        --cyan: #78ddff;
+        --cyan-soft: rgba(120, 221, 255, 0.18);
+        --green: #8df3b6;
+        --amber: #ffcf70;
+        --orange: #ff9a57;
+        --red-soft: rgba(255, 133, 92, 0.3);
+        --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        --glow: 0 0 24px rgba(120, 221, 255, 0.22);
       }
 
-      * { box-sizing: border-box; }
-      html, body { margin: 0; padding: 0; }
-      .apparatus, .apparatus * { touch-action: none; }
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
       body {
         min-height: 100vh;
         font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+        background:
+          radial-gradient(circle at 50% 0%, rgba(120, 221, 255, 0.06), transparent 28%),
+          linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
         color: var(--text);
       }
 
-      button { font: inherit; }
+      button {
+        font: inherit;
+      }
 
       .app {
         min-height: 100vh;
         display: grid;
-        grid-template-rows: 56px 1fr 78px;
+        grid-template-rows: 64px 1fr;
       }
 
       .topbar {
-        display: grid;
-        grid-template-columns: auto 1fr auto;
+        display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: 16px;
-        padding: 0 16px;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
-        background: rgba(19, 24, 31, 0.82);
-        backdrop-filter: blur(12px);
+        padding: 0 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(12, 17, 24, 0.76);
+        backdrop-filter: blur(14px);
       }
 
       .brand {
         display: flex;
         align-items: center;
-        gap: 10px;
-        font-weight: 700;
+        gap: 12px;
+        min-width: 0;
       }
 
       .brand-badge {
-        width: 30px;
-        height: 30px;
-        border-radius: 10px;
+        width: 34px;
+        height: 34px;
         display: grid;
         place-items: center;
-        background: linear-gradient(135deg, #67d8ff, #74a2ff);
-        color: #162029;
+        border-radius: 11px;
+        background: linear-gradient(135deg, #83e1ff, #75a7ff);
+        color: #10202a;
         box-shadow: var(--shadow);
       }
 
-      .experiment-title {
-        text-align: center;
+      .brand-copy {
+        min-width: 0;
+      }
+
+      .brand-copy strong {
+        display: block;
+        font-size: 14px;
+      }
+
+      .brand-copy span {
+        display: block;
         color: var(--muted);
-        font-size: 13px;
-        letter-spacing: 0.02em;
+        font-size: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .toolbar {
         display: flex;
-        gap: 8px;
+        align-items: center;
+        gap: 10px;
       }
 
-      .icon-btn,
-      .category-btn,
-      .library-item,
-      .step-btn,
-      .primary-action {
-        border: 1px solid rgba(255,255,255,0.08);
-      }
-
-      .icon-btn {
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
-        display: grid;
-        place-items: center;
+      .ghost-btn,
+      .primary-btn {
+        height: 38px;
+        border-radius: 12px;
+        border: 1px solid var(--panel-line);
         cursor: pointer;
-        background: rgba(255,255,255,0.03);
+      }
+
+      .ghost-btn {
+        padding: 0 14px;
         color: var(--text);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .primary-btn {
+        padding: 0 16px;
+        font-weight: 700;
+        color: #10202a;
+        background: linear-gradient(135deg, #7cddff, #92f0d1);
       }
 
       .main {
-        display: grid;
-        grid-template-columns: 1fr 280px;
         min-height: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
       }
 
-      .canvas-shell {
+      .stage {
         position: relative;
         overflow: hidden;
         background:
-          radial-gradient(circle at 50% 10%, rgba(255,255,255,0.025), transparent 34%),
-          linear-gradient(180deg, #353c45 0%, #2c333c 100%);
+          radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.04), transparent 28%),
+          linear-gradient(180deg, #202833 0%, #151b23 100%);
       }
 
-      .canvas-shell::after {
-        content: "";
+      .scene-hint,
+      .scene-note,
+      .floating-card {
         position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 160px;
-        background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,0.08));
+        z-index: 20;
+        border: 1px solid var(--panel-line);
+        background: var(--panel);
+        backdrop-filter: blur(14px);
+        box-shadow: var(--shadow);
+      }
+
+      .scene-hint {
+        top: 16px;
+        left: 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+      }
+
+      .scene-hint .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 14px rgba(141, 243, 182, 0.55);
+      }
+
+      .scene-note {
+        top: 16px;
+        right: 16px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .floating-card {
+        left: 16px;
+        bottom: 16px;
+        width: 280px;
+        border-radius: 16px;
+        padding: 14px;
+      }
+
+      .floating-card strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 14px;
+      }
+
+      .floating-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+        font-size: 13px;
+      }
+
+      .stage-inner {
+        position: absolute;
+        inset: 0;
+        padding: 56px 36px 36px;
+      }
+
+      .perspective-wrap {
+        position: relative;
+        width: min(100%, 1080px);
+        height: min(100%, 760px);
+        margin: 0 auto;
+        perspective: 1400px;
+      }
+
+      .lab-world {
+        position: absolute;
+        inset: 0;
+        transform-style: preserve-3d;
+      }
+
+      .light-cone {
+        position: absolute;
+        left: 50%;
+        top: 10%;
+        width: 540px;
+        height: 540px;
+        transform: translateX(-50%);
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 245, 194, 0.15), rgba(255, 245, 194, 0.03) 48%, transparent 72%);
+        filter: blur(12px);
         pointer-events: none;
+      }
+
+      .bench-shadow {
+        position: absolute;
+        left: 50%;
+        bottom: 88px;
+        width: 640px;
+        height: 150px;
+        transform: translateX(-50%);
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.08) 60%, transparent 76%);
+        filter: blur(18px);
+      }
+
+      .bench {
+        position: absolute;
+        left: 50%;
+        bottom: 74px;
+        width: 760px;
+        height: 380px;
+        transform: translateX(-50%) rotateX(68deg);
+        transform-style: preserve-3d;
+      }
+
+      .bench-top {
+        position: absolute;
+        inset: 0;
+        border-radius: 22px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.01)),
+          linear-gradient(135deg, #4f5964, #323942 58%, #2a3139 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 18px 34px rgba(0, 0, 0, 0.22);
       }
 
       .bench-grid {
         position: absolute;
-        inset: 0;
+        inset: 22px;
+        border-radius: 12px;
         background-image:
-          linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
-        background-size: 44px 44px;
-        opacity: 0.35;
-        pointer-events: none;
+          linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 54px 54px;
+        opacity: 0.46;
       }
 
-      .workspace {
+      .bench-front {
         position: absolute;
-        inset: 0;
-        padding: 56px 32px 28px 32px;
+        left: 0;
+        right: 0;
+        top: calc(100% - 1px);
+        height: 50px;
+        border-radius: 0 0 18px 18px;
+        transform-origin: top;
+        transform: rotateX(-90deg);
+        background: linear-gradient(180deg, #252b33, #181d24);
       }
 
-      .canvas-board {
+      .bench-side {
         position: absolute;
-        inset: 56px 24px 28px 24px;
-        border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.05);
-        background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.005));
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+        top: 0;
+        right: -1px;
+        width: 50px;
+        height: 100%;
+        transform-origin: left;
+        transform: rotateY(90deg);
+        background: linear-gradient(180deg, #2d333c, #1d232b);
+        border-radius: 0 18px 18px 0;
       }
 
-      .hint-tag {
+      .bench-label {
         position: absolute;
-        left: 16px;
-        top: 14px;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 14px;
-        border-radius: 999px;
-        background: rgba(18, 23, 29, 0.82);
-        border: 1px solid rgba(255,255,255,0.08);
-        color: var(--text);
-        font-size: 13px;
-        z-index: 5;
-        box-shadow: var(--shadow);
-      }
-
-      .dot {
-        width: 9px;
-        height: 9px;
-        border-radius: 50%;
-        background: var(--green);
-        box-shadow: 0 0 14px rgba(147, 242, 143, 0.55);
-      }
-
-      .zoom-tag {
-        position: absolute;
-        left: 12px;
-        bottom: 12px;
-        padding: 8px 12px;
-        border-radius: 10px;
-        background: rgba(19,24,31,0.82);
-        border: 1px solid rgba(255,255,255,0.08);
-        color: var(--muted);
-        font-size: 13px;
-        z-index: 5;
-      }
-
-      .drag-tip {
-        position: absolute;
-        right: 18px;
-        top: 14px;
-        padding: 10px 12px;
-        border-radius: 12px;
-        background: rgba(19,24,31,0.82);
-        border: 1px solid rgba(255,255,255,0.08);
-        color: var(--muted);
+        left: 50%;
+        bottom: 20px;
+        transform: translateX(-50%);
+        color: rgba(255, 255, 255, 0.52);
         font-size: 12px;
-        z-index: 5;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .object-layer {
+        position: absolute;
+        left: 50%;
+        bottom: 154px;
+        width: 760px;
+        height: 380px;
+        transform: translateX(-50%);
       }
 
       .apparatus {
         position: absolute;
-        transition: box-shadow 0.2s ease, transform 0.2s ease;
+        transform-style: preserve-3d;
+        cursor: grab;
         user-select: none;
+        touch-action: none;
+        transition: filter 0.18s ease, transform 0.18s ease;
       }
 
-      .apparatus.draggable { cursor: grab; }
-      .apparatus.dragging {
+      .apparatus:active {
         cursor: grabbing;
-        z-index: 30 !important;
-        transform: scale(1.02);
-        filter: drop-shadow(0 16px 24px rgba(0,0,0,0.28));
       }
 
       .apparatus.selected {
-        filter: drop-shadow(0 0 18px rgba(118,216,255,0.24));
+        filter: drop-shadow(0 0 16px rgba(120, 221, 255, 0.22));
       }
 
-      .stand {
-        width: 140px;
-        height: 380px;
+      .apparatus.dragging {
+        filter: drop-shadow(0 16px 28px rgba(0, 0, 0, 0.3));
       }
 
-      .stand-base {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 102px;
-        height: 20px;
-        border-radius: 8px 8px 12px 12px;
-        background: linear-gradient(180deg, #606a75, #404854);
-        box-shadow: 0 8px 14px rgba(0,0,0,0.16);
-      }
-
-      .stand-rod {
+      .shadow {
         position: absolute;
         left: 50%;
-        transform: translateX(-50%);
-        bottom: 18px;
-        width: 6px;
-        height: 330px;
-        border-radius: 999px;
-        background: linear-gradient(180deg, #c8d0d8, #78818c);
-      }
-
-      .clamp-bar {
-        position: absolute;
-        top: 140px;
-        left: 34px;
-        width: 72px;
-        height: 8px;
-        border-radius: 999px;
-        background: linear-gradient(180deg, #b7bec6, #717983);
-      }
-
-      .main-tube {
-        width: 560px;
-        height: 84px;
-      }
-
-      .tube-body {
-        position: absolute;
-        left: 48px;
-        top: 16px;
-        width: 410px;
-        height: 24px;
-        border-radius: 999px;
-        border: 3px solid rgba(255,255,255,0.72);
-        background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.03));
-        box-shadow: inset 0 0 18px rgba(255,255,255,0.08);
-      }
-
-      .tube-fill {
-        position: absolute;
-        left: 56px;
-        top: 23px;
-        height: 10px;
-        width: var(--tube-fill, 110px);
-        border-radius: 999px;
-        background: linear-gradient(90deg, #ffe58e, #ffb86c);
-      }
-
-      .tube-tip {
-        position: absolute;
-        left: 454px;
-        top: 23px;
-        width: 24px;
-        height: 10px;
-        border-radius: 999px;
-        background: linear-gradient(180deg, #dab98e, #bb9260);
-      }
-
-      .tube-bend {
-        position: absolute;
-        left: 468px;
-        top: 20px;
-        width: 30px;
-        height: 70px;
-        border-right: 4px solid rgba(255,255,255,0.7);
-        border-top: 4px solid rgba(255,255,255,0.7);
-        border-top-right-radius: 18px;
-      }
-
-      .gasbag {
-        position: absolute;
-        left: 0;
-        top: 8px;
-        width: 62px;
-        height: 40px;
-        border-radius: 999px;
-        background: radial-gradient(circle at 32% 28%, #f5d88f, #b47f2d);
-        box-shadow: 0 10px 18px rgba(0,0,0,0.2);
-      }
-
-      .gasbag::after {
-        content: 'CO';
-        position: absolute;
-        inset: 0;
-        display: grid;
-        place-items: center;
-        color: #52340f;
-        font-size: 13px;
-        font-weight: 800;
-      }
-
-      .burner {
-        width: 96px;
-        height: 128px;
-      }
-
-      .burner-stand {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 74px;
-        height: 18px;
-        border-radius: 10px;
-        background: linear-gradient(180deg, #c7cdd5, #808995);
-      }
-
-      .burner-body {
-        position: absolute;
-        bottom: 14px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 42px;
-        height: 52px;
-        border-radius: 16px 16px 10px 10px;
-        background: linear-gradient(180deg, #d3942a, #8c5c14);
-        box-shadow: 0 10px 14px rgba(0,0,0,0.16);
-      }
-
-      .burner-neck {
-        position: absolute;
-        bottom: 58px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 14px;
-        height: 20px;
-        border-radius: 7px;
-        background: linear-gradient(180deg, #b58c51, #7b5b2a);
-      }
-
-      .burner-flame {
-        position: absolute;
-        bottom: 74px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 18px;
-        height: 32px;
-        border-radius: 50% 50% 42% 42%;
-        background: radial-gradient(circle at 50% 18%, #fff6c3, #ff9343 72%);
-        opacity: var(--flame-opacity, 0.16);
-      }
-
-      .tail-tube {
-        width: 88px;
-        height: 214px;
-      }
-
-      .tail-glass {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: 0;
-        width: 38px;
-        height: 190px;
-        border-radius: 0 0 20px 20px;
-        border: 3px solid rgba(255,255,255,0.72);
-        background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.02));
-      }
-
-      .tail-liquid {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: 10px;
-        width: 24px;
-        height: var(--tail-liquid, 46px);
-        border-radius: 0 0 16px 16px;
-        background: linear-gradient(180deg, rgba(121,232,255,0.92), rgba(74,151,255,0.78));
-      }
-
-      .tail-hose {
-        position: absolute;
-        left: 0;
-        top: 16px;
-        width: 56px;
-        height: 10px;
-        border-radius: 999px;
-        background: linear-gradient(180deg, #d9bd95, #bb905c);
-        transform: rotate(-12deg);
-        transform-origin: right center;
-      }
-
-      .bottle-group {
-        display: flex;
-        gap: 16px;
-        align-items: end;
-      }
-
-      .bottle {
-        width: 56px;
-        height: 82px;
-        position: relative;
-      }
-
-      .bottle-cap {
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 24px;
-        height: 12px;
-        border-radius: 6px 6px 0 0;
-        background: #c1c7cf;
-      }
-
-      .bottle-body {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        height: 68px;
-        border-radius: 14px;
-        border: 2px solid rgba(255,255,255,0.55);
-        background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04));
-      }
-
-      .bottle-label {
-        position: absolute;
-        left: 6px;
-        right: 6px;
-        top: 28px;
-        padding: 4px 6px;
-        border-radius: 6px;
-        background: rgba(255,255,255,0.78);
-        color: #25323c;
-        font-size: 11px;
-        font-weight: 700;
-        text-align: center;
-      }
-
-      .small-tool {
-        position: absolute;
-      }
-
-      .spoon-shape {
-        width: 96px;
-        height: 10px;
-        border-radius: 999px;
-        background: linear-gradient(90deg, #cc744f, #ff9f63);
-        position: relative;
-      }
-
-      .spoon-shape::before {
-        content: '';
-        position: absolute;
-        right: -8px;
-        top: -4px;
-        width: 18px;
-        height: 18px;
+        top: 100%;
+        transform: translate(-50%, -10px);
         border-radius: 50%;
-        background: linear-gradient(180deg, #ffb27d, #dd7e4e);
+        background: radial-gradient(circle, rgba(0, 0, 0, 0.38), rgba(0, 0, 0, 0.08) 62%, transparent 76%);
+        pointer-events: none;
+        filter: blur(4px);
       }
 
-      .match-shape {
-        width: 62px;
-        height: 8px;
-        border-radius: 999px;
-        background: linear-gradient(90deg, #d1bc99, #8d6030);
-        position: relative;
+      .lamp {
+        width: 110px;
+        height: 150px;
       }
 
-      .match-shape::before {
-        content: '';
+      .lamp .shadow {
+        width: 88px;
+        height: 22px;
+      }
+
+      .lamp-body {
         position: absolute;
-        left: -2px;
-        top: -2px;
-        width: 10px;
-        height: 12px;
+        left: 50%;
+        bottom: 22px;
+        width: 64px;
+        height: 72px;
+        transform: translateX(-50%);
+        border-radius: 22px 22px 18px 18px;
+        background: linear-gradient(180deg, rgba(255, 226, 178, 0.95), rgba(146, 94, 24, 0.96));
+        border: 2px solid rgba(255, 244, 224, 0.36);
+        box-shadow: inset 0 6px 10px rgba(255, 255, 255, 0.12), inset 0 -10px 18px rgba(73, 41, 8, 0.34);
+      }
+
+      .lamp-glass {
+        position: absolute;
+        inset: 10px 8px 14px;
+        border-radius: 18px;
+        background: linear-gradient(180deg, rgba(255, 231, 185, 0.34), rgba(255, 167, 65, 0.14));
+        border: 1px solid rgba(255, 251, 241, 0.22);
+      }
+
+      .lamp-cap {
+        position: absolute;
+        left: 50%;
+        bottom: 90px;
+        width: 18px;
+        height: 16px;
+        transform: translateX(-50%);
+        border-radius: 8px;
+        background: linear-gradient(180deg, #c7a776, #7c5b2b);
+      }
+
+      .lamp-wick {
+        position: absolute;
+        left: 50%;
+        bottom: 102px;
+        width: 8px;
+        height: 18px;
+        transform: translateX(-50%);
         border-radius: 6px;
-        background: #b74d32;
+        background: linear-gradient(180deg, #f4ddbf, #85623f);
       }
 
-      .library {
-        border-left: 1px solid rgba(255,255,255,0.05);
-        background: linear-gradient(180deg, #2c333c 0%, #262c35 100%);
+      .lamp-flame {
+        position: absolute;
+        left: 50%;
+        bottom: 112px;
+        width: 26px;
+        height: 48px;
+        transform: translateX(-50%);
+        border-radius: 55% 55% 45% 45%;
+        background: radial-gradient(circle at 50% 22%, #fffbe3, #ffc466 48%, #ff8d49 76%);
+        box-shadow: 0 0 22px rgba(255, 191, 94, 0.4);
+        transform-origin: bottom center;
+        animation: flameFlicker 1.8s ease-in-out infinite alternate;
+      }
+
+      .lamp-flame::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 8px;
+        width: 10px;
+        height: 18px;
+        transform: translateX(-50%);
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(201, 241, 255, 0.95), rgba(121, 211, 255, 0.35));
+      }
+
+      .lamp.off .lamp-flame {
+        opacity: 0.18;
+        filter: grayscale(0.4);
+        box-shadow: none;
+      }
+
+      .tube {
+        width: 184px;
+        height: 72px;
+      }
+
+      .tube .shadow {
+        width: 134px;
+        height: 22px;
+      }
+
+      .tube-shell {
+        position: absolute;
+        left: 20px;
+        top: 18px;
+        width: 144px;
+        height: 30px;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.76);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.06));
+        box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.08);
+      }
+
+      .tube-core {
+        position: absolute;
+        left: 30px;
+        top: 27px;
+        width: 82px;
+        height: 10px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #8a5330, #d89356 54%, rgba(255, 211, 157, 0.7));
+        opacity: 0.78;
+        transition: background 0.18s ease, box-shadow 0.18s ease;
+      }
+
+      .tube-mouth {
+        position: absolute;
+        right: 18px;
+        top: 24px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.76);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .tube.heating .tube-core {
+        background: linear-gradient(90deg, #ff9f5a, #ffd28c 58%, rgba(255, 245, 198, 0.9));
+        box-shadow: 0 0 16px rgba(255, 177, 103, 0.38);
+      }
+
+      .tube.heating .tube-shell {
+        box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.08), 0 0 18px rgba(255, 153, 87, 0.2);
+      }
+
+      .heat-zone {
+        position: absolute;
+        width: 160px;
+        height: 140px;
+        border-radius: 50%;
+        border: 1px dashed rgba(255, 199, 112, 0.24);
+        background: radial-gradient(circle, rgba(255, 182, 93, 0.12), rgba(255, 182, 93, 0.03) 52%, transparent 72%);
+        pointer-events: none;
+        filter: blur(1px);
+      }
+
+      .heat-zone.hidden {
+        opacity: 0;
+      }
+
+      .panel {
         display: grid;
-        grid-template-rows: auto auto 1fr;
-        min-height: 0;
+        grid-template-rows: auto auto 1fr auto;
+        gap: 12px;
+        padding: 16px;
+        border-left: 1px solid rgba(255, 255, 255, 0.06);
+        background: linear-gradient(180deg, #171f28 0%, #111720 100%);
       }
 
-      .library-head {
-        padding: 12px 12px 10px;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
+      .panel-card {
+        border: 1px solid var(--panel-line);
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 16px;
+        padding: 14px;
       }
 
-      .library-head h2 {
+      .panel-card h2,
+      .panel-card h3,
+      .panel-card p {
         margin: 0;
-        font-size: 16px;
       }
 
-      .library-head p {
-        margin: 8px 0 0;
+      .panel-card h2 {
+        font-size: 18px;
+        margin-bottom: 8px;
+      }
+
+      .panel-card p {
         color: var(--muted);
-        line-height: 1.6;
+        line-height: 1.65;
         font-size: 13px;
       }
 
-      .categories {
+      .status-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
-        padding: 10px 12px;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
+        gap: 10px;
       }
 
-      .category-btn {
-        border-radius: 10px;
-        padding: 9px 8px;
-        cursor: pointer;
-        background: rgba(255,255,255,0.03);
-        color: var(--text);
-        font-size: 13px;
-      }
-
-      .category-btn.active {
-        background: rgba(118,216,255,0.12);
-        border-color: rgba(118,216,255,0.34);
-      }
-
-      .library-list {
-        padding: 10px 12px 14px;
-        overflow: auto;
-        display: grid;
-        align-content: start;
-        gap: 8px;
-      }
-
-      .library-item {
-        border-radius: 12px;
+      .status-item {
+        border-radius: 14px;
         padding: 12px;
-        cursor: pointer;
-        background: rgba(255,255,255,0.03);
-        color: var(--text);
-        text-align: left;
-        min-height: 72px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
       }
 
-      .library-item:hover,
-      .library-item.active {
-        background: rgba(118,216,255,0.12);
-        border-color: rgba(118,216,255,0.34);
-      }
-
-      .library-item strong {
+      .status-item span {
         display: block;
+        color: var(--muted);
+        font-size: 12px;
         margin-bottom: 6px;
       }
 
-      .library-item span {
+      .status-item strong {
+        font-size: 14px;
+      }
+
+      .legend {
+        display: grid;
+        gap: 8px;
+      }
+
+      .legend-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
         color: var(--muted);
         font-size: 13px;
+      }
+
+      .legend-swatch {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      .footer-note {
+        color: var(--muted);
+        font-size: 12px;
         line-height: 1.6;
       }
 
-      .bottombar {
-        display: grid;
-        grid-template-columns: 1fr 1.1fr auto;
-        gap: 12px;
-        align-items: center;
-        padding: 0 12px;
-        border-top: 1px solid rgba(255,255,255,0.05);
-        background: rgba(19,24,31,0.9);
-        backdrop-filter: blur(12px);
+      @keyframes flameFlicker {
+        0% {
+          transform: translateX(-50%) scaleY(1) scaleX(1);
+        }
+        50% {
+          transform: translateX(-50%) scaleY(1.08) scaleX(0.94) rotate(-2deg);
+        }
+        100% {
+          transform: translateX(-50%) scaleY(0.96) scaleX(1.05) rotate(2deg);
+        }
       }
 
-      .stepper,
-      .status-line,
-      .records {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        min-width: 0;
-      }
-
-      .step-btn {
-        border-radius: 12px;
-        padding: 10px 12px;
-        cursor: pointer;
-        background: rgba(255,255,255,0.03);
-        color: var(--text);
-      }
-
-      .step-btn.active {
-        background: rgba(147,242,143,0.1);
-        border-color: rgba(147,242,143,0.34);
-      }
-
-      .status-pill,
-      .record-pill {
-        padding: 9px 11px;
-        border-radius: 10px;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.08);
-        color: var(--muted);
-        font-size: 12px;
-        white-space: nowrap;
-      }
-
-      .primary-action {
-        padding: 12px 14px;
-        border-radius: 10px;
-        background: linear-gradient(135deg, #6ad6ff, #83f0db);
-        color: #1a242d;
-        font-weight: 800;
-        cursor: pointer;
-      }
-
-      @media (max-width: 1180px) {
-        .main { grid-template-columns: 1fr; }
-        .library { min-height: 420px; }
-        .bottombar {
+      @media (max-width: 1120px) {
+        .main {
           grid-template-columns: 1fr;
-          padding: 10px 14px;
+        }
+
+        .panel {
+          border-left: 0;
+          border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+      }
+
+      @media (max-width: 820px) {
+        .topbar {
           height: auto;
+          padding: 14px;
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .toolbar {
+          justify-content: flex-end;
+        }
+
+        .stage-inner {
+          padding: 64px 12px 12px;
+        }
+
+        .scene-hint,
+        .scene-note,
+        .floating-card {
+          position: static;
+          margin-bottom: 10px;
+        }
+
+        .floating-card {
+          width: auto;
         }
       }
     </style>
@@ -663,306 +647,257 @@
     <div class="app">
       <header class="topbar">
         <div class="brand">
-          <div class="brand-badge">⚗️</div>
-          <div>WebAI Chemistry Lab</div>
+          <div class="brand-badge">🧪</div>
+          <div class="brand-copy">
+            <strong>WebAI Chemistry Lab</strong>
+            <span>3D 实验台原型，只验证实验台、酒精灯、试管和加热关系</span>
+          </div>
         </div>
-        <div class="experiment-title">一氧化碳还原氧化铜 · 实验器材画布 v0.6.1</div>
         <div class="toolbar">
-          <button class="icon-btn" title="重置">↺</button>
-          <button class="icon-btn" title="缩小">－</button>
-          <button class="icon-btn" title="放大">＋</button>
-          <button class="icon-btn" title="帮助">?</button>
+          <button class="ghost-btn" id="toggleFlameBtn">切换火焰</button>
+          <button class="primary-btn" id="resetBtn">重置位置</button>
         </div>
       </header>
 
       <main class="main">
-        <section class="canvas-shell">
-          <div class="bench-grid"></div>
-          <div class="canvas-board"></div>
-          <div class="hint-tag"><span class="dot"></span><span id="hintText">当前步骤：确认装置位置后，点火加热，再观察试管与尾气处理变化。</span></div>
-          <div class="drag-tip">可直接拖动画布中的器材</div>
-          <div class="workspace" id="workspace">
-            <div class="apparatus stand draggable" data-drag="stand-left" style="left: 96px; top: 320px; z-index: 2;">
-              <div class="stand-rod"></div>
-              <div class="clamp-bar"></div>
-              <div class="stand-base"></div>
-            </div>
-            <div class="apparatus stand draggable" data-drag="stand-right" style="left: 238px; top: 320px; z-index: 2;">
-              <div class="stand-rod"></div>
-              <div class="clamp-bar"></div>
-              <div class="stand-base"></div>
-            </div>
+        <section class="stage">
+          <div class="scene-hint"><span class="dot"></span><span id="hintText">拖动酒精灯和试管，观察空间位置与加热反馈。</span></div>
+          <div class="scene-note">当前原型采用固定视角，不做自由镜头，先把核心手感做对。</div>
+          <div class="floating-card">
+            <strong>这版只验证 3 件事</strong>
+            <p>一，实验台是否像一个真实场景。二，酒精灯和试管拖动是否顺手。三，试管进入火焰上方后，反馈是否足够明确。</p>
+          </div>
 
-            <div class="apparatus main-tube draggable selected" data-drag="main-tube" style="left: 54px; top: 86px; z-index: 6;">
-              <div class="gasbag"></div>
-              <div class="tube-body"></div>
-              <div class="tube-fill" id="tubeFill"></div>
-              <div class="tube-tip"></div>
-              <div class="tube-bend"></div>
-            </div>
+          <div class="stage-inner">
+            <div class="perspective-wrap">
+              <div class="lab-world">
+                <div class="light-cone"></div>
+                <div class="bench-shadow"></div>
 
-            <div class="apparatus burner draggable" data-drag="burner" style="left: 174px; top: 178px; z-index: 5;">
-              <div class="burner-flame" id="burnerFlame"></div>
-              <div class="burner-neck"></div>
-              <div class="burner-body"></div>
-              <div class="burner-stand"></div>
-            </div>
+                <div class="bench">
+                  <div class="bench-top"></div>
+                  <div class="bench-grid"></div>
+                  <div class="bench-front"></div>
+                  <div class="bench-side"></div>
+                  <div class="bench-label">experiment bench</div>
+                </div>
 
-            <div class="apparatus tail-tube draggable" data-drag="tail-tube" style="left: 324px; top: 118px; z-index: 7;">
-              <div class="tail-hose"></div>
-              <div class="tail-glass"></div>
-              <div class="tail-liquid" id="tailLiquid"></div>
-            </div>
+                <div class="object-layer" id="objectLayer">
+                  <div class="heat-zone hidden" id="heatZone"></div>
 
-            <div class="apparatus bottle-group draggable" data-drag="bottles" style="left: 374px; top: 198px; z-index: 7;">
-              <div class="bottle">
-                <div class="bottle-cap"></div>
-                <div class="bottle-body"></div>
-                <div class="bottle-label">CuO</div>
+                  <div class="apparatus lamp selected" id="lamp" data-object="lamp">
+                    <div class="lamp-flame"></div>
+                    <div class="lamp-wick"></div>
+                    <div class="lamp-cap"></div>
+                    <div class="lamp-body">
+                      <div class="lamp-glass"></div>
+                    </div>
+                    <div class="shadow"></div>
+                  </div>
+
+                  <div class="apparatus tube" id="tube" data-object="tube">
+                    <div class="tube-shell"></div>
+                    <div class="tube-core"></div>
+                    <div class="tube-mouth"></div>
+                    <div class="shadow"></div>
+                  </div>
+                </div>
               </div>
-              <div class="bottle">
-                <div class="bottle-cap"></div>
-                <div class="bottle-body"></div>
-                <div class="bottle-label">Ca(OH)₂</div>
-              </div>
-              <div class="bottle">
-                <div class="bottle-cap"></div>
-                <div class="bottle-body"></div>
-                <div class="bottle-label">Cu</div>
-              </div>
-            </div>
-
-            <div class="apparatus small-tool draggable" data-drag="match" style="left: 382px; top: 272px; z-index: 7;">
-              <div class="match-shape"></div>
-            </div>
-            <div class="apparatus small-tool draggable" data-drag="spoon" style="left: 430px; top: 266px; z-index: 7;">
-              <div class="spoon-shape"></div>
             </div>
           </div>
-          <div class="zoom-tag">73%</div>
         </section>
 
-        <aside class="library">
-          <div class="library-head">
-            <h2>器材与药品库</h2>
-            <p>先把形态做成器材画布，再逐步补真实装配关系。当前已支持基础拖动，先解决“像页面，不像实验台”的问题。</p>
+        <aside class="panel">
+          <div class="panel-card">
+            <h2>最小实验台状态</h2>
+            <p>这一版刻意只保留实验台、酒精灯、试管和加热判定。先不要扩到完整实验系统。</p>
           </div>
-          <div class="categories" id="categories"></div>
-          <div class="library-list" id="libraryList"></div>
+
+          <div class="status-grid">
+            <div class="status-item">
+              <span>当前选中</span>
+              <strong id="selectedValue">酒精灯</strong>
+            </div>
+            <div class="status-item">
+              <span>酒精灯状态</span>
+              <strong id="lampValue">点燃中</strong>
+            </div>
+            <div class="status-item">
+              <span>试管状态</span>
+              <strong id="tubeValue">未加热</strong>
+            </div>
+            <div class="status-item">
+              <span>空间关系</span>
+              <strong id="relationValue">试管未进入火焰上方</strong>
+            </div>
+          </div>
+
+          <div class="panel-card legend">
+            <h3 style="margin-bottom: 10px;">当前验证点</h3>
+            <div class="legend-row"><span class="legend-swatch" style="background:#78ddff"></span><span>拖动对象时有选中与聚焦感</span></div>
+            <div class="legend-row"><span class="legend-swatch" style="background:#ffcf70"></span><span>火焰上方存在受热区域</span></div>
+            <div class="legend-row"><span class="legend-swatch" style="background:#8df3b6"></span><span>试管进入热区后出现暖色反馈</span></div>
+          </div>
+
+          <div class="footer-note">下一步如果方向成立，再继续加点燃/熄灭、液体变化、更多器材和真实实验流程。</div>
         </aside>
       </main>
-
-      <footer class="bottombar">
-        <div class="stepper" id="stepper"></div>
-        <div class="status-line">
-          <div class="status-pill" id="statusPill">装置状态：基础装置已摆放</div>
-          <div class="status-pill" id="reactionPill">反应状态：尚未加热</div>
-          <div class="status-pill" id="tailPill">尾气处理：待观察</div>
-        </div>
-        <button class="primary-action" id="primaryAction">执行当前步骤</button>
-      </footer>
     </div>
 
     <script>
-      const categories = [
-        { id: 'device', name: '仪器', items: [
-          { id: 'stand', name: '铁架台', desc: '支撑玻璃管与实验装置。' },
-          { id: 'tube', name: '硬质玻璃管', desc: '主反应发生区。' },
-          { id: 'burner', name: '酒精灯', desc: '提供持续加热。' },
-          { id: 'tailtube', name: '尾气试管', desc: '观察尾气处理与液面变化。' }
-        ]},
-        { id: 'reagent', name: '药品', items: [
-          { id: 'co', name: '一氧化碳', desc: '还原剂，经导气系统进入反应区。' },
-          { id: 'cuo', name: '氧化铜', desc: '被还原的黑色固体。' },
-          { id: 'lime', name: '石灰水', desc: '尾气处理与现象观察。' },
-          { id: 'cu', name: '铜', desc: '反应产物对照。' }
-        ]},
-        { id: 'tool', name: '工具', items: [
-          { id: 'match', name: '火柴', desc: '点燃酒精灯。' },
-          { id: 'spoon', name: '药匙', desc: '辅助取放药品。' },
-          { id: 'move', name: '移动模式', desc: '当前画布中的器材可直接拖动。' },
-          { id: 'reset', name: '复位工具', desc: '后续可一键还原装置。' }
-        ]}
-      ];
-
-      const steps = [
-        {
-          id: 'setup',
-          name: '步骤 1 · 摆装置',
-          hint: '拖动铁架台、主玻璃管和试管，先把装置摆顺。',
-          status: '装置状态：基础装置已摆放',
-          reaction: '反应状态：尚未加热',
-          tail: '尾气处理：待观察',
-          record: '观察记录：先把实验台做得像器材画布，而不是信息页。',
-          flame: 0.16,
-          fill: 120,
-          tailLiquid: 46
-        },
-        {
-          id: 'ignite',
-          name: '步骤 2 · 点燃酒精灯',
-          hint: '点火后，主反应管开始受热，实验进入过程阶段。',
-          status: '装置状态：酒精灯已点燃',
-          reaction: '反应状态：主反应区开始受热',
-          tail: '尾气处理：继续导气',
-          record: '观察记录：点火以后，画布开始有过程感。',
-          flame: 0.98,
-          fill: 190,
-          tailLiquid: 46
-        },
-        {
-          id: 'observe',
-          name: '步骤 3 · 观察现象',
-          hint: '观察受热区与尾气试管变化，后续应继续补局部放大与颜色变化。',
-          status: '装置状态：加热稳定',
-          reaction: '反应状态：氧化铜正在被还原',
-          tail: '尾气处理：液面变化更明显',
-          record: '观察记录：现在已经更像实验台，但还缺装配关系与真实实验动画。',
-          flame: 0.98,
-          fill: 270,
-          tailLiquid: 78
-        }
-      ];
-
-      let activeCategory = 'device';
-      let activeTool = 'stand';
-      let activeStep = 'setup';
-
-      const categoriesEl = document.getElementById('categories');
-      const libraryListEl = document.getElementById('libraryList');
-      const stepperEl = document.getElementById('stepper');
+      const objectLayer = document.getElementById('objectLayer');
+      const lampEl = document.getElementById('lamp');
+      const tubeEl = document.getElementById('tube');
+      const heatZoneEl = document.getElementById('heatZone');
+      const resetBtn = document.getElementById('resetBtn');
+      const toggleFlameBtn = document.getElementById('toggleFlameBtn');
+      const selectedValueEl = document.getElementById('selectedValue');
+      const lampValueEl = document.getElementById('lampValue');
+      const tubeValueEl = document.getElementById('tubeValue');
+      const relationValueEl = document.getElementById('relationValue');
       const hintTextEl = document.getElementById('hintText');
-      const statusPillEl = document.getElementById('statusPill');
-      const reactionPillEl = document.getElementById('reactionPill');
-      const tailPillEl = document.getElementById('tailPill');
-      const recordPillEl = document.getElementById('recordPill');
-      const primaryActionEl = document.getElementById('primaryAction');
-      const tubeFillEl = document.getElementById('tubeFill');
-      const burnerFlameEl = document.getElementById('burnerFlame');
-      const tailLiquidEl = document.getElementById('tailLiquid');
 
-      function renderCategories() {
-        categoriesEl.innerHTML = categories.map(category => `
-          <button class="category-btn ${category.id === activeCategory ? 'active' : ''}" data-category="${category.id}">${category.name}</button>
-        `).join('');
+      const initialState = {
+        lamp: { x: 220, y: 186 },
+        tube: { x: 406, y: 138 },
+        flameOn: true,
+        selected: 'lamp'
+      };
+
+      const state = JSON.parse(JSON.stringify(initialState));
+
+      const bounds = {
+        lamp: { minX: 84, maxX: 600, minY: 140, maxY: 252 },
+        tube: { minX: 110, maxX: 540, minY: 102, maxY: 236 }
+      };
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
       }
 
-      function renderLibrary() {
-        const current = categories.find(category => category.id === activeCategory);
-        libraryListEl.innerHTML = current.items.map(item => `
-          <button class="library-item ${item.id === activeTool ? 'active' : ''}" data-item="${item.id}">
-            <strong>${item.name}</strong>
-            <span>${item.desc}</span>
-          </button>
-        `).join('');
+      function setSelected(name) {
+        state.selected = name;
+        lampEl.classList.toggle('selected', name === 'lamp');
+        tubeEl.classList.toggle('selected', name === 'tube');
+        selectedValueEl.textContent = name === 'lamp' ? '酒精灯' : '试管';
       }
 
-      function renderSteps() {
-        stepperEl.innerHTML = steps.map(step => `
-          <button class="step-btn ${step.id === activeStep ? 'active' : ''}" data-step="${step.id}">${step.name}</button>
-        `).join('');
+      function renderObjects() {
+        lampEl.style.left = `${state.lamp.x}px`;
+        lampEl.style.top = `${state.lamp.y}px`;
+        tubeEl.style.left = `${state.tube.x}px`;
+        tubeEl.style.top = `${state.tube.y}px`;
+        tubeEl.style.transform = 'rotate(-18deg)';
+
+        lampEl.classList.toggle('off', !state.flameOn);
+        lampValueEl.textContent = state.flameOn ? '点燃中' : '已熄灭';
+
+        const heatZone = getHeatZoneRect();
+        heatZoneEl.style.left = `${heatZone.x}px`;
+        heatZoneEl.style.top = `${heatZone.y}px`;
+        heatZoneEl.classList.toggle('hidden', !state.flameOn);
+
+        const heating = isTubeHeating();
+        tubeEl.classList.toggle('heating', heating);
+        tubeValueEl.textContent = heating ? '加热中' : '未加热';
+        relationValueEl.textContent = heating ? '试管已进入火焰上方' : '试管未进入火焰上方';
+        hintTextEl.textContent = heating
+          ? '试管正在受热，说明热区和空间关系已经被感知到了。'
+          : state.flameOn
+            ? '继续拖动试管靠近火焰上方，观察受热反馈。'
+            : '当前火焰关闭中，可以重新点燃后测试加热关系。';
       }
 
-      function applyStepView() {
-        const current = steps.find(step => step.id === activeStep);
-        hintTextEl.textContent = `当前步骤：${current.hint}`;
-        statusPillEl.textContent = current.status;
-        reactionPillEl.textContent = current.reaction;
-        tailPillEl.textContent = current.tail;
-        recordPillEl.textContent = current.record;
-        tubeFillEl.style.setProperty('--tube-fill', `${current.fill}px`);
-        burnerFlameEl.style.setProperty('--flame-opacity', current.flame);
-        tailLiquidEl.style.setProperty('--tail-liquid', `${current.tailLiquid}px`);
+      function getHeatZoneRect() {
+        return {
+          x: state.lamp.x - 24,
+          y: state.lamp.y - 50,
+          width: 160,
+          height: 140
+        };
       }
 
-      categoriesEl.addEventListener('click', (event) => {
-        const button = event.target.closest('[data-category]');
-        if (!button) return;
-        activeCategory = button.dataset.category;
-        const current = categories.find(category => category.id === activeCategory);
-        activeTool = current.items[0].id;
-        renderCategories();
-        renderLibrary();
-      });
+      function getTubeProbePoint() {
+        return {
+          x: state.tube.x + 34,
+          y: state.tube.y + 38
+        };
+      }
 
-      libraryListEl.addEventListener('click', (event) => {
-        const button = event.target.closest('[data-item]');
-        if (!button) return;
-        activeTool = button.dataset.item;
-        renderLibrary();
-      });
+      function isTubeHeating() {
+        if (!state.flameOn) return false;
+        const zone = getHeatZoneRect();
+        const probe = getTubeProbePoint();
+        return (
+          probe.x >= zone.x &&
+          probe.x <= zone.x + zone.width &&
+          probe.y >= zone.y &&
+          probe.y <= zone.y + zone.height
+        );
+      }
 
-      stepperEl.addEventListener('click', (event) => {
-        const button = event.target.closest('[data-step]');
-        if (!button) return;
-        activeStep = button.dataset.step;
-        renderSteps();
-        applyStepView();
-      });
+      function attachDrag(element, key) {
+        let dragging = false;
+        let startPointerX = 0;
+        let startPointerY = 0;
+        let startX = 0;
+        let startY = 0;
 
-      primaryActionEl.addEventListener('click', () => {
-        const idx = steps.findIndex(step => step.id === activeStep);
-        activeStep = steps[(idx + 1) % steps.length].id;
-        renderSteps();
-        applyStepView();
-      });
+        const onMove = (event) => {
+          if (!dragging) return;
+          event.preventDefault();
+          const dx = event.clientX - startPointerX;
+          const dy = event.clientY - startPointerY;
+          state[key].x = clamp(startX + dx, bounds[key].minX, bounds[key].maxX);
+          state[key].y = clamp(startY + dy, bounds[key].minY, bounds[key].maxY);
+          renderObjects();
+        };
 
-      function enableDragging() {
-        const items = document.querySelectorAll('.apparatus.draggable');
-        const workspace = document.getElementById('workspace');
-        items.forEach(item => {
-          let startX = 0;
-          let startY = 0;
-          let initialLeft = 0;
-          let initialTop = 0;
-          let dragging = false;
+        const stopDrag = () => {
+          if (!dragging) return;
+          dragging = false;
+          element.classList.remove('dragging');
+          window.removeEventListener('pointermove', onMove);
+          window.removeEventListener('pointerup', stopDrag);
+          window.removeEventListener('pointercancel', stopDrag);
+        };
 
-          const onPointerMove = (event) => {
-            if (!dragging) return;
-            const dx = event.clientX - startX;
-            const dy = event.clientY - startY;
-            const nextLeft = initialLeft + dx;
-            const nextTop = initialTop + dy;
-            item.style.left = `${nextLeft}px`;
-            item.style.top = `${nextTop}px`;
-          };
-
-          const stopDragging = () => {
-            if (!dragging) return;
-            dragging = false;
-            item.classList.remove('dragging');
-            document.body.style.userSelect = '';
-            window.removeEventListener('pointermove', onPointerMove);
-            window.removeEventListener('pointerup', stopDragging);
-            window.removeEventListener('pointercancel', stopDragging);
-          };
-
-          item.addEventListener('pointerdown', (event) => {
-            if (event.button !== 0) return;
-            event.preventDefault();
-            event.stopPropagation();
-            document.querySelectorAll('.apparatus.selected').forEach(el => el.classList.remove('selected'));
-            item.classList.add('selected');
-            workspace.appendChild(item);
-            dragging = true;
-            startX = event.clientX;
-            startY = event.clientY;
-            initialLeft = parseFloat(item.style.left || 0);
-            initialTop = parseFloat(item.style.top || 0);
-            item.classList.add('dragging');
-            document.body.style.userSelect = 'none';
-            window.addEventListener('pointermove', onPointerMove, { passive: false });
-            window.addEventListener('pointerup', stopDragging);
-            window.addEventListener('pointercancel', stopDragging);
-          });
+        element.addEventListener('pointerdown', (event) => {
+          if (event.button !== 0) return;
+          event.preventDefault();
+          dragging = true;
+          startPointerX = event.clientX;
+          startPointerY = event.clientY;
+          startX = state[key].x;
+          startY = state[key].y;
+          element.classList.add('dragging');
+          objectLayer.appendChild(element);
+          setSelected(key);
+          window.addEventListener('pointermove', onMove, { passive: false });
+          window.addEventListener('pointerup', stopDrag);
+          window.addEventListener('pointercancel', stopDrag);
         });
       }
 
-      renderCategories();
-      renderLibrary();
-      renderSteps();
-      applyStepView();
-      enableDragging();
+      resetBtn.addEventListener('click', () => {
+        state.lamp.x = initialState.lamp.x;
+        state.lamp.y = initialState.lamp.y;
+        state.tube.x = initialState.tube.x;
+        state.tube.y = initialState.tube.y;
+        state.flameOn = initialState.flameOn;
+        setSelected(initialState.selected);
+        renderObjects();
+      });
+
+      toggleFlameBtn.addEventListener('click', () => {
+        state.flameOn = !state.flameOn;
+        renderObjects();
+      });
+
+      attachDrag(lampEl, 'lamp');
+      attachDrag(tubeEl, 'tube');
+      setSelected(state.selected);
+      renderObjects();
     </script>
   </body>
 </html>
