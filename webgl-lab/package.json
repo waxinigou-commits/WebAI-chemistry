@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test:plan": "node scripts/test-plan.mjs",
     "test:e2e": "node scripts/run-e2e.mjs",
-    "test:flame-toggle": "node scripts/test-flame-toggle.mjs"
+    "test:flame-toggle": "node scripts/test-flame-toggle.mjs",
+    "test:heat-zone": "node scripts/test-heat-zone.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

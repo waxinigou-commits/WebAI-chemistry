@@ -32,16 +32,28 @@ function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value))
 }
 
-function isTubeHeating(lamp: Vec2, tube: Vec2, flameOn: boolean) {
-  if (!flameOn) return false
-  const probe = {
+function getHeatProbe(tube: Vec2) {
+  return {
     x: tube.x - 0.46,
     z: tube.z + 0.12,
   }
+}
+
+function getHeatZoneCenter(lamp: Vec2) {
+  return {
+    x: lamp.x + HEAT_ZONE.offsetX,
+    z: lamp.z + HEAT_ZONE.offsetZ,
+  }
+}
+
+function isTubeHeating(lamp: Vec2, tube: Vec2, flameOn: boolean) {
+  if (!flameOn) return false
+  const probe = getHeatProbe(tube)
+  const center = getHeatZoneCenter(lamp)
 
   return (
-    Math.abs(probe.x - (lamp.x + HEAT_ZONE.offsetX)) <= HEAT_ZONE.radiusX &&
-    Math.abs(probe.z - (lamp.z + HEAT_ZONE.offsetZ)) <= HEAT_ZONE.radiusZ
+    Math.abs(probe.x - center.x) <= HEAT_ZONE.radiusX &&
+    Math.abs(probe.z - center.z) <= HEAT_ZONE.radiusZ
   )
 }
 
@@ -53,6 +65,8 @@ function App() {
   const [dragging, setDragging] = useState<ObjectType | null>(null)
 
   const heating = useMemo(() => isTubeHeating(lamp, tube, flameOn), [lamp, tube, flameOn])
+  const heatProbe = useMemo(() => getHeatProbe(tube), [tube])
+  const heatZoneCenter = useMemo(() => getHeatZoneCenter(lamp), [lamp])
 
   const toggleFlame = () => {
     setFlameOn((value) => !value)
@@ -92,7 +106,7 @@ function App() {
             <div id="flame-flag" data-flame-on={flameOn ? 'true' : 'false'} style={{ display: 'none' }} />
             <button id="move-lamp-test" className="ghost-btn test-btn" onClick={() => {
               setSelected('lamp')
-              setLamp({ x: -0.4, z: 0.45 })
+              setLamp({ x: 0.05, z: 0.2 })
             }}>
               测试移动酒精灯
             </button>
@@ -101,6 +115,12 @@ function App() {
               setTube({ x: 0.1, z: 0.2 })
             }}>
               测试移动试管到热区
+            </button>
+            <button id="move-tube-outside-heat-test" className="ghost-btn test-btn" onClick={() => {
+              setSelected('tube')
+              setTube({ x: 1.8, z: -0.95 })
+            }}>
+              测试移出热区
             </button>
             <button id="toggle-flame-test" className="ghost-btn test-btn" onClick={toggleFlame}>
               测试切换火焰
@@ -188,9 +208,11 @@ function App() {
           </section>
 
           <section className="card report-card">
-            <h2>当前子功能：火焰开关</h2>
-            <p id="flame-debug">flameOn={String(flameOn)} | heating={String(heating)}</p>
-            <p>本轮只验收火焰开关。按钮、状态文案、热区结果和重置恢复必须保持一致。</p>
+            <h2>当前子功能：热区判定</h2>
+            <p id="heat-debug">
+              flameOn={String(flameOn)} | heating={String(heating)} | probe=({heatProbe.x.toFixed(2)}, {heatProbe.z.toFixed(2)}) | center=({heatZoneCenter.x.toFixed(2)}, {heatZoneCenter.z.toFixed(2)})
+            </p>
+            <p>本轮只验收热区判定。测试必须覆盖命中、不命中、关火失效、重置恢复四种路径。</p>
           </section>
         </aside>
       </main>

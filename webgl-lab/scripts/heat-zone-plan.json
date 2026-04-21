@@ -1,0 +1,29 @@
+{
+  "subfeature": "heat-zone",
+  "implementationPlan": {
+    "goal": "让热区判定成为一个独立、可观察、可测试的几何规则，只由 lamp/tube 坐标和 flameOn 驱动。",
+    "inputs": [
+      "lamp position",
+      "tube position",
+      "flameOn"
+    ],
+    "state": [
+      "heating:boolean",
+      "heatProbe:{x,z}",
+      "heatZoneCenter:{x,z}"
+    ],
+    "outputs": [
+      "试管状态在 加热中/未加热 间切换",
+      "空间关系文案在 已进入/未进入火焰上方 间切换",
+      "提示文案根据是否命中热区切换",
+      "热区 debug 信息可读"
+    ]
+  },
+  "testPlan": {
+    "T-HEAT-1": "初始位置不命中热区，heating=false",
+    "T-HEAT-2": "将灯和试管移动到测试位后必须命中热区，heating=true",
+    "T-HEAT-3": "仅移动试管离开热区后必须取消加热",
+    "T-HEAT-4": "即使位置命中，flameOn=false 时 heating 也必须为 false",
+    "T-HEAT-5": "重置后恢复为未加热初始值"
+  }
+}
