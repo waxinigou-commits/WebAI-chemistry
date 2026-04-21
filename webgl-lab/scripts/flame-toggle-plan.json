@@ -1,0 +1,21 @@
+{
+  "subfeature": "flame-toggle",
+  "implementationPlan": {
+    "goal": "让火焰开关成为单一可信状态源，统一驱动按钮文案、酒精灯状态文案、试管加热状态、热区可见性和提示文案。",
+    "inputs": ["toggle-flame button click", "toggle-flame-test button click", "reset-scene button click"],
+    "state": ["flameOn:boolean"],
+    "outputs": [
+      "顶部按钮文案在 熄灭火焰/点燃火焰 间切换",
+      "状态面板在 点燃中/已熄灭 间切换",
+      "试管加热状态在 加热中/未加热 间切换",
+      "提示文案根据 flameOn 和 heating 切换",
+      "重置时恢复 flameOn=true"
+    ]
+  },
+  "testPlan": {
+    "T-FLAME-1": "初始状态应为点燃中，按钮文案为熄灭火焰",
+    "T-FLAME-2": "进入热区后切换火焰，试管状态必须从加热中变未加热",
+    "T-FLAME-3": "切换后按钮文案必须变为点燃火焰，提示文案必须说明火焰关闭",
+    "T-FLAME-4": "重置后按钮和状态全部恢复到点燃初始值"
+  }
+}
