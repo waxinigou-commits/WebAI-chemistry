@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "status": "completed",
+  "currentIndex": 4,
+  "maxRetries": 2,
+  "startedAt": "2026-04-22T06:42:23.122Z",
+  "updatedAt": "2026-04-22T06:43:26.371Z",
+  "features": [
+    {
+      "index": 0,
+      "id": "feature-1-flame-toggle",
+      "name": "功能 1 火焰开关",
+      "command": "npm run test:flame-toggle",
+      "status": "passed",
+      "attempts": 1,
+      "lastExitCode": 0,
+      "lastSignal": null,
+      "lastError": null,
+      "startedAt": "2026-04-22T06:42:23.124Z",
+      "finishedAt": "2026-04-22T06:42:38.510Z"
+    },
+    {
+      "index": 1,
+      "id": "feature-2-heat-zone",
+      "name": "功能 2 热区判定",
+      "command": "npm run test:heat-zone",
+      "status": "passed",
+      "attempts": 1,
+      "lastExitCode": 0,
+      "lastSignal": null,
+      "lastError": null,
+      "startedAt": "2026-04-22T06:42:38.512Z",
+      "finishedAt": "2026-04-22T06:42:49.324Z"
+    },
+    {
+      "index": 2,
+      "id": "feature-3-reset-logic",
+      "name": "功能 3 重置逻辑",
+      "command": "npm run test:reset-logic",
+      "status": "passed",
+      "attempts": 1,
+      "lastExitCode": 0,
+      "lastSignal": null,
+      "lastError": null,
+      "startedAt": "2026-04-22T06:42:49.325Z",
+      "finishedAt": "2026-04-22T06:43:00.917Z"
+    },
+    {
+      "index": 3,
+      "id": "feature-4-status-panel",
+      "name": "功能 4 状态面板一致性",
+      "command": "npm run test:status-panel",
+      "status": "passed",
+      "attempts": 1,
+      "lastExitCode": 0,
+      "lastSignal": null,
+      "lastError": null,
+      "startedAt": "2026-04-22T06:43:00.922Z",
+      "finishedAt": "2026-04-22T06:43:10.729Z"
+    },
+    {
+      "index": 4,
+      "id": "feature-5-e2e",
+      "name": "功能 5 总体验收",
+      "command": "npm run test:e2e",
+      "status": "passed",
+      "attempts": 1,
+      "lastExitCode": 0,
+      "lastSignal": null,
+      "lastError": null,
+      "startedAt": "2026-04-22T06:43:10.730Z",
+      "finishedAt": "2026-04-22T06:43:26.369Z"
+    }
+  ],
+  "history": [
+    {
+      "at": "2026-04-22T06:42:23.124Z",
+      "type": "feature_started",
+      "featureId": "feature-1-flame-toggle",
+      "attempt": 1
+    },
+    {
+      "at": "2026-04-22T06:42:38.510Z",
+      "type": "feature_passed",
+      "featureId": "feature-1-flame-toggle",
+      "attempt": 1
+    },
+    {
+      "at": "2026-04-22T06:42:38.512Z",
+      "type": "feature_started",
+      "featureId": "feature-2-heat-zone",
+      "attempt": 1
+    },
+    {
+      "at": "2026-04-22T06:42:49.324Z",
+      "type": "feature_passed",
+      "featureId": "feature-2-heat-zone",
+      "attempt": 1
+    },
+    {
+      "at": "2026-04-22T06:42:49.325Z",
+      "type": "feature_started",
+      "featureId": "feature-3-reset-logic",
+      "attempt": 1
+    },
+    {
+      "at": "2026-04-22T06:43:00.917Z",
+      "type": "feature_passed",
+      "featureId": "feature-3-reset-logic",
+      "attempt": 1
+    },
+    {
+      "at": "2026-04-22T06:43:00.922Z",
+      "type": "feature_started",
+      "featureId": "feature-4-status-panel",
+      "attempt": 1
+    },
+    {
+      "at": "2026-04-22T06:43:10.729Z",
+      "type": "feature_passed",
+      "featureId": "feature-4-status-panel",
+      "attempt": 1
+    },
+    {
+      "at": "2026-04-22T06:43:10.730Z",
+      "type": "feature_started",
+      "featureId": "feature-5-e2e",
+      "attempt": 1
+    },
+    {
+      "at": "2026-04-22T06:43:26.369Z",
+      "type": "feature_passed",
+      "featureId": "feature-5-e2e",
+      "attempt": 1
+    },
+    {
+      "at": "2026-04-22T06:43:26.371Z",
+      "type": "flow_completed"
+    }
+  ]
+}

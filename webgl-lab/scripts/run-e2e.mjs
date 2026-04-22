@@ -70,8 +70,12 @@ async function run() {
   })
 
   const hintBefore = await status()
-  await page.click('#move-lamp-test')
-  await page.click('#move-tube-heat-test')
+  await page.locator('#move-lamp-test').dispatchEvent('click')
+  await page.locator('#move-tube-heat-test').dispatchEvent('click')
+  await page.waitForFunction(() => {
+    const text = document.querySelector('#heat-debug')?.textContent || ''
+    return text.includes('selected=tube') && text.includes('heating=true')
+  })
   const hintAfterDrag = await status()
   tests.push({
     id: 'T2',
@@ -87,12 +91,19 @@ async function run() {
     detail: hintAfterDrag,
   })
 
-  await page.locator('#toggle-flame-test').click()
-  await page.waitForTimeout(300)
+  await page.locator('#set-flame-off-test').dispatchEvent('click')
+  await page.waitForFunction(() => document.querySelector('#flame-flag')?.getAttribute('data-flame-on') === 'false')
+  await page.waitForTimeout(120)
   const afterFlameOff = await status()
   const flameButtonText = await page.locator('#toggle-flame').textContent()
-  await page.locator('#reset-scene').click()
-  await page.waitForTimeout(300)
+  await page.locator('#reset-scene').dispatchEvent('click')
+  await page.waitForFunction(() => {
+    const flame = document.querySelector('#flame-flag')?.getAttribute('data-flame-on')
+    const selected = document.querySelector('#status-selected')?.textContent || ''
+    const lamp = document.querySelector('#status-lamp')?.textContent || ''
+    return flame === 'true' && selected.includes('酒精灯') && lamp.includes('点燃中')
+  })
+  await page.waitForTimeout(120)
   const afterReset = await status()
   tests.push({
     id: 'T4',
