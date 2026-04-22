@@ -11,7 +11,12 @@
     "test:plan": "node scripts/test-plan.mjs",
     "test:e2e": "node scripts/run-e2e.mjs",
     "test:flame-toggle": "node scripts/test-flame-toggle.mjs",
-    "test:heat-zone": "node scripts/test-heat-zone.mjs"
+    "test:heat-zone": "node scripts/test-heat-zone.mjs",
+    "test:reset-logic": "node scripts/test-reset-logic.mjs",
+    "test:status-panel": "node scripts/test-status-panel.mjs",
+    "flow:run": "node scripts/feature-flow.mjs run",
+    "flow:status": "node scripts/feature-flow.mjs status",
+    "flow:reset": "node scripts/feature-flow.mjs reset"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

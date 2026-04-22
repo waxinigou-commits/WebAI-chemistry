@@ -1,6 +1,6 @@
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Environment, Html, OrbitControls } from '@react-three/drei'
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ThreeEvent } from '@react-three/fiber'
 import type { Mesh, Group } from 'three'
 import './App.css'
@@ -63,6 +63,7 @@ function App() {
   const [selected, setSelected] = useState<ObjectType>(INITIAL_STATE.selected)
   const [flameOn, setFlameOn] = useState(INITIAL_STATE.flameOn)
   const [dragging, setDragging] = useState<ObjectType | null>(null)
+  const [flameVersion, setFlameVersion] = useState(0)
 
   const heating = useMemo(() => isTubeHeating(lamp, tube, flameOn), [lamp, tube, flameOn])
   const heatProbe = useMemo(() => getHeatProbe(tube), [tube])
@@ -71,6 +72,10 @@ function App() {
   const toggleFlame = () => {
     setFlameOn((value) => !value)
   }
+
+  useEffect(() => {
+    setFlameVersion((value) => value + 1)
+  }, [flameOn])
 
   const resetScene = () => {
     setLamp(INITIAL_STATE.lamp)
@@ -122,8 +127,29 @@ function App() {
             }}>
               测试移出热区
             </button>
+            <button id="select-tube-test" className="ghost-btn test-btn" onClick={() => setSelected('tube')}>
+              测试选中试管
+            </button>
+            <button id="select-lamp-test" className="ghost-btn test-btn" onClick={() => setSelected('lamp')}>
+              测试选中酒精灯
+            </button>
             <button id="toggle-flame-test" className="ghost-btn test-btn" onClick={toggleFlame}>
               测试切换火焰
+            </button>
+            <button id="set-flame-off-test" className="ghost-btn test-btn" onClick={() => {
+              setFlameOn(false)
+              setDragging(null)
+            }}>
+              测试直接关火
+            </button>
+            <button id="set-flame-on-test" className="ghost-btn test-btn" onClick={() => {
+              setFlameOn(true)
+              setDragging(null)
+            }}>
+              测试直接点火
+            </button>
+            <button id="reset-scene-test" className="ghost-btn test-btn" onClick={resetScene}>
+              测试重置场景
             </button>
           </div>
           <div className="hud hud-left" id="hint-text">
@@ -208,11 +234,14 @@ function App() {
           </section>
 
           <section className="card report-card">
-            <h2>当前子功能：热区判定</h2>
+            <h2>当前子功能：状态面板一致性</h2>
             <p id="heat-debug">
-              flameOn={String(flameOn)} | heating={String(heating)} | probe=({heatProbe.x.toFixed(2)}, {heatProbe.z.toFixed(2)}) | center=({heatZoneCenter.x.toFixed(2)}, {heatZoneCenter.z.toFixed(2)})
+              selected={selected} | flameOn={String(flameOn)} | heating={String(heating)} | probe=({heatProbe.x.toFixed(2)}, {heatProbe.z.toFixed(2)}) | center=({heatZoneCenter.x.toFixed(2)}, {heatZoneCenter.z.toFixed(2)})
             </p>
-            <p>本轮只验收热区判定。测试必须覆盖命中、不命中、关火失效、重置恢复四种路径。</p>
+            <p id="flame-debug">
+              flameOn={String(flameOn)} | button={flameOn ? '熄灭火焰' : '点燃火焰'} | version={flameVersion} | dragging={String(dragging)}
+            </p>
+            <p>本轮只验收状态面板。要求它始终和内部状态完全一致，不允许 selected 或 reset 后残留旧值。</p>
           </section>
         </aside>
       </main>
@@ -408,6 +437,8 @@ function useBenchDrag(
     onPointerMove,
     onPointerUp,
     onPointerMissed: () => onDragState(null),
+    onPointerLeave: () => onDragState(null),
+    onLostPointerCapture: () => onDragState(null),
     position: [current.x, dragPlaneY, current.z] as [number, number, number],
   }
 }

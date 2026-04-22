@@ -117,9 +117,11 @@ button {
 .test-controls {
   position: absolute;
   left: 32px;
+  right: 32px;
   bottom: 32px;
   z-index: 10;
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 

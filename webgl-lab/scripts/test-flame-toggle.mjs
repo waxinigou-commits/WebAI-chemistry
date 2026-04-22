@@ -59,8 +59,8 @@ async function run() {
     detail: initial,
   })
 
-  await page.click('#move-lamp-test')
-  await page.click('#move-tube-heat-test')
+  await page.locator('#move-lamp-test').dispatchEvent('click')
+  await page.locator('#move-tube-heat-test').dispatchEvent('click')
   await page.waitForTimeout(300)
   const heated = await read()
   results.push({
@@ -69,8 +69,9 @@ async function run() {
     detail: heated,
   })
 
-  await page.click('#toggle-flame-test')
-  await page.waitForTimeout(400)
+  await page.locator('#set-flame-off-test').dispatchEvent('click')
+  await page.waitForFunction(() => document.querySelector('#flame-flag')?.getAttribute('data-flame-on') === 'false')
+  await page.waitForTimeout(120)
   const afterOff = await read()
   results.push({
     id: 'T-FLAME-2',
@@ -84,7 +85,7 @@ async function run() {
     detail: afterOff,
   })
 
-  await page.click('#reset-scene')
+  await page.locator('#reset-scene').dispatchEvent('click')
   await page.waitForTimeout(400)
   const afterReset = await read()
   results.push({
