@@ -58,8 +58,8 @@ async function run() {
     detail: initial,
   })
 
-  await page.click('#move-lamp-test')
-  await page.click('#move-tube-heat-test')
+  await page.locator('#move-lamp-test').dispatchEvent('click')
+  await page.locator('#move-tube-heat-test').dispatchEvent('click')
   await page.waitForTimeout(300)
   const heated = await read()
   results.push({
@@ -68,8 +68,12 @@ async function run() {
     detail: heated,
   })
 
-  await page.click('#move-tube-outside-heat-test')
-  await page.waitForTimeout(300)
+  await page.locator('#move-tube-outside-heat-test').dispatchEvent('click')
+  await page.waitForFunction(() => {
+    const text = document.querySelector('#heat-debug')?.textContent || ''
+    return text.includes('probe=(1.69, -0.93)')
+  })
+  await page.waitForTimeout(120)
   const outside = await read()
   results.push({
     id: 'T-HEAT-3',
@@ -77,10 +81,11 @@ async function run() {
     detail: outside,
   })
 
-  await page.click('#move-tube-heat-test')
+  await page.locator('#move-tube-heat-test').dispatchEvent('click')
   await page.waitForTimeout(200)
-  await page.click('#toggle-flame-test')
-  await page.waitForTimeout(300)
+  await page.locator('#set-flame-off-test').dispatchEvent('click')
+  await page.waitForFunction(() => document.querySelector('#flame-flag')?.getAttribute('data-flame-on') === 'false')
+  await page.waitForTimeout(120)
   const flameOff = await read()
   results.push({
     id: 'T-HEAT-4',
@@ -88,7 +93,7 @@ async function run() {
     detail: flameOff,
   })
 
-  await page.click('#reset-scene')
+  await page.locator('#reset-scene').dispatchEvent('click')
   await page.waitForTimeout(300)
   const afterReset = await read()
   results.push({

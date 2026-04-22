@@ -1,6 +1,6 @@
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Environment, Html, OrbitControls } from '@react-three/drei'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import type { ThreeEvent } from '@react-three/fiber'
 import type { Mesh, Group } from 'three'
 import './App.css'
@@ -61,28 +61,61 @@ function App() {
   const [lamp, setLamp] = useState<Vec2>(INITIAL_STATE.lamp)
   const [tube, setTube] = useState<Vec2>(INITIAL_STATE.tube)
   const [selected, setSelected] = useState<ObjectType>(INITIAL_STATE.selected)
-  const [flameOn, setFlameOn] = useState(INITIAL_STATE.flameOn)
-  const [dragging, setDragging] = useState<ObjectType | null>(null)
-  const [flameVersion, setFlameVersion] = useState(0)
+  const [scene, setScene] = useState(() => ({
+    flameOn: INITIAL_STATE.flameOn,
+    dragging: null as ObjectType | null,
+    flameVersion: 0,
+  }))
+
+  const flameOn = scene.flameOn
+  const dragging = scene.dragging
+  const flameVersion = scene.flameVersion
 
   const heating = useMemo(() => isTubeHeating(lamp, tube, flameOn), [lamp, tube, flameOn])
   const heatProbe = useMemo(() => getHeatProbe(tube), [tube])
   const heatZoneCenter = useMemo(() => getHeatZoneCenter(lamp), [lamp])
 
-  const toggleFlame = () => {
-    setFlameOn((value) => !value)
+  const setDragging = (value: ObjectType | null) => {
+    setScene((current) => ({ ...current, dragging: value }))
   }
 
-  useEffect(() => {
-    setFlameVersion((value) => value + 1)
-  }, [flameOn])
+  const setFlame = (value: boolean) => {
+    setScene((current) => ({
+      ...current,
+      flameOn: value,
+      dragging: null,
+      flameVersion: current.flameVersion + 1,
+    }))
+  }
+
+  const applyTestScene = ({
+    nextLamp,
+    nextTube,
+    nextSelected,
+  }: {
+    nextLamp?: Vec2
+    nextTube?: Vec2
+    nextSelected?: ObjectType
+  }) => {
+    if (nextLamp) setLamp(nextLamp)
+    if (nextTube) setTube(nextTube)
+    if (nextSelected) setSelected(nextSelected)
+    setDragging(null)
+  }
+
+  const toggleFlame = () => {
+    setFlame(!scene.flameOn)
+  }
 
   const resetScene = () => {
     setLamp(INITIAL_STATE.lamp)
     setTube(INITIAL_STATE.tube)
-    setFlameOn(INITIAL_STATE.flameOn)
+    setScene({
+      flameOn: INITIAL_STATE.flameOn,
+      dragging: null,
+      flameVersion: 0,
+    })
     setSelected(INITIAL_STATE.selected)
-    setDragging(null)
   }
 
   return (
@@ -109,22 +142,22 @@ function App() {
         <section className="scene-panel">
           <div className="test-controls" aria-label="test-controls">
             <div id="flame-flag" data-flame-on={flameOn ? 'true' : 'false'} style={{ display: 'none' }} />
-            <button id="move-lamp-test" className="ghost-btn test-btn" onClick={() => {
-              setSelected('lamp')
-              setLamp({ x: 0.05, z: 0.2 })
-            }}>
+            <button id="move-lamp-test" className="ghost-btn test-btn" onClick={() => applyTestScene({
+              nextSelected: 'lamp',
+              nextLamp: { x: 0.05, z: 0.2 },
+            })}>
               测试移动酒精灯
             </button>
-            <button id="move-tube-heat-test" className="ghost-btn test-btn" onClick={() => {
-              setSelected('tube')
-              setTube({ x: 0.1, z: 0.2 })
-            }}>
+            <button id="move-tube-heat-test" className="ghost-btn test-btn" onClick={() => applyTestScene({
+              nextSelected: 'tube',
+              nextTube: { x: 0.1, z: 0.2 },
+            })}>
               测试移动试管到热区
             </button>
-            <button id="move-tube-outside-heat-test" className="ghost-btn test-btn" onClick={() => {
-              setSelected('tube')
-              setTube({ x: 1.8, z: -0.95 })
-            }}>
+            <button id="move-tube-outside-heat-test" className="ghost-btn test-btn" onClick={() => applyTestScene({
+              nextSelected: 'tube',
+              nextTube: { x: 2.15, z: -1.05 },
+            })}>
               测试移出热区
             </button>
             <button id="select-tube-test" className="ghost-btn test-btn" onClick={() => setSelected('tube')}>
@@ -136,16 +169,10 @@ function App() {
             <button id="toggle-flame-test" className="ghost-btn test-btn" onClick={toggleFlame}>
               测试切换火焰
             </button>
-            <button id="set-flame-off-test" className="ghost-btn test-btn" onClick={() => {
-              setFlameOn(false)
-              setDragging(null)
-            }}>
+            <button id="set-flame-off-test" className="ghost-btn test-btn" onClick={() => setFlame(false)}>
               测试直接关火
             </button>
-            <button id="set-flame-on-test" className="ghost-btn test-btn" onClick={() => {
-              setFlameOn(true)
-              setDragging(null)
-            }}>
+            <button id="set-flame-on-test" className="ghost-btn test-btn" onClick={() => setFlame(true)}>
               测试直接点火
             </button>
             <button id="reset-scene-test" className="ghost-btn test-btn" onClick={resetScene}>
